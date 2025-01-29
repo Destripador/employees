@@ -519,8 +519,6 @@ export default {
 						(response) => {
 							this.$root.$emit('getall')
 							this.$root.$emit('show', false)
-							// eslint-disable-next-line no-console
-							console.log('message: ', this.areaSend)
 							showSuccess('Datos actualizados')
 						},
 						(err) => {
