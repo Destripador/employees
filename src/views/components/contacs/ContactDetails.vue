@@ -75,7 +75,13 @@
 								:config="config" />
 						</VTab>
 
-						<VTab title="Personal" />
+						<VTab title="Personal">
+							<PersonalTab
+								:data="data"
+								:show="show"
+								:empleados="Empleados"
+								:config="config" />
+						</VTab>
 
 						<VTab title="Archivos" />
 					</VueTabs>
@@ -87,6 +93,7 @@
 
 <script>
 import EmpleadoTab from './perfil/EmpleadoTab.vue'
+import PersonalTab from './perfil/PersonalTab.vue'
 import { VueTabs, VTab } from 'vue-nav-tabs/dist/vue-tabs.js'
 import 'vue-nav-tabs/themes/vue-tabs.css'
 
@@ -112,6 +119,7 @@ export default {
 
 	components: {
 		EmpleadoTab,
+		PersonalTab,
 		NcAvatar,
 		VueTabs,
 		VTab,
@@ -172,3 +180,78 @@ export default {
 	},
 }
 </script>
+
+<style lang="scss" scoped>
+
+.envelope {
+	.app-content-list-item-icon {
+		height: 40px; // To prevent some unexpected spacing below the avatar
+	}
+
+	&__subtitle {
+		display: flex;
+		gap: 4px;
+
+		&__subject {
+			color: var(--color-main-text);
+			line-height: 130%;
+			overflow: hidden;
+			text-overflow: ellipsis;
+		}
+	}
+}
+
+.list-item-style {
+	list-style: none;
+}
+
+.contacts-list__item-wrapper {
+	&[draggable='true'] .avatardiv * {
+		cursor: move !important;
+	}
+
+	&[draggable='false'] .avatardiv * {
+		cursor: not-allowed !important;
+	}
+}
+#emptycontent, .emptycontent {
+    margin-top: 2vh;
+    }
+
+.container {
+		padding: 20px 15px 0px 6px;
+		align-items: center;
+}
+.container-progress {
+	margin-right: 30%;
+	margin-left: 30%;
+	margin-top: 20px;
+	align-items: center;
+}
+.wrapper {
+	display: flex;
+	gap: 4px;
+	align-items: flex-end;
+	flex-wrap: wrap;
+	margin-right: 5%;
+	margin-left: 5%;
+}
+
+.contacts-list {
+	max-height: calc(100vh - var(--header-height) - 48px);
+	overflow: auto;
+}
+.contacts-list__header {
+	min-height: 48px;
+}
+
+.margin-left-icon{
+	margin-right: 20px;
+}
+
+.button-container-profile{
+	float: right;
+	margin-top: -10px;
+}
+
+</style>

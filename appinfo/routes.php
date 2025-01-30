@@ -17,6 +17,7 @@ return [
 		
 		['name' => 'page#GuardarNota', 'url' => '/GuardarNota', 'verb' => 'POST'],
 		['name' => 'empleados#CambiosEmpleado', 'url' => '/CambiosEmpleado', 'verb' => 'POST'],
+		['name' => 'empleados#CambiosPersonal', 'url' => '/CambiosPersonal', 'verb' => 'POST'],
 		['name' => 'page#ActivarEmpleado', 'url' => '/ActivarEmpleado', 'verb' => 'POST'],
 		['name' => 'page#EliminarEmpleado', 'url' => '/EliminarEmpleado', 'verb' => 'POST'],
 		['name' => 'page#ImportListEmpleados', 'url' => '/ImportListEmpleados', 'verb' => 'POST'],

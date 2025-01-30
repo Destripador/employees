@@ -274,4 +274,8 @@ class empleadosController extends Controller {
 		$this->empleadosMapper->CambiosEmpleado($id_empleados, $numeroempleado, $ingreso, $area, $puesto, $socio, $gerente, $fondoclave, $numerocuenta, $equipoasignado, $sueldo);
 	}
 
+	public function CambiosPersonal($Id_empleados, $Direccion, $Estado_civil, $Telefono_contacto, $Rfc, $Imss, $Contacto_emergencia, $Numero_emergencia, $Curp, $Fecha_nacimiento, $Correo_contacto, $Genero): void {
+		$this->empleadosMapper->CambiosPersonal($Id_empleados, $Direccion, $Estado_civil, $Telefono_contacto, $Rfc, $Imss, $Contacto_emergencia, $Numero_emergencia, $Curp, $Fecha_nacimiento, $Correo_contacto, $Genero);
+	}
+
 }

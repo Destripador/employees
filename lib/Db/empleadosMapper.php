@@ -187,7 +187,6 @@ class empleadosMapper extends QBMapper {
 			$query->update($this->getTableName())
 				->set('Numero_empleado', $query->createNamedParameter($Numero_empleado))
 				->set('Ingreso', $query->createNamedParameter($Ingreso))
-				->set('Correo_contacto', $query->createNamedParameter($Correo_contacto))
 				->set('Id_departamento', $query->createNamedParameter($Id_departamento))
 				->set('Id_puesto', $query->createNamedParameter($Id_puesto))
 				->set('Id_gerente', $query->createNamedParameter($Id_gerente))
@@ -200,9 +199,50 @@ class empleadosMapper extends QBMapper {
 				->where($query->expr()->eq('Id_empleados', $query->createNamedParameter($Id_empleados)));
 	
 			$query->execute();
+			
 		}
 		catch(Exception $e){
 			console.log($e);
+		}
+	}
+
+	public function CambiosPersonal($Id_empleados, $Direccion, $Estado_civil, $Telefono_contacto, $Rfc, $Imss, $Contacto_emergencia, $Numero_emergencia, $Curp, $Fecha_nacimiento, $Correo_contacto, $Genero): void {
+		try{
+			$timestamp = date('Y-m-d');
+
+			if(empty($Direccion) && $Direccion != 0){ $Direccion = null; }
+			if(empty($Estado_civil) && $Estado_civil != 0){ $Estado_civil = null; }
+			if(empty($Telefono_contacto) && $Telefono_contacto != 0){ $Telefono_contacto = null; }
+			if(empty($Curp) && $Curp != 0){ $Curp = null; }
+			if(empty($Rfc) && $Rfc != 0){ $Rfc = null; }
+			if(empty($Imss) && $Imss != 0){ $Imss = null; }
+			if(empty($Genero) && $Genero != 0){ $Genero = null; }
+			if(empty($Correo_contacto) && $Correo_contacto != 0){ $Correo_contacto = null; }
+			if(empty($Contacto_emergencia) && $Contacto_emergencia != 0){ $Contacto_emergencia = null; }
+			if(empty($Fecha_nacimiento) && $Fecha_nacimiento != 0){ $Fecha_nacimiento = null; }
+			if(empty($Numero_emergencia) && $Numero_emergencia != 0){ $Numero_emergencia = null; }
+			
+	
+			$query = $this->db->getQueryBuilder();
+			$query->update($this->getTableName())
+				->set('Direccion', $query->createNamedParameter($Direccion))
+				->set('Estado_civil', $query->createNamedParameter($Estado_civil))
+				->set('Telefono_contacto', $query->createNamedParameter($Telefono_contacto))
+				->set('Curp', $query->createNamedParameter($Curp))
+				->set('Rfc', $query->createNamedParameter($Rfc))
+				->set('Imss', $query->createNamedParameter($Imss))
+				->set('Genero', $query->createNamedParameter($Genero))			
+				->set('Correo_contacto', $query->createNamedParameter($Correo_contacto))
+				->set('Contacto_emergencia', $query->createNamedParameter($Contacto_emergencia))
+				->set('Numero_emergencia', $query->createNamedParameter($Numero_emergencia))
+				->set('Fecha_nacimiento', $query->createNamedParameter($Fecha_nacimiento))
+				->set('updated_at', $query->createNamedParameter($timestamp))
+				->where($query->expr()->eq('Id_empleados', $query->createNamedParameter($Id_empleados)));
+	
+			$query->execute();
+		}
+		catch(Exception $e){
+			echo $e;
 		}
 	}
 }
