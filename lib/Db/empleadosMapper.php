@@ -25,7 +25,8 @@ class empleadosMapper extends QBMapper {
 
 		$qb->select('*')
 			->from($this->getTableName(), 'o')
-			->innerJoin('o', 'users', 'c', $qb->expr()->eq('uid', 'id_user'));
+			->innerJoin('o', 'users', 'c', $qb->expr()->eq('uid', 'id_user'))
+			->where($qb->expr()->eq('Estado', $qb->createNamedParameter(1)));
 		
 		$result = $qb->execute();
 		$users = $result->fetchAll();
@@ -49,6 +50,21 @@ class empleadosMapper extends QBMapper {
 		return $users;
 	}
 
+	public function GetUserListsDeactive(): array {
+		$qb = $this->db->getQueryBuilder();
+
+		$qb->select('*')
+			->from($this->getTableName(), 'o')
+			->innerJoin('o', 'users', 'c', $qb->expr()->eq('uid', 'id_user'))
+			->where($qb->expr()->eq('Estado', $qb->createNamedParameter(0)));
+		
+		$result = $qb->execute();
+		$users = $result->fetchAll();
+		$result->closeCursor();
+	
+		return $users;
+	}
+
 	public function deleteByIdEmpleado(int $id_empleados): void {
 		$qb = $this->db->getQueryBuilder();
 
@@ -56,6 +72,18 @@ class empleadosMapper extends QBMapper {
 			->where($qb->expr()->eq('Id_empleados', $qb->createNamedParameter($id_empleados)));
 			
 
+		$result = $qb->execute();
+	}
+
+	public function DesactivarByIdEmpleado(int $id_empleados): void {
+		$timestamp = date('Y-m-d');
+		$qb = $this->db->getQueryBuilder();
+
+		$qb->update($this->getTableName())
+		->set('Estado', $qb->createNamedParameter(0))
+		->set('updated_at', $qb->createNamedParameter($timestamp))
+		->where($qb->expr()->eq('Id_empleados', $qb->createNamedParameter($id_empleados)));
+			
 		$result = $qb->execute();
 	}
 

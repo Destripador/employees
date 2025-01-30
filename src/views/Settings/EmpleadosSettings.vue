@@ -15,92 +15,149 @@
 			</h2>
 		</div>
 
-		<div v-if="Empleados.length > 0" class="container">
-			<div style="display: flex; gap: 12px; flex: 1">
-				<div>
-					<h2 class="titles">
-						<span>Empleados activos</span>
-					</h2>
-				</div>
-			</div>
-			<table class="grid">
-				<tr>
-					<th class="header__cell header__cell--avatar">
+		<VueTabs>
+			<VTab title="Empleados activos">
+				<div v-if="Empleados.length > 0" class="container">
+					<div style="display: flex; gap: 12px; flex: 1">
+						<div>
+							<h2 class="titles">
+								<span>Empleados activos</span>
+							</h2>
+						</div>
+					</div>
+					<table class="grid">
+						<tr>
+							<th class="header__cell header__cell--avatar">
 						&nbsp;
-					</th>
-					<th>{{ t('empleados', 'Nombre') }}</th>
-					<th>{{ t('empleados', 'Opciones') }}</th>
-				</tr>
-				<tr v-for="(item, index) in Empleados" v-bind="$attrs">
-					<td class="row__cell row__cell--avatar">
-						<NcAvatar :user="item.uid"
-							:display-name="item.displayname"
-							:show-user-status-compact="false"
-							:show-user-status="false" />
-					</td>
+							</th>
+							<th>{{ t('empleados', 'Nombre') }}</th>
+							<th>{{ t('empleados', 'Opciones') }}</th>
+						</tr>
+						<tr v-for="(item, index) in Empleados" v-bind="$attrs">
+							<td class="row__cell row__cell--avatar">
+								<NcAvatar :user="item.uid"
+									:display-name="item.displayname"
+									:show-user-status-compact="false"
+									:show-user-status="false" />
+							</td>
 
-					<td v-if="item.displayname">
-						{{ item.displayname }}
-					</td>
-					<td v-else>
-						{{ item.uid }}
-					</td>
+							<td v-if="item.displayname">
+								{{ item.displayname }}
+							</td>
+							<td v-else>
+								{{ item.uid }}
+							</td>
 
-					<td>
-						<NcActions>
-							<NcActionButton @click="EliminarUser(index)">
-								<template #icon>
-									<Delete :size="20" />
-								</template>
-								Eliminar
-							</NcActionButton>
-						</NcActions>
-					</td>
-				</tr>
-			</table>
-		</div>
-		<br>
-		<div v-if="Usuarios.length > 0" class="container">
-			<div style="display: flex; gap: 12px; flex: 1">
-				<div>
-					<h2 class="titles">
-						<span>Usuarios sin cuenta de empleado</span>
-					</h2>
+							<td>
+								<NcActions>
+									<NcActionButton @click="DeactiveUserDialog(index, item.displayname)">
+										<template #icon>
+											<AccountOff :size="20" />
+										</template>
+										Deshabilitar cuenta {{ item.displayname }}
+									</NcActionButton>
+								</NcActions>
+							</td>
+						</tr>
+					</table>
 				</div>
-			</div>
-			<table class="grid">
-				<tr>
-					<th class="header__cell header__cell--avatar">
+			</VTab>
+
+			<VTab title="Empleados desactivados">
+				<div v-if="Desactivados.length > 0" class="container">
+					<div style="display: flex; gap: 12px; flex: 1">
+						<div>
+							<h2 class="titles">
+								<span>Empleados activos</span>
+							</h2>
+						</div>
+					</div>
+					<table class="grid">
+						<tr>
+							<th class="header__cell header__cell--avatar">
 						&nbsp;
-					</th>
-					<th>{{ t('empleados', 'Nombre') }}</th>
-					<th>{{ t('empleados', 'Opciones') }}</th>
-				</tr>
-				<tr v-for="(item, index) in Usuarios" v-bind="$attrs">
-					<td class="row__cell row__cell--avatar">
-						<NcAvatar :user="item.uid"
-							:display-name="item.displayname"
-							:show-user-status-compact="false"
-							:show-user-status="false" />
-					</td>
+							</th>
+							<th>{{ t('empleados', 'Nombre') }}</th>
+							<th>{{ t('empleados', 'Opciones') }}</th>
+						</tr>
+						<tr v-for="(item, index) in Desactivados" v-bind="$attrs">
+							<td class="row__cell row__cell--avatar">
+								<NcAvatar :user="item.uid"
+									:display-name="item.displayname"
+									:show-user-status-compact="false"
+									:show-user-status="false" />
+							</td>
 
-					<td>
-						{{ JSON.parse(item.data).displayname.value }}
-					</td>
+							<td v-if="item.displayname">
+								{{ item.displayname }}
+							</td>
+							<td v-else>
+								{{ item.uid }}
+							</td>
 
-					<td>
-						<NcActions>
-							<NcActionButton @click="ActivarUser(index)">
-								<template #icon>
-									<Plus :size="20" />
-								</template>
-								Activar
-							</NcActionButton>
-						</NcActions>
-					</td>
-				</tr>
-			</table>
-		</div>
+							<td>
+								<NcActions>
+									<NcActionButton @click="EliminarUser(index)">
+										<template #icon>
+											<Delete :size="20" />
+										</template>
+										Eliminar {{ index }}
+									</NcActionButton>
+								</NcActions>
+							</td>
+						</tr>
+					</table>
+				</div>
+			</VTab>
+
+			<VTab title="Empleados sin cuenta">
+				<div v-if="Usuarios.length > 0" class="container">
+					<div style="display: flex; gap: 12px; flex: 1">
+						<div>
+							<h2 class="titles">
+								<span>Usuarios sin cuenta de empleado</span>
+							</h2>
+						</div>
+					</div>
+					<table class="grid">
+						<tr>
+							<th class="header__cell header__cell--avatar">
+						&nbsp;
+							</th>
+							<th>{{ t('empleados', 'Nombre') }}</th>
+							<th>{{ t('empleados', 'Opciones') }}</th>
+						</tr>
+						<tr v-for="(item, index) in Usuarios" v-bind="$attrs">
+							<td class="row__cell row__cell--avatar">
+								<NcAvatar :user="item.uid"
+									:display-name="item.displayname"
+									:show-user-status-compact="false"
+									:show-user-status="false" />
+							</td>
+
+							<td>
+								{{ JSON.parse(item.data).displayname.value }}
+							</td>
+
+							<td>
+								<NcActions>
+									<NcActionButton @click="ActivarUser(index)">
+										<template #icon>
+											<Plus :size="20" />
+										</template>
+										Activar
+									</NcActionButton>
+								</NcActions>
+							</td>
+						</tr>
+					</table>
+				</div>
+			</VTab>
+		</VueTabs>
+		<NcDialog :open.sync="showDeactiveUserDialog"
+			name="Confirmacion"
+			:message="'Esta seguro que desea deshabilitar la cuenta de \n' + selected.name + '?'"
+			:buttons="buttons" />
 	</div>
 </template>
 
@@ -109,13 +166,14 @@
 import AccountGroup from 'vue-material-design-icons/AccountGroup.vue'
 import Delete from 'vue-material-design-icons/Delete.vue'
 import Plus from 'vue-material-design-icons/Plus.vue'
-// import WalletPlus from 'vue-material-design-icons/WalletPlus'
+import AccountOff from 'vue-material-design-icons/AccountOff.vue'
 // import Cog from 'vue-material-design-icons/Cog'
 // import Check from 'vue-material-design-icons/Check'
 
 // imports
-import { NcActions, NcActionButton, NcLoadingIcon, NcAvatar } from '@nextcloud/vue'
+import { NcActions, NcActionButton, NcLoadingIcon, NcAvatar, NcDialog } from '@nextcloud/vue'
 import { showError /* showSuccess */ } from '@nextcloud/dialogs'
+import { VueTabs, VTab } from 'vue-nav-tabs/dist/vue-tabs.js'
 import { generateUrl } from '@nextcloud/router'
 import axios from '@nextcloud/axios'
 
@@ -129,14 +187,28 @@ export default {
 		AccountGroup,
 		Delete,
 		Plus,
+		VueTabs,
+		VTab,
+		AccountOff,
+		NcDialog,
 	},
 
 	data() {
 		return {
+			showDeactiveUserDialog: false,
+			selected: [],
 			loading: true,
 			Empleados: [],
 			Usuarios: [],
+			Desactivados: [],
 			map: {},
+			buttons: [
+				{
+					label: 'Ok',
+					type: 'primary',
+					callback: () => { this.DeactiveUser(this.selected.index) },
+				},
+			],
 		}
 	},
 
@@ -151,28 +223,26 @@ export default {
 				await axios.get(generateUrl('/apps/empleados/GetUserLists'))
 					.then(
 						(response) => {
-
+							// Inicializar listas vacías
 							this.Usuarios = []
-							this.Empleados = []
+							this.Empleados = response.data.Empleados
+							this.Desactivados = response.data.Desactivados
+
+							// Crear un mapa de empleados y desactivados para rápida eliminación
 							this.map = {}
 
-							for (let i = 0; i < response.data.Empleados.length; i++) {
-								this.map[response.data.Empleados[i].Id_user] = true
-								this.Empleados.push(response.data.Empleados[i])
-							}
+							// Marcar empleados activos en el mapa
+							response.data.Empleados.forEach(empleado => {
+								this.map[empleado.Id_user] = true
+							})
 
-							// Recorrer el segundo array y verificar si sus elementos existen en el objeto
-							for (let i = 0; i < response.data.Users.length; i++) {
-								if (!this.map[response.data.Users[i].uid]) {
-									this.Usuarios.push(response.data.Users[i])
-								}
-							}
+							// Marcar empleados desactivados en el mapa
+							response.data.Desactivados.forEach(empleado => {
+								this.map[empleado.Id_user] = true
+							})
 
-							// eslint-disable-next-line no-console
-							console.log('Usuarios: ', this.Usuarios)
-
-							// eslint-disable-next-line no-console
-							console.log('Empleados: ', this.Empleados)
+							// Filtrar `Usuarios`, eliminando los que están en `Empleados` y `Desactivados`
+							this.Usuarios = response.data.Users.filter(user => !this.map[user.uid])
 
 							this.loading = false
 						},
@@ -185,9 +255,33 @@ export default {
 			}
 		},
 
+		DeactiveUserDialog(index, name) {
+			this.selected.index = index
+			this.selected.name = name
+			this.showDeactiveUserDialog = true
+		},
+
 		async EliminarUser(index) {
 			try {
 				await axios.post(generateUrl('/apps/empleados/EliminarEmpleado'),
+					{
+						id_empleados: this.Desactivados[index].Id_empleados,
+					})
+					.then(
+						(response) => {
+							this.getall()
+						},
+						(err) => {
+							showError(err)
+						},
+					)
+			} catch (err) {
+				showError(t('empleados', 'Se ha producido una excepcion [03] [' + err + ']'))
+			}
+		},
+		async DeactiveUser(index) {
+			try {
+				await axios.post(generateUrl('/apps/empleados/DesactivarEmpleado'),
 					{
 						id_empleados: this.Empleados[index].Id_empleados,
 					})
@@ -203,7 +297,6 @@ export default {
 				showError(t('empleados', 'Se ha producido una excepcion [03] [' + err + ']'))
 			}
 		},
-
 		async ActivarUser(index) {
 			try {
 				await axios.post(generateUrl('/apps/empleados/ActivarEmpleado'),

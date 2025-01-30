@@ -126,10 +126,12 @@ class PageController extends Controller {
 	public function GetUserLists(): array{
 		$empleados = $this->empleadosMapper->GetUserLists();
 		$users = $this->empleadosMapper->getAllUsers();
+		$deactivated = $this->empleadosMapper->GetUserListsDeactive();
 		
 		$data = array(
 			'Empleados' => $empleados,
 			'Users' => $users,
+			'Desactivados' => $deactivated,
         );
 
 		return $data;
@@ -215,6 +217,20 @@ class PageController extends Controller {
 		try{
 
 			$this->empleadosMapper->deleteByIdEmpleado($id_empleados);
+
+			
+			return "ok"; 
+		}
+		catch(Exception $e){
+			return $e;
+		}
+	}
+
+	#[UseSession]
+	public function DesactivarEmpleado(int $id_empleados): string {
+		try{
+
+			$this->empleadosMapper->DesactivarByIdEmpleado($id_empleados);
 
 			
 			return "ok"; 

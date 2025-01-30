@@ -161,6 +161,7 @@ class empleadosController extends Controller {
 
 			$user = new empleados();
 			$user->setid_user($id_user);
+			$user->setestado('1');
 			$user->setcreated_at($timestamp);
 			$user->setupdated_at($timestamp);
 
@@ -181,7 +182,6 @@ class empleadosController extends Controller {
 
 			$this->empleadosMapper->deleteByIdEmpleado($id_empleados);
 
-			
 			return "ok"; 
 		}
 		catch(Exception $e){
