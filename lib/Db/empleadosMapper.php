@@ -87,6 +87,18 @@ class empleadosMapper extends QBMapper {
 		$result = $qb->execute();
 	}
 
+	public function ActivarByIdEmpleado(int $id_empleados): void {
+		$timestamp = date('Y-m-d');
+		$qb = $this->db->getQueryBuilder();
+
+		$qb->update($this->getTableName())
+		->set('Estado', $qb->createNamedParameter(1))
+		->set('updated_at', $qb->createNamedParameter($timestamp))
+		->where($qb->expr()->eq('Id_empleados', $qb->createNamedParameter($id_empleados)));
+			
+		$result = $qb->execute();
+	}
+
 	public function updateEmpleado(string $Id_empleados, string $Numero_empleado, string $Ingreso, string $Correo_contacto, string $Id_departamento, string $Id_puesto, string $Id_gerente, string $Id_socio, string $Fondo_clave, string $Numero_cuenta, string $Equipo_asignado, string $Sueldo, string $Fecha_nacimiento, string $Estado, string $Direccion, string $Estado_civil, string $Telefono_contacto, string $Curp, string $Rfc, string $Imss, string $Genero, string $Contacto_emergencia, string $Numero_emergencia,
 	): void {
 		try{

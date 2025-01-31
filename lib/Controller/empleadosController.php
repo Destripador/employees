@@ -156,18 +156,38 @@ class empleadosController extends Controller {
 	#[UseSession]
 	public function ActivarEmpleado(string $id_user): string {
 		try{
-		
-			$timestamp = date('Y-m-d');
+			$user = $this->userManager->get($id_user);
+			$gestor = $this->configuracionesMapper->GetGestor();
+			$currenGestor = $gestor[0]['Data'] ?? null; // Usa null coalescing operator para evitar errores si 'Data' no existe
 
-			$user = new empleados();
-			$user->setid_user($id_user);
-			$user->setestado('1');
-			$user->setcreated_at($timestamp);
-			$user->setupdated_at($timestamp);
+			if (!empty($currenGestor)) { // Verifica que el usuario existe
+				try {
+					$userFolder = $this->rootFolder->getUserFolder($currenGestor);
 
-			$this->empleadosMapper->insert($user);
-			
-			return "ok"; 
+					// Ruta EMPLEADOS/usuario/
+					$folderPath = "EMPLEADOS/". $id_user . " - " . strtoupper($user->getDisplayName());
+
+					if (!$userFolder->nodeExists($folderPath)) {
+						$userFolder->newFolder($folderPath);
+					}
+					
+					$timestamp = date('Y-m-d');
+					$user = new empleados();
+					$user->setid_user($id_user);
+					$user->setestado('1');
+					$user->setcreated_at($timestamp);
+					$user->setupdated_at($timestamp);
+
+					$insertedUser = $this->empleadosMapper->insert($user);
+					$userId = $insertedUser->getid_user();
+
+				} catch (Exception $e) {
+					return $e->getMessage();
+				}
+			} else {
+				return "No existe usuario gestor";
+			}
+			return "ok";
 		}
 		catch(Exception $e){
 			return $e;

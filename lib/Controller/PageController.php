@@ -122,7 +122,7 @@ class PageController extends Controller {
 		);
 	}
 
-	#[UseSession]
+	#[PublicPage]
 	public function GetUserLists(): array{
 		$empleados = $this->empleadosMapper->GetUserLists();
 		$users = $this->empleadosMapper->getAllUsers();
@@ -231,6 +231,20 @@ class PageController extends Controller {
 		try{
 
 			$this->empleadosMapper->DesactivarByIdEmpleado($id_empleados);
+
+			
+			return "ok"; 
+		}
+		catch(Exception $e){
+			return $e;
+		}
+	}
+
+	#[UseSession]
+	public function ActivarUsuario(int $id_empleados): string {
+		try{
+
+			$this->empleadosMapper->ActivarByIdEmpleado($id_empleados);
 
 			
 			return "ok"; 

@@ -1,14 +1,15 @@
 <!-- eslint-disable vue/require-v-for-key -->
 <template>
-	<VueTabs>
-		<VTab title="Configuraciones">
-			<ListSettings />
-		</VTab>
-
-		<VTab title="Empleados">
-			<EmpleadosSettings />
-		</VTab>
-	</VueTabs>
+	<div class="container">
+		<VueTabs>
+			<VTab title="Empleados">
+				<EmpleadosSettings />
+			</VTab>
+			<VTab title="Configuraciones">
+				<ListSettings />
+			</VTab>
+		</VueTabs>
+	</div>
 </template>
 
 <script>
@@ -88,6 +89,7 @@ export default {
 .container {
 	padding-left: 20px;
 	padding-right: 20px;
+	margin-top: 10px;
 }
 
 .rsg {

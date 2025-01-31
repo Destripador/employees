@@ -19,6 +19,7 @@ return [
 		['name' => 'empleados#CambiosEmpleado', 'url' => '/CambiosEmpleado', 'verb' => 'POST'],
 		['name' => 'empleados#CambiosPersonal', 'url' => '/CambiosPersonal', 'verb' => 'POST'],
 		['name' => 'empleados#ActivarEmpleado', 'url' => '/ActivarEmpleado', 'verb' => 'POST'],
+		['name' => 'page#ActivarUsuario', 'url' => '/ActivarUsuario', 'verb' => 'POST'],
 		['name' => 'page#EliminarEmpleado', 'url' => '/EliminarEmpleado', 'verb' => 'POST'],
 		['name' => 'page#DesactivarEmpleado', 'url' => '/DesactivarEmpleado', 'verb' => 'POST'],
 		['name' => 'page#ImportListEmpleados', 'url' => '/ImportListEmpleados', 'verb' => 'POST'],

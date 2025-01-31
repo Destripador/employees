@@ -7,6 +7,10 @@ import Router from 'vue-router'
 Vue.use(Router)
 Vue.mixin({ methods: { t, n } })
 
+// Agregar OC y OCA a Vue para acceso global
+Vue.prototype.OC = window.OC
+Vue.prototype.OCA = window.OCA
+
 // Obtener los parámetros desde el DOM
 const configuraciones = document.getElementById('data').getAttribute('data-parameters')
 // const parameterss = scriptElement ? JSON.parse(scriptElement.textContent) : {}

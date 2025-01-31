@@ -66,6 +66,9 @@ class Version3Date20240726162712 extends SimpleMigrationStep {
 			$table->addColumn('Nombre', 'string', [
 				'notnull' => false,
 			]);
+			$table->addColumn('Tag', 'string', [
+				'notnull' => false,
+			]);
 			$table->addColumn('created_at', 'string', [
 				'notnull' => true,
 			]);

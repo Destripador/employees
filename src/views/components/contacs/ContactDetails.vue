@@ -83,7 +83,13 @@
 								:config="config" />
 						</VTab>
 
-						<VTab title="Archivos" />
+						<VTab title="Archivos">
+							<FilesTab
+								:data="data"
+								:show="show"
+								:empleados="Empleados"
+								:config="config" />
+						</VTab>
 					</VueTabs>
 				</div>
 			</div>
@@ -94,6 +100,7 @@
 <script>
 import EmpleadoTab from './perfil/EmpleadoTab.vue'
 import PersonalTab from './perfil/PersonalTab.vue'
+import FilesTab from './perfil/FilesTab.vue'
 import { VueTabs, VTab } from 'vue-nav-tabs/dist/vue-tabs.js'
 import 'vue-nav-tabs/themes/vue-tabs.css'
 
@@ -111,7 +118,6 @@ import {
 	NcActions,
 	NcActionButton,
 	NcActionSeparator,
-	// NcProgressBar,
 } from '@nextcloud/vue'
 
 export default {
@@ -128,6 +134,7 @@ export default {
 		AccountCog,
 		AccountEdit,
 		NcActionButton,
+		FilesTab,
 	},
 
 	props: {
@@ -253,5 +260,4 @@ export default {
 	float: right;
 	margin-top: -10px;
 }
-
 </style>
