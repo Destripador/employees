@@ -1,14 +1,51 @@
 <template>
 	<div class="top">
-		<div>
-			<h2>📂 Lista de Archivos</h2>
-			<p v-if="files.length === 0">No hay archivos disponibles.</p>
-			<ul v-else>
-				<li v-for="file in files" :key="file.id">
-					{{ file.name }}
-					<a :href="file.downloadUrl" download>{{file}}</a>
-				</li>
-			</ul>
+		<div class="file-container">
+			<!-- Botón para subir archivos -->
+			<input ref="fileInput"
+				type="file"
+				class="file-input"
+				@change="uploadFile">
+			<button class="upload-btn" @click="$refs.fileInput.click()">
+				Subir Archivo
+			</button>
+
+			<!-- Botón para regresar a la carpeta anterior -->
+			<button v-if="currentPath !== '/EMPLEADOS/'" class="back-btn" @click="goBack">
+				⬅ Volver
+			</button>
+
+			<p v-if="files.length === 0" class="empty-msg">
+				No hay archivos disponibles.
+			</p>
+
+			<table v-if="files.length > 0" class="file-table">
+				<thead>
+					<tr>
+						<th>📄 Archivo</th>
+						<th>📏 Tamaño</th>
+						<th>🔗 Acción</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr v-for="file in files" :key="file.id" @dblclick="exploreFolder(file)">
+						<td>
+							<span :class="getFileIcon(file.name)" class="file-icon" />
+							{{ file.name }}
+						</td>
+						<td>{{ formatSize(file.size) }}</td>
+						<td>
+							<NcActions>
+								<NcActionButton icon="eye" @click="viewFile(file)">Ver</NcActionButton>
+								<NcActionButton icon="download" @click="downloadFile(file)">Descargar</NcActionButton>
+								<NcActionButton icon="external-link" @click="openFile(file)">Abrir</NcActionButton>
+								<NcActionButton icon="trash" @click="deleteFile(file)">Eliminar</NcActionButton>
+								<NcActionButton icon="edit" @click="renameFile(file)">Renombrar</NcActionButton>
+							</NcActions>
+						</td>
+					</tr>
+				</tbody>
+			</table>
 		</div>
 	</div>
 </template>
@@ -16,228 +53,261 @@
 <script>
 import { getClient, defaultRootPath } from '@nextcloud/files/dav'
 import { showError, showSuccess } from '@nextcloud/dialogs'
-import { generateUrl } from '@nextcloud/router'
-import 'vue-nav-tabs/themes/vue-tabs.css'
-import axios from '@nextcloud/axios'
-
-// ICONOS
-
-import {
-} from '@nextcloud/vue'
+import { NcActions, NcActionButton } from '@nextcloud/vue'
 
 export default {
 	name: 'FilesTab',
-
-	components: {
-		/*
-		Badgeaccountoutline,
-		MapMarkerOutline,
-		CakeVariantOutline,
-		EmailOutline,
-		NcButton,
-		NcSelect,
-        */
-	},
+	components: { NcActions, NcActionButton },
 
 	props: {
-		data: {
-			type: Object,
-			required: true,
-		},
-
-		show: {
-			type: Boolean,
-			required: true,
-		},
-
-		empleados: {
-			type: Array,
-			required: true,
-		},
-		config: {
-			type: String,
-			required: true,
-		},
+		data: { type: Object, required: true },
+		show: { type: Boolean, required: true },
+		empleados: { type: Array, required: true },
+		config: { type: String, required: true },
 	},
 
 	data() {
 		return {
 			files: [],
-			nextcloudVersion: '',
-			filesPath: '',
-			Direccion: '',
-			Estado_civil: '',
-			Telefono_contacto: '',
-			Rfc: '',
-			Imss: '',
-			Contacto_emergencia: '',
-			Numero_emergencia: '',
-			Curp: '',
-			Fecha_nacimiento: '',
-			Correo_contacto: '',
-			Genero: '',
-			GeneroOptions: ['Masculino', 'Femenino'],
-			EstadoCiviloptions: ['soltero', 'casado', 'divorciado', 'viudo', 'union libre'],
+			currentPath: `${defaultRootPath}/EMPLEADOS/${this.data.uid} - ${this.data.displayname.toUpperCase()}/`,
 		}
 	},
 
 	watch: {
-		data(news, old) {
-			if (news) {
-				this.setAttr(
-					news.Direccion,
-					news.Estado_civil,
-					news.Telefono_contacto,
-					news.Rfc,
-					news.Imss,
-					news.Contacto_emergencia,
-					news.Numero_emergencia,
-					news.Curp,
-					news.Fecha_nacimiento,
-					news.Correo_contacto,
-					news.Genero,
-				)
-			}
+		data: {
+			handler(newVal) {
+				if (newVal) this.fetchFiles()
+			},
+			deep: true,
 		},
 	},
 
 	mounted() {
 		this.fetchFiles()
-		this.nextcloudVersion = this.OC.config.versionstring || 'Desconocida'
-		this.filesPath = this.OCA.Files || 'No disponible'
-		this.setAttr(
-			this.data.Direccion,
-			this.data.Estado_civil,
-			this.data.Telefono_contacto,
-			this.data.Rfc,
-			this.data.Imss,
-			this.data.Contacto_emergencia,
-			this.data.Numero_emergencia,
-			this.data.Curp,
-			this.data.Fecha_nacimiento,
-			this.data.Correo_contacto,
-			this.data.Genero,
-		)
 	},
 
 	methods: {
-		setAttr(Direccion, EstadoCivil, TelefonoContacto, Rfc, Imss, ContactoEmergencia, NumeroEmergencia, Curp, FechaNacimiento, CorreoContacto, Genero) {
-			this.Direccion = this.checknull(Direccion)
-			this.Estado_civil = this.checknull(EstadoCivil)
-			this.Telefono_contacto = this.checknull(TelefonoContacto)
-			this.Rfc = this.checknull(Rfc)
-			this.Imss = this.checknull(Imss)
-			this.Contacto_emergencia = this.checknull(ContactoEmergencia)
-			this.Numero_emergencia = this.checknull(NumeroEmergencia)
-			this.Curp = this.checknull(Curp)
-			this.Fecha_nacimiento = this.checknull(FechaNacimiento)
-			this.Correo_contacto = this.checknull(CorreoContacto)
-			this.Genero = this.checknull(Genero)
-		},
-
+		// 📂 Obtener archivos de Nextcloud
 		async fetchFiles() {
 			try {
 				const client = getClient()
-				const path = '/EMPLEADOS/' // Cambia esto según tu directorio real
-				const fullPath = `${defaultRootPath}${path}`
+				const fullPath = `${this.currentPath}`
 
 				// eslint-disable-next-line no-console
 				console.log('📂 Consultando ruta:', fullPath)
 
 				const response = await client.getDirectoryContents(fullPath, { details: true })
 
-				// eslint-disable-next-line no-console
-				console.log('🔍 Respuesta de getDirectoryContents:', response)
-
-				if (response.data && Array.isArray(response.data)) {
-					this.files = response.data.map((file) => ({
+				if (Array.isArray(response.data)) {
+					this.files = response.data.map(file => ({
 						id: file.id || file.etag,
 						name: file.basename || file.name,
 						size: file.size || 0,
+						isFolder: file.type === 'directory',
+						location: this.currentPath,
 						downloadUrl: file.href,
 					}))
 				} else {
+					// eslint-disable-next-line no-console
 					console.error('⚠️ La respuesta NO contiene un array en `data`:', response)
+					showError('⚠️ La respuesta NO contiene un array en `data`')
 					this.files = []
 				}
 			} catch (error) {
+				// eslint-disable-next-line no-console
 				console.error('❌ Error al obtener los archivos:', error)
+				showError('❌ Error al obtener los archivos: ' + error.message)
+				this.files = []
 			}
 		},
 
-		checknull(satanizar) {
-			if (!satanizar && satanizar === null) {
-				return ''
+		// 📂 Explorar carpetas con doble clic
+		exploreFolder(file) {
+			if (file.isFolder) {
+				this.currentPath = `${this.currentPath}${file.name}/`
+				this.fetchFiles()
 			}
-			return satanizar
 		},
 
-		async CambiosPersonal() {
+		// 🔙 Volver a la carpeta anterior
+		goBack() {
+			if (this.currentPath !== `/EMPLEADOS/${this.data.uid} - ${this.data.displayname.toUpperCase()}/`) {
+				const pathSegments = this.currentPath.split('/').filter(Boolean)
+				pathSegments.pop()
+				this.currentPath = `/${pathSegments.join('/')}/`
+				this.fetchFiles()
+			}
+		},
+
+		// 📄 Ver archivo
+		viewFile(file) {
+			// eslint-disable-next-line no-console
+			console.log('👀 Ver archivo:', file)
+		},
+
+		// ⬇ Descargar archivo
+		downloadFile(file) {
+			window.location.href = file.downloadUrl
+		},
+
+		// 🔗 Abrir archivo
+		openFile(file) {
+			window.open(file.downloadUrl, '_blank')
+		},
+
+		// 🗑 Eliminar archivo
+		async deleteFile(file) {
 			try {
-				await axios.post(generateUrl('/apps/empleados/CambiosPersonal'),
-					{
-						Id_empleados: this.data.Id_empleados,
-						Direccion: this.checknull(this.Direccion),
-						Estado_civil: this.checknull(this.Estado_civil),
-						Telefono_contacto: this.checknull(this.Telefono_contacto),
-						Rfc: this.checknull(this.Rfc),
-						Imss: this.checknull(this.Imss),
-						Contacto_emergencia: this.checknull(this.Contacto_emergencia),
-						Numero_emergencia: this.checknull(this.Numero_emergencia),
-						Curp: this.checknull(this.Curp),
-						Fecha_nacimiento: this.checknull(this.Fecha_nacimiento),
-						Correo_contacto: this.checknull(this.Correo_contacto),
-						Genero: this.checknull(this.Genero),
-					})
-					.then(
-						(response) => {
-							this.$root.$emit('getall')
-							this.$root.$emit('show', false)
-							showSuccess('Datos actualizados')
-						},
-						(err) => {
-							showError(err)
-						},
-					)
-			} catch (err) {
-				showError(t('empleados', 'Se ha producido una excepcion [03] [' + err + ']'))
+				const client = getClient()
+				// eslint-disable-next-line no-console
+				console.error(JSON.stringify(file))
+				await client.deleteFile(file.location)
+				showSuccess('✅ Archivo eliminado correctamente')
+				this.fetchFiles()
+			} catch (error) {
+				// eslint-disable-next-line no-console
+				console.error('❌ Error al eliminar archivo:', error)
+				showError('❌ Error al eliminar archivo: ' + error.message)
 			}
+		},
+
+		// ✏ Renombrar archivo
+		async renameFile(file) {
+			const newName = prompt('📝 Nuevo nombre del archivo:', file.name)
+			if (!newName || newName === file.name) return
+
+			try {
+				const client = getClient()
+				const newPath = `${this.currentPath}${newName}`
+				await client.move(file.downloadUrl, newPath)
+
+				showSuccess('✅ Archivo renombrado correctamente')
+				this.fetchFiles()
+			} catch (error) {
+				// eslint-disable-next-line no-console
+				console.error('❌ Error al renombrar archivo:', error)
+				showError('❌ Error al renombrar archivo: ' + error.message)
+			}
+		},
+
+		// ⬆️ Subir un archivo (CORREGIDO)
+		async uploadFile(event) {
+			const file = event.target.files[0]
+			if (!file) return
+
+			try {
+				const client = getClient()
+				const filePath = `${this.currentPath}${file.name}`
+
+				// eslint-disable-next-line no-console
+				console.log('⬆️ Intentando subir archivo a:', filePath)
+
+				// Verificar si la carpeta actual existe antes de subir
+				const folderExists = await client.exists(this.currentPath)
+
+				if (!folderExists) {
+					// eslint-disable-next-line no-console
+					console.log('📂 Carpeta no existe, creando:', this.currentPath)
+					await client.createDirectory(this.currentPath)
+				}
+
+				await client.putFileContents(filePath, file, { contentLength: file.size })
+
+				// eslint-disable-next-line no-console
+				console.log('✅ Archivo subido correctamente.')
+				this.fetchFiles() // Recargar lista después de subir
+			} catch (error) {
+				// eslint-disable-next-line no-console
+				console.error('❌ Error al subir archivo:', error)
+				showError('❌ Error al subir archivo: ' + error.message)
+			}
+		},
+		// 📏 Convertir bytes en KB / MB
+		formatSize(bytes) {
+			if (bytes < 1024) return `${bytes} B`
+			const kb = bytes / 1024
+			if (kb < 1024) return `${kb.toFixed(2)} KB`
+			return `${(kb / 1024).toFixed(2)} MB`
+		},
+
+		// 🖼️ Obtener icono de archivo
+		getFileIcon(fileName) {
+			if (fileName.endsWith('.pdf')) return 'icon-pdf'
+			if (fileName.endsWith('.jpg') || fileName.endsWith('.png')) return 'icon-image'
+			if (fileName.endsWith('.docx')) return 'icon-doc'
+			return 'icon-default'
 		},
 	},
 }
 </script>
-<style>
-.wrapper {
-	display: flex;
-	gap: 4px;
-	align-items: flex-end;
-	flex-wrap: wrap;
-}
-.external-label {
-  display: flex; /* Activa Flexbox */
-  align-items: center; /* Alinea verticalmente */
-  gap: 10px; /* Espacio entre el label y el input */
-  margin-top: 10px;;
+
+<style scoped>
+/* 📂 Estilos inspirados en Nextcloud */
+.file-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 20px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  text-align: center;
 }
 
-.labeltype {
-  font-weight: bold;
-  display: flex;
-  align-items: center;
-  gap: 5px; /* Espacio entre el icono y el texto */
-  min-width: 150px; /* Define un ancho mínimo para la etiqueta */
-}
-
-.inputtype {
-  flex: 1; /* Hace que el input ocupe el espacio restante */
-  height: 40px;
-  padding: 8px 12px;
-  font-size: 14px;
-  border-radius: 5px;
-  border: 1px solid #ccc;
+/* Tabla de archivos */
+.file-table {
   width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
 }
-.emergency-contact {
-	border: 1px solid rgba(0,0,0,0.17);
+.file-table th, .file-table td {
+  border-bottom: 1px solid #ddd;
+  padding: 10px;
+  text-align: left;
 }
+.file-table th {
+  background-color: #f4f4f4;
+  font-weight: bold;
+}
+.file-table tr:hover {
+  background-color: #f9f9f9;
+}
+
+/* Botón de subida */
+.upload-btn, .back-btn {
+  background-color: #0078d4;
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  margin: 10px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+.upload-btn:hover, .back-btn:hover {
+  background-color: #005ea2;
+}
+
+/* Input oculto para seleccionar archivos */
+.file-input {
+  display: none;
+}
+
+/* Mensaje de archivos vacíos */
+.empty-msg {
+  color: #888;
+  text-align: center;
+}
+
+/* 🔹 Iconos de archivos */
+.file-icon {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  margin-right: 8px;
+  background-size: cover;
+}
+
+.icon-pdf { background-image: url('https://cdn-icons-png.flaticon.com/512/337/337946.png'); }
+.icon-image { background-image: url('https://cdn-icons-png.flaticon.com/512/2659/2659360.png'); }
+.icon-doc { background-image: url('https://cdn-icons-png.flaticon.com/512/281/281760.png'); }
+.icon-default { background-image: url('https://cdn-icons-png.flaticon.com/512/149/149071.png'); }
 </style>
