@@ -1,32 +1,35 @@
 <!-- eslint-disable vue/require-v-for-key -->
 <template>
 	<div>
+		<!-- Mostrar icono de carga mientras se cargan los datos -->
 		<div v-if="loading">
 			<div class="center-screen" style="background-color: #fff;">
 				<NcLoadingIcon :size="64" appearance="dark" name="Loading on light background" />
 			</div>
 		</div>
+		<!-- Mostrar contenido principal cuando los datos están cargados -->
 		<div v-else id="admin">
 			<div>
 				<h2 class="board-title">
-					<AccountGroup :size="20"
-						decorative
-						class="icon" />
+					<AccountGroup :size="20" decorative class="icon" />
 					<span>Empleados</span>
 				</h2>
 			</div>
 
+			<!-- Pestañas para diferentes categorías de empleados -->
 			<VueTabs>
+				<!-- Pestaña de empleados activos -->
 				<VTab title="Empleados activos">
 					<div v-if="Empleados.length > 0" class="container">
 						<table class="grid">
 							<tr>
 								<th class="header__cell header__cell--avatar">
-						&nbsp;
+									&nbsp;
 								</th>
 								<th>{{ t('empleados', 'Nombre') }}</th>
 								<th>{{ t('empleados', 'Opciones') }}</th>
 							</tr>
+							<!-- Listar empleados activos -->
 							<tr v-for="(item, index) in Empleados" v-bind="$attrs">
 								<td class="row__cell row__cell--avatar">
 									<NcAvatar :user="item.uid"
@@ -34,14 +37,12 @@
 										:show-user-status-compact="false"
 										:show-user-status="false" />
 								</td>
-
 								<td v-if="item.displayname">
 									{{ item.displayname }}
 								</td>
 								<td v-else>
 									{{ item.uid }}
 								</td>
-
 								<td>
 									<NcActions>
 										<NcActionButton @click="DeactiveUserDialog(index, item.displayname)">
@@ -55,10 +56,10 @@
 							</tr>
 						</table>
 					</div>
+					<!-- Mostrar mensaje si no hay empleados activos -->
 					<div v-else class="container">
 						<br>
-						<NcEmptyContent
-							name="Aun no existen usuarios">
+						<NcEmptyContent name="Aun no existen usuarios">
 							<template #icon>
 								<AccountOff :size="20" />
 							</template>
@@ -66,16 +67,18 @@
 					</div>
 				</VTab>
 
+				<!-- Pestaña de empleados desactivados -->
 				<VTab title="Empleados desactivados">
 					<div v-if="Desactivados.length > 0" class="container">
 						<table class="grid">
 							<tr>
 								<th class="header__cell header__cell--avatar">
-						&nbsp;
+								&nbsp;
 								</th>
 								<th>{{ t('empleados', 'Nombre') }}</th>
 								<th>{{ t('empleados', 'Opciones') }}</th>
 							</tr>
+							<!-- Listar empleados desactivados -->
 							<tr v-for="(item, index) in Desactivados" v-bind="$attrs">
 								<td class="row__cell row__cell--avatar">
 									<NcAvatar :user="item.uid"
@@ -83,14 +86,12 @@
 										:show-user-status-compact="false"
 										:show-user-status="false" />
 								</td>
-
 								<td v-if="item.displayname">
 									{{ item.displayname }}
 								</td>
 								<td v-else>
 									{{ item.uid }}
 								</td>
-
 								<td>
 									<NcActions>
 										<NcActionButton close-after-click @click="ActivarUsuario(index)">
@@ -110,10 +111,10 @@
 							</tr>
 						</table>
 					</div>
+					<!-- Mostrar mensaje si no hay empleados desactivados -->
 					<div v-else class="container">
 						<br>
-						<NcEmptyContent
-							name="Aun no existen usuarios">
+						<NcEmptyContent name="Aun no existen usuarios">
 							<template #icon>
 								<AccountOff :size="20" />
 							</template>
@@ -121,16 +122,18 @@
 					</div>
 				</VTab>
 
+				<!-- Pestaña de empleados sin cuenta -->
 				<VTab title="Empleados sin cuenta">
 					<div v-if="Usuarios.length > 0" class="container">
 						<table class="grid">
 							<tr>
 								<th class="header__cell header__cell--avatar">
-						&nbsp;
+&nbsp;
 								</th>
 								<th>{{ t('empleados', 'Nombre') }}</th>
 								<th>{{ t('empleados', 'Opciones') }}</th>
 							</tr>
+							<!-- Listar empleados sin cuenta -->
 							<tr v-for="(item, index) in Usuarios" v-bind="$attrs">
 								<td class="row__cell row__cell--avatar">
 									<NcAvatar :user="item.uid"
@@ -138,11 +141,7 @@
 										:show-user-status-compact="false"
 										:show-user-status="false" />
 								</td>
-
-								<td>
-									{{ JSON.parse(item.data).displayname.value }}
-								</td>
-
+								<td>{{ JSON.parse(item.data).displayname.value }}</td>
 								<td>
 									<NcActions>
 										<NcActionButton @click="ActivarUser(index)">
@@ -159,10 +158,12 @@
 				</VTab>
 			</VueTabs>
 		</div>
+		<!-- Diálogo de confirmación para desactivar usuario -->
 		<NcDialog :open.sync="showDeactiveUserDialog"
 			name="Confirmacion"
 			:message="'Esta seguro que desea deshabilitar la cuenta de \n' + selected.name + '?'"
 			:buttons="buttons" />
+		<!-- Diálogo de confirmación para eliminar usuario -->
 		<NcDialog :open.sync="showEliminarUserDialog"
 			name="¿Esta seguro que desea eliminar?"
 			message="Esta accion eliminara toda la informacion del empleado"
@@ -171,17 +172,16 @@
 </template>
 
 <script>
-// iconos
+// Importar iconos
 import AccountGroup from 'vue-material-design-icons/AccountGroup.vue'
 import Delete from 'vue-material-design-icons/Delete.vue'
 import Plus from 'vue-material-design-icons/Plus.vue'
 import AccountOff from 'vue-material-design-icons/AccountOff.vue'
 import AccountPlus from 'vue-material-design-icons/AccountPlus.vue'
-// import Check from 'vue-material-design-icons/Check'
 
-// imports
+// Importar componentes y utilidades
 import { NcActions, NcActionButton, NcLoadingIcon, NcAvatar, NcDialog, NcEmptyContent } from '@nextcloud/vue'
-import { showError /* showSuccess */ } from '@nextcloud/dialogs'
+import { showError } from '@nextcloud/dialogs'
 import { VueTabs, VTab } from 'vue-nav-tabs/dist/vue-tabs.js'
 import { generateUrl } from '@nextcloud/router'
 import axios from '@nextcloud/axios'
@@ -236,6 +236,7 @@ export default {
 	},
 
 	methods: {
+		// Obtener todas las listas de usuarios
 		async getall() {
 			this.loading = true
 			try {
@@ -274,16 +275,19 @@ export default {
 			}
 		},
 
+		// Mostrar diálogo para desactivar usuario
 		DeactiveUserDialog(index, name) {
 			this.selected.index = index
 			this.selected.name = name
 			this.showDeactiveUserDialog = true
 		},
+		// Mostrar diálogo para eliminar usuario
 		EliminarUserDialog(index) {
 			this.selected.index = index
 			this.showEliminarUserDialog = true
 		},
 
+		// Activar usuario desactivado
 		async ActivarUsuario(index) {
 			try {
 				await axios.post(generateUrl('/apps/empleados/ActivarUsuario'),
@@ -302,6 +306,7 @@ export default {
 				showError(t('empleados', 'Se ha producido una excepcion [03] [' + err + ']'))
 			}
 		},
+		// Eliminar usuario
 		async EliminarUser(index) {
 			this.showDeactiveUserDialog = false
 			try {
@@ -321,6 +326,7 @@ export default {
 				showError(t('empleados', 'Se ha producido una excepcion [03] [' + err + ']'))
 			}
 		},
+		// Desactivar usuario activo
 		async DeactiveUser(index) {
 			try {
 				await axios.post(generateUrl('/apps/empleados/DesactivarEmpleado'),
@@ -339,6 +345,7 @@ export default {
 				showError(t('empleados', 'Se ha producido una excepcion [03] [' + err + ']'))
 			}
 		},
+		// Activar usuario sin cuenta
 		async ActivarUser(index) {
 			try {
 				await axios.post(generateUrl('/apps/empleados/ActivarEmpleado'),
@@ -362,7 +369,7 @@ export default {
 </script>
 
 <style>
-
+/* Estilos para el título del tablero */
 .board-title {
 	padding-left: 20px;
 	margin-right: 10px;
@@ -376,6 +383,7 @@ export default {
 	}
 }
 
+/* Estilos para centrar el icono de carga en la pantalla */
 .center-screen {
   display: flex;
   justify-content: center;
@@ -384,6 +392,7 @@ export default {
   min-height: 100vh;
 }
 
+/* Estilos para los títulos */
 .titles {
 	margin-right: 10px;
 	margin-top: 14px;
@@ -394,11 +403,14 @@ export default {
 		margin-right: 8px;
 	}
 }
+
+/* Estilos para el contenedor */
 .container {
 	padding-left: 20px;
 	padding-right: 20px;
 }
 
+/* Estilos para la tabla */
 .rsg {
 	padding-top: 16px;
 	padding-bottom: 16px;

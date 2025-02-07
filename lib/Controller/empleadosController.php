@@ -169,6 +169,10 @@ class empleadosController extends Controller {
 
 					if (!$userFolder->nodeExists($folderPath)) {
 						$userFolder->newFolder($folderPath);
+						$userFolder->newFolder($folderPath . "/CAPACITACIONES");
+						$userFolder->newFolder($folderPath . "/DOCUMENTOS OFICIALES");
+						$userFolder->newFolder($folderPath . "/DOCUMENTOS DE IDENTIFICACION");
+						$userFolder->newFolder($folderPath . "/MEMORANDUMS");
 					}
 					
 					$timestamp = date('Y-m-d');

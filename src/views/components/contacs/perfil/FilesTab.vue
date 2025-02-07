@@ -6,19 +6,20 @@
 				type="file"
 				class="file-input"
 				@change="uploadFile">
-			<button class="upload-btn" @click="$refs.fileInput.click()">
-				Subir Archivo
-			</button>
 
-			<!-- Botón para regresar a la carpeta anterior -->
-			<button v-if="currentPath !== '/EMPLEADOS/'" class="back-btn" @click="goBack">
-				⬅ Volver
-			</button>
-
-			<p v-if="files.length === 0" class="empty-msg">
-				No hay archivos disponibles.
-			</p>
-
+			<div style="display: flex; justify-content: space-between; gap: 12px;">
+				<NcButton v-if="navigationStack.length > 0" @click="goBack">
+					<template #icon>
+						<ArrowLeft :size="20" />
+					</template>
+				</NcButton>
+				<NcButton style="margin-left: auto;" @click="$refs.fileInput.click()">
+					<template #icon>
+						<CloudUpload :size="20" />
+					</template>
+					Agregar Archivo
+				</NcButton>
+			</div>
 			<table v-if="files.length > 0" class="file-table">
 				<thead>
 					<tr>
@@ -30,34 +31,65 @@
 				<tbody>
 					<tr v-for="file in files" :key="file.id" @dblclick="exploreFolder(file)">
 						<td>
-							<span :class="getFileIcon(file.name)" class="file-icon" />
-							{{ file.name }}
+							<div class="file-item">
+								<FolderOutline v-if="file.isFolder" :size="20" />
+								<FileOutline v-else :size="20" />
+								<span class="file-name">
+									{{ truncateText(file.name) }}
+								</span>
+							</div>
 						</td>
 						<td>{{ formatSize(file.size) }}</td>
 						<td>
-							<NcActions>
-								<NcActionButton icon="eye" @click="viewFile(file)">Ver</NcActionButton>
-								<NcActionButton icon="download" @click="downloadFile(file)">Descargar</NcActionButton>
-								<NcActionButton icon="external-link" @click="openFile(file)">Abrir</NcActionButton>
-								<NcActionButton icon="trash" @click="deleteFile(file)">Eliminar</NcActionButton>
-								<NcActionButton icon="edit" @click="renameFile(file)">Renombrar</NcActionButton>
+							<NcActions v-if="!file.isFolder">
+								<NcActionButton icon="eye" @click="viewFile(file)">
+									Ver
+								</NcActionButton>
+								<NcActionButton icon="download" @click="downloadFile(file)">
+									Descargar
+								</NcActionButton>
+								<NcActionButton icon="external-link" @click="openFile(file)">
+									Abrir
+								</NcActionButton>
+								<NcActionButton icon="trash" @click="deleteFile(file)">
+									Eliminar
+								</NcActionButton>
+								<NcActionButton icon="edit" @click="renameFile(file)">
+									Renombrar
+								</NcActionButton>
 							</NcActions>
 						</td>
 					</tr>
 				</tbody>
 			</table>
+			<p v-if="files.length === 0" class="empty-msg" style="margin-top: 20px;">
+				No hay archivos disponibles.
+			</p>
 		</div>
 	</div>
 </template>
 
 <script>
+import FolderOutline from 'vue-material-design-icons/FolderOutline.vue'
+import CloudUpload from 'vue-material-design-icons/CloudUpload.vue'
+import FileOutline from 'vue-material-design-icons/FileOutline.vue'
+import ArrowLeft from 'vue-material-design-icons/ArrowLeft.vue'
+
 import { getClient, defaultRootPath } from '@nextcloud/files/dav'
 import { showError, showSuccess } from '@nextcloud/dialogs'
-import { NcActions, NcActionButton } from '@nextcloud/vue'
+import { NcActions, NcActionButton, NcButton } from '@nextcloud/vue'
 
 export default {
 	name: 'FilesTab',
-	components: { NcActions, NcActionButton },
+	components: {
+		NcActions,
+		NcActionButton,
+		FolderOutline,
+		NcButton,
+		FileOutline,
+		CloudUpload,
+		ArrowLeft,
+	},
 
 	props: {
 		data: { type: Object, required: true },
@@ -69,53 +101,51 @@ export default {
 	data() {
 		return {
 			files: [],
-			currentPath: `${defaultRootPath}/EMPLEADOS/${this.data.uid} - ${this.data.displayname.toUpperCase()}/`,
+			currentPath: null,
+			navigationStack: [],
+			client: null,
+			response: null,
 		}
 	},
 
 	watch: {
-		data: {
-			handler(newVal) {
-				if (newVal) this.fetchFiles()
-			},
-			deep: true,
+		data(news, old) {
+			if (news) {
+				this.currentPath = `${defaultRootPath}/EMPLEADOS/${news.uid} - ${news.displayname.toUpperCase()}/`
+				this.navigationStack = []
+				this.fetchFiles()
+			}
 		},
 	},
 
 	mounted() {
+		this.currentPath = `${defaultRootPath}/EMPLEADOS/${this.data.uid} - ${this.data.displayname.toUpperCase()}/`
 		this.fetchFiles()
 	},
 
 	methods: {
-		// 📂 Obtener archivos de Nextcloud
+		// 📂 Obtener archivos de la carpeta actual
 		async fetchFiles() {
 			try {
-				const client = getClient()
-				const fullPath = `${this.currentPath}`
+				this.client = getClient()
+				this.response = await this.client.getDirectoryContents(this.currentPath, { details: true })
 
-				// eslint-disable-next-line no-console
-				console.log('📂 Consultando ruta:', fullPath)
-
-				const response = await client.getDirectoryContents(fullPath, { details: true })
-
-				if (Array.isArray(response.data)) {
-					this.files = response.data.map(file => ({
+				if (Array.isArray(this.response.data)) {
+					// eslint-disable-next-line no-console
+					console.log('👀 Ver archivos:', this.response.data)
+					this.files = this.response.data.map(file => ({
 						id: file.id || file.etag,
 						name: file.basename || file.name,
 						size: file.size || 0,
-						isFolder: file.type === 'directory',
+						isFolder: file.type === 'directory', // Identificar si es carpeta
 						location: this.currentPath,
 						downloadUrl: file.href,
 					}))
 				} else {
-					// eslint-disable-next-line no-console
-					console.error('⚠️ La respuesta NO contiene un array en `data`:', response)
 					showError('⚠️ La respuesta NO contiene un array en `data`')
 					this.files = []
 				}
 			} catch (error) {
-				// eslint-disable-next-line no-console
-				console.error('❌ Error al obtener los archivos:', error)
 				showError('❌ Error al obtener los archivos: ' + error.message)
 				this.files = []
 			}
@@ -124,6 +154,8 @@ export default {
 		// 📂 Explorar carpetas con doble clic
 		exploreFolder(file) {
 			if (file.isFolder) {
+				// Guardar la ruta actual en la pila antes de cambiar
+				this.navigationStack.push(this.currentPath)
 				this.currentPath = `${this.currentPath}${file.name}/`
 				this.fetchFiles()
 			}
@@ -131,10 +163,8 @@ export default {
 
 		// 🔙 Volver a la carpeta anterior
 		goBack() {
-			if (this.currentPath !== `/EMPLEADOS/${this.data.uid} - ${this.data.displayname.toUpperCase()}/`) {
-				const pathSegments = this.currentPath.split('/').filter(Boolean)
-				pathSegments.pop()
-				this.currentPath = `/${pathSegments.join('/')}/`
+			if (this.navigationStack.length > 0) {
+				this.currentPath = this.navigationStack.pop() // Regresar a la última ruta guardada
 				this.fetchFiles()
 			}
 		},
@@ -159,9 +189,7 @@ export default {
 		async deleteFile(file) {
 			try {
 				const client = getClient()
-				// eslint-disable-next-line no-console
-				console.error(JSON.stringify(file))
-				await client.deleteFile(file.location)
+				await client.deleteFile(file.location + '/' + file.name)
 				showSuccess('✅ Archivo eliminado correctamente')
 				this.fetchFiles()
 			} catch (error) {
@@ -230,12 +258,9 @@ export default {
 			return `${(kb / 1024).toFixed(2)} MB`
 		},
 
-		// 🖼️ Obtener icono de archivo
-		getFileIcon(fileName) {
-			if (fileName.endsWith('.pdf')) return 'icon-pdf'
-			if (fileName.endsWith('.jpg') || fileName.endsWith('.png')) return 'icon-image'
-			if (fileName.endsWith('.docx')) return 'icon-doc'
-			return 'icon-default'
+		truncateText(text, length = 50) {
+			if (!text) return '' // Si no hay texto, retorna vacío
+			return text.length > length ? text.substring(0, length) + '...' : text
 		},
 	},
 }
@@ -244,7 +269,6 @@ export default {
 <style scoped>
 /* 📂 Estilos inspirados en Nextcloud */
 .file-container {
-  max-width: 900px;
   margin: 0 auto;
   padding: 20px;
   background: white;
@@ -272,20 +296,6 @@ export default {
   background-color: #f9f9f9;
 }
 
-/* Botón de subida */
-.upload-btn, .back-btn {
-  background-color: #0078d4;
-  color: white;
-  border: none;
-  padding: 8px 15px;
-  margin: 10px;
-  cursor: pointer;
-  border-radius: 4px;
-}
-.upload-btn:hover, .back-btn:hover {
-  background-color: #005ea2;
-}
-
 /* Input oculto para seleccionar archivos */
 .file-input {
   display: none;
@@ -305,9 +315,13 @@ export default {
   margin-right: 8px;
   background-size: cover;
 }
+.file-item {
+    display: flex;
+    align-items: center; /* Centra verticalmente */
+    gap: 8px; /* Espacio entre icono y texto */
+}
 
-.icon-pdf { background-image: url('https://cdn-icons-png.flaticon.com/512/337/337946.png'); }
-.icon-image { background-image: url('https://cdn-icons-png.flaticon.com/512/2659/2659360.png'); }
-.icon-doc { background-image: url('https://cdn-icons-png.flaticon.com/512/281/281760.png'); }
-.icon-default { background-image: url('https://cdn-icons-png.flaticon.com/512/149/149071.png'); }
+.file-name {
+    white-space: nowrap; /* Evita que el texto se divida en varias líneas */
+}
 </style>
