@@ -15,9 +15,15 @@
 				</NcButton>
 				<NcButton style="margin-left: auto;" @click="$refs.fileInput.click()">
 					<template #icon>
+						<FolderMoveOutline :size="20" />
+					</template>
+					Ir a
+				</NcButton>
+				<NcButton @click="$refs.fileInput.click()">
+					<template #icon>
 						<CloudUpload :size="20" />
 					</template>
-					Agregar Archivo
+					Subir
 				</NcButton>
 			</div>
 			<table v-if="files.length > 0" class="file-table">
@@ -70,6 +76,7 @@
 </template>
 
 <script>
+import FolderMoveOutline from 'vue-material-design-icons/FolderMoveOutline.vue'
 import FolderOutline from 'vue-material-design-icons/FolderOutline.vue'
 import CloudUpload from 'vue-material-design-icons/CloudUpload.vue'
 import FileOutline from 'vue-material-design-icons/FileOutline.vue'
@@ -89,6 +96,7 @@ export default {
 		FileOutline,
 		CloudUpload,
 		ArrowLeft,
+		FolderMoveOutline,
 	},
 
 	props: {
@@ -172,7 +180,21 @@ export default {
 		// 📄 Ver archivo
 		viewFile(file) {
 			// eslint-disable-next-line no-console
-			console.log('👀 Ver archivo:', file)
+			console.log('📂 Archivo recibido:', file)
+			if (!file || !file.downloadUrl) {
+				// eslint-disable-next-line no-console
+				console.error('❌ No se puede abrir el archivo, falta la URL de descarga.')
+				return
+			}
+
+			// Construimos la URL de OnlyOffice
+			const onlyOfficeUrl = `${window.location.origin}/apps/onlyoffice/${encodeURIComponent(file.downloadUrl)}`
+
+			// eslint-disable-next-line no-console
+			console.log('🔗 Abriendo archivo en OnlyOffice:', onlyOfficeUrl)
+
+			// Abrir en una nueva pestaña
+			window.open(onlyOfficeUrl, '_blank')
 		},
 
 		// ⬇ Descargar archivo

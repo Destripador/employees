@@ -238,7 +238,7 @@ export default {
 	methods: {
 		// Obtener todas las listas de usuarios
 		async getall() {
-			this.loading = true
+			// this.loading = true
 			try {
 				await axios.get(generateUrl('/apps/empleados/GetUserLists'))
 					.then(
