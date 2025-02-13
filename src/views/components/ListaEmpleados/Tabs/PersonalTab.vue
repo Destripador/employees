@@ -183,10 +183,6 @@ export default {
 			type: Array,
 			required: true,
 		},
-		config: {
-			type: String,
-			required: true,
-		},
 	},
 
 	data() {

@@ -200,6 +200,36 @@ class empleadosController extends Controller {
 		}
 	}
 
+	
+	#[UseSession]
+	public function DesactivarEmpleado(int $id_empleados): string {
+		try{
+
+			$this->empleadosMapper->DesactivarByIdEmpleado($id_empleados);
+
+			
+			return "ok"; 
+		}
+		catch(Exception $e){
+			return $e;
+		}
+	}
+
+	
+	#[UseSession]
+	public function ActivarUsuario(int $id_empleados): string {
+		try{
+
+			$this->empleadosMapper->ActivarByIdEmpleado($id_empleados);
+
+			
+			return "ok"; 
+		}
+		catch(Exception $e){
+			return $e;
+		}
+	}
+
 	public function ImportListEmpleados(): void {
 		$file = $this->getUploadedFile('fileXLSX');
 		if ( $xlsx = SimpleXLSX::parse($file['tmp_name']) ) {

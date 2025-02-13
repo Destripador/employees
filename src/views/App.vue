@@ -1,18 +1,15 @@
 <template id="content">
 	<NcContent app-name="empleados">
 		<navigator />
-		<EmployeeList :config="parameters" />
+		<EmployeeList />
 	</NcContent>
 </template>
 
 <script>
-// navigator
+// Importing necessary components
 import navigator from './navigator/Sidenavigation.vue'
-import EmployeeList from './components/contacs/EmployeeList.vue'
-
-import {
-	NcContent,
-} from '@nextcloud/vue'
+import EmployeeList from './components/ListaEmpleados/EmployeeList.vue'
+import { NcContent } from '@nextcloud/vue'
 
 export default {
 	name: 'App',
@@ -21,21 +18,29 @@ export default {
 		EmployeeList,
 		NcContent,
 	},
+	provide() {
+		return {
+			configuraciones: this.configuraciones,
+		}
+	},
+
 	props: {
-		// obtencion de parametros de configuracion
+		// Configuration parameters
 		parameters: {
-			type: String,
+			type: Object,
 			required: true,
 		},
 	},
 
-	created() {
-		this.$root.$emit('configuraciones-empleados', this.parameters)
+	data() {
+		return {
+			configuraciones: this.parameters,
+		}
 	},
 }
 </script>
-<style scoped lang="scss">
 
+<style scoped lang="scss">
 	.container {
 		padding-left: 60px;
 	}
@@ -51,5 +56,4 @@ export default {
 			margin-right: 8px;
 		}
 	}
-
 </style>

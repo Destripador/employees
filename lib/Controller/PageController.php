@@ -90,16 +90,23 @@ class PageController extends Controller {
 	#[NoCSRFRequired]
 	public function index(): TemplateResponse {
 
-		$configuraciones = $this->configuracionesMapper->GetNotasGuardado();
+		$configuraciones = $this->configuracionesMapper->GetConfig();
+
+		$configMap = [];
+		foreach ($configuraciones as $config) {
+			$configMap[$config['Nombre']] = $config['Data'];
+		}
 		
+		// Asignar valores usando el array generado
 		$params = array(
-			"automatic_save_note" => $configuraciones[0]['Data'],
+			"usuario_almacenamiento" => isset($configMap['usuario_almacenamiento']) ? $configMap['usuario_almacenamiento'] : null,
+			"automatic_save_note" => isset($configMap['automatic_save_note']) ? $configMap['automatic_save_note'] : null,
 		);
 
 		return new TemplateResponse(
 			Application::APP_ID,
 			'index',
-			$params,
+			['config' => $params],
 		);
 	}
 

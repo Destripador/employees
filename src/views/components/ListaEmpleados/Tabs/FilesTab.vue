@@ -107,7 +107,6 @@ export default {
 		data: { type: Object, required: true },
 		show: { type: Boolean, required: true },
 		empleados: { type: Array, required: true },
-		config: { type: String, required: true },
 	},
 
 	data() {

@@ -11,12 +11,11 @@ Vue.mixin({ methods: { t, n } })
 Vue.prototype.OC = window.OC
 Vue.prototype.OCA = window.OCA
 
-// Obtener los parámetros desde el DOM
-const configuraciones = document.getElementById('data').getAttribute('data-parameters')
-// const parameterss = scriptElement ? JSON.parse(scriptElement.textContent) : {}
+// Obtener configuraciones del módulo desde el DOM
+const dataElement = document.getElementById('data')
+const configuraciones = dataElement ? JSON.parse(dataElement.getAttribute('data-parameters') || '{}') : {}
 
-// eslint-disable-next-line no-console
-console.log('DATAS: ', configuraciones)
+// Crear la vista
 const View = Vue.extend(App)
 
 new View({

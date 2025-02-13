@@ -30,12 +30,6 @@
 								</template>
 								Importar datos desde plantilla
 							</NcActionButton>
-							<NcActionLink href="https://nextcloud.com">
-								<template #icon>
-									<Cog :size="20" />
-								</template>
-								Link
-							</NcActionLink>
 						</NcActions>
 					</div>
 				</div>

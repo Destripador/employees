@@ -1,12 +1,14 @@
 <!-- eslint-disable object-curly-newline -->
 <template>
 	<div class="contacts-list__item-wrapper">
-		<div v-if="Object.keys( data ).length == 0">
+		<!-- Display empty content if no data is present -->
+		<div v-if="Object.keys(data).length === 0">
 			<div class="emptycontent">
 				<img src="../../../../img/crowesito-think.png" width="170px">
 				<h2>Selecciona un empleado para empezar</h2>
 			</div>
 		</div>
+		<!-- Display contact details if data is present -->
 		<div v-else class="container">
 			<div>
 				<div class="container-search-profile">
@@ -15,38 +17,30 @@
 							<template #icon>
 								<AccountCog :size="20" />
 							</template>
-							<NcActionButton
-								:close-after-click="true"
-								@click="showEdit">
+							<NcActionButton :close-after-click="true" @click="showEdit">
 								<template #icon>
 									<AccountEdit :size="20" />
 								</template>
-								Habilitar edicion
+								{{ hability }} edicion
 							</NcActionButton>
 							<NcActionSeparator />
-							<NcActionButton @click="showEdit">
+							<NcActionButton :close-after-click="true" :disabled="true" @click="showEdit">
 								<template #icon>
 									<AccountEdit :size="20" />
 								</template>
 								Exportar
 							</NcActionButton>
-							<NcActionButton @click="showEdit">
-								<template #icon>
-									<AccountEdit :size="20" />
-								</template>
-								Mostrar archivos en explorador
-							</NcActionButton>
-							<NcActionButton @click="showEdit">
+							<NcActionButton :close-after-click="true" :disabled="true" @click="showEdit">
 								<template #icon>
 									<AccountEdit :size="20" />
 								</template>
 								Enviar correo
 							</NcActionButton>
-							<NcActionButton @click="showEdit">
+							<NcActionButton @click="DeactiveUserDialog(data.Id_empleados)">
 								<template #icon>
 									<AccountEdit :size="20" />
 								</template>
-								Deshablitar usuario
+								Deshabilitar a {{ data.Id_empleados }}
 							</NcActionButton>
 						</NcActions>
 					</div>
@@ -60,64 +54,60 @@
 				<div v-else>
 					<h2>{{ data.uid }}</h2>
 				</div>
-
 				<div>
-					<VueTabs
-						active-tab-color="#fdb913c"
+					<VueTabs active-tab-color="#fdb913c"
 						active-text-color="white"
 						type="pills"
 						centered>
 						<VTab title="Empleado">
-							<EmpleadoTab
-								:data="data"
+							<EmpleadoTab :data="data"
 								:show="show"
 								:empleados="Empleados"
-								:config="config" />
+								:automaticsave="automatic_save_note" />
 						</VTab>
-
 						<VTab title="Personal">
-							<PersonalTab
-								:data="data"
+							<PersonalTab :data="data"
 								:show="show"
-								:empleados="Empleados"
-								:config="config" />
+								:empleados="Empleados" />
 						</VTab>
-
 						<VTab title="Archivos">
-							<FilesTab
-								:data="data"
+							<FilesTab :data="data"
 								:show="show"
-								:empleados="Empleados"
-								:config="config" />
+								:empleados="Empleados" />
 						</VTab>
 					</VueTabs>
 				</div>
 			</div>
 		</div>
+		<!-- Diálogo de confirmación para desactivar usuario -->
+		<NcDialog :open.sync="showDeactiveUserDialog"
+			name="Confirmacion"
+			message="Esta seguro que desea deshabilitar la cuenta?"
+			:buttons="buttons" />
 	</div>
 </template>
 
 <script>
-import EmpleadoTab from './perfil/EmpleadoTab.vue'
-import PersonalTab from './perfil/PersonalTab.vue'
-import FilesTab from './perfil/FilesTab.vue'
+import EmpleadoTab from './Tabs/EmpleadoTab.vue'
+import PersonalTab from './Tabs/PersonalTab.vue'
+import FilesTab from './Tabs/FilesTab.vue'
 import { VueTabs, VTab } from 'vue-nav-tabs/dist/vue-tabs.js'
 import 'vue-nav-tabs/themes/vue-tabs.css'
 
-// ICONOS
+// ICONS
 import AccountEdit from 'vue-material-design-icons/AccountEdit.vue'
 import AccountCog from 'vue-material-design-icons/AccountCog.vue'
-// import Cog from 'vue-material-design-icons/Cog.vue'
 
 import { generateUrl } from '@nextcloud/router'
 import axios from '@nextcloud/axios'
-import { showError /* showSuccess */ } from '@nextcloud/dialogs'
+import { showError } from '@nextcloud/dialogs'
 
 import {
 	NcAvatar,
 	NcActions,
 	NcActionButton,
 	NcActionSeparator,
+	NcDialog,
 } from '@nextcloud/vue'
 
 export default {
@@ -135,23 +125,34 @@ export default {
 		AccountEdit,
 		NcActionButton,
 		FilesTab,
+		NcDialog,
 	},
+
+	inject: ['configuraciones'],
 
 	props: {
 		data: {
 			type: Object,
 			required: true,
 		},
-		config: {
-			type: String,
-			required: true,
-		},
+
 	},
 
 	data() {
 		return {
+			automatic_save_note: this.configuraciones.automatic_save_note,
 			show: false,
 			Empleados: [],
+			hability: 'Habilitar',
+			showDeactiveUserDialog: false,
+			SelectedEmpleado: null,
+			buttons: [
+				{
+					label: 'Ok',
+					type: 'primary',
+					callback: () => { this.DeactiveUser() },
+				},
+			],
 		}
 	},
 
@@ -164,24 +165,44 @@ export default {
 	methods: {
 		showEdit() {
 			this.show = !this.show
-			if (this.show === true) {
+			this.hability = this.show ? 'Deshabilitar' : 'Habilitar'
+			if (this.show) {
 				this.getall()
 			}
 		},
 
 		async getall() {
 			try {
-				await axios.get(generateUrl('/apps/empleados/GetEmpleadosListFix'))
+				const response = await axios.get(generateUrl('/apps/empleados/GetEmpleadosListFix'))
+				this.Empleados = response.data
+			} catch (err) {
+				showError(t('empleados', 'Se ha producido una excepcion [01] [' + err + ']'))
+			}
+		},
+
+		// Mostrar diálogo para desactivar usuario
+		DeactiveUserDialog(IdEmpleado) {
+			this.showDeactiveUserDialog = true
+			this.SelectedEmpleado = IdEmpleado
+		},
+
+		// Desactivar usuario activo
+		async DeactiveUser() {
+			try {
+				await axios.post(generateUrl('/apps/empleados/DesactivarEmpleado'),
+					{
+						id_empleados: this.SelectedEmpleado,
+					})
 					.then(
 						(response) => {
-							this.Empleados = response.data
+							this.getall()
 						},
 						(err) => {
 							showError(err)
 						},
 					)
 			} catch (err) {
-				showError(t('empleados', 'Se ha producido una excepcion [01] [' + err + ']'))
+				showError(t('empleados', 'Se ha producido una excepcion [03] [' + err + ']'))
 			}
 		},
 	},
@@ -189,7 +210,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-
 .envelope {
 	.app-content-list-item-icon {
 		height: 40px; // To prevent some unexpected spacing below the avatar
@@ -221,20 +241,23 @@ export default {
 		cursor: not-allowed !important;
 	}
 }
+
 #emptycontent, .emptycontent {
-    margin-top: 2vh;
-    }
+	margin-top: 2vh;
+}
 
 .container {
-		padding: 20px 15px 0px 6px;
-		align-items: center;
+	padding: 20px 15px 0px 6px;
+	align-items: center;
 }
+
 .container-progress {
 	margin-right: 30%;
 	margin-left: 30%;
 	margin-top: 20px;
 	align-items: center;
 }
+
 .wrapper {
 	display: flex;
 	gap: 4px;
@@ -248,15 +271,16 @@ export default {
 	max-height: calc(100vh - var(--header-height) - 48px);
 	overflow: auto;
 }
+
 .contacts-list__header {
 	min-height: 48px;
 }
 
-.margin-left-icon{
+.margin-left-icon {
 	margin-right: 20px;
 }
 
-.button-container-profile{
+.button-container-profile {
 	float: right;
 	margin-top: -10px;
 }

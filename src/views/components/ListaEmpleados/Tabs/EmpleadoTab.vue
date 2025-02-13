@@ -154,7 +154,7 @@
 				:disabled="show"
 				:value.sync="inputValue" />
 			<NcButton
-				v-if="config === 'false'"
+				v-if="automaticsave === 'false'"
 				aria-label="Guardar nota"
 				type="primary"
 				@click="guardarNota()">
@@ -227,7 +227,7 @@ export default {
 			type: Array,
 			required: true,
 		},
-		config: {
+		automaticsave: {
 			type: String,
 			required: true,
 		},
@@ -265,7 +265,7 @@ export default {
 		debouncePropertyChange() {
 			return debounce(function(value) {
 				this.notas = value
-				if (this.config) {
+				if (this.automaticsave) {
 					this.guardarNota()
 				}
 			}, 700)

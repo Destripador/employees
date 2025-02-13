@@ -6,6 +6,7 @@
 			</template>
 		</NcEmptyContent>
 	</NcAppContent>
+
 	<NcAppContent v-else name="Loading">
 		<!-- contacts list -->
 		<template #list>
@@ -17,7 +18,7 @@
 		</template>
 
 		<!-- main contacts details -->
-		<ContactDetails :data="data_empleado" :config="config" />
+		<ContactDetails :data="data_empleado" />
 	</NcAppContent>
 </template>
 
@@ -45,14 +46,6 @@ export default {
 		NcLoadingIcon,
 		ContactsList,
 		ContactDetails,
-	},
-
-	props: {
-		// obtencion de parametros de configuracion
-		config: {
-			type: String,
-			required: true,
-		},
 	},
 
 	data() {
