@@ -13,11 +13,17 @@
 						<ArrowLeft :size="20" />
 					</template>
 				</NcButton>
-				<NcButton style="margin-left: auto;" @click="$refs.fileInput.click()">
+				<NcButton style="margin-left: auto;" @click="OpenFolder()">
 					<template #icon>
 						<FolderMoveOutline :size="20" />
 					</template>
-					Ir a
+					Abrir
+				</NcButton>
+				<NcButton @click="CreateFolder()">
+					<template #icon>
+						<FolderPlusOutline :size="20" />
+					</template>
+					Crear
 				</NcButton>
 				<NcButton @click="$refs.fileInput.click()">
 					<template #icon>
@@ -25,13 +31,18 @@
 					</template>
 					Subir
 				</NcButton>
+				<NcButton @click="reloadFiles()">
+					<template #icon>
+						<Reload :size="20" />
+					</template>
+				</NcButton>
 			</div>
 			<table v-if="files.length > 0" class="file-table">
 				<thead>
 					<tr>
 						<th>📄 Archivo</th>
-						<th>📏 Tamaño</th>
-						<th>🔗 Acción</th>
+
+						<!-- th>🔗 Acción</th -->
 					</tr>
 				</thead>
 				<tbody>
@@ -45,26 +56,6 @@
 								</span>
 							</div>
 						</td>
-						<td>{{ formatSize(file.size) }}</td>
-						<td>
-							<NcActions v-if="!file.isFolder">
-								<NcActionButton icon="eye" @click="viewFile(file)">
-									Ver
-								</NcActionButton>
-								<NcActionButton icon="download" @click="downloadFile(file)">
-									Descargar
-								</NcActionButton>
-								<NcActionButton icon="external-link" @click="openFile(file)">
-									Abrir
-								</NcActionButton>
-								<NcActionButton icon="trash" @click="deleteFile(file)">
-									Eliminar
-								</NcActionButton>
-								<NcActionButton icon="edit" @click="renameFile(file)">
-									Renombrar
-								</NcActionButton>
-							</NcActions>
-						</td>
 					</tr>
 				</tbody>
 			</table>
@@ -72,31 +63,44 @@
 				No hay archivos disponibles.
 			</p>
 		</div>
+		<NcDialog :open.sync="showDialogFolder"
+			is-form
+			:buttons="buttons"
+			name="Crear Carpeta"
+			@submit="FolderAction()">
+			<NcTextField v-model="Folder" label="Nuevo nombre" required />
+		</NcDialog>
 	</div>
 </template>
 
 <script>
+import FolderPlusOutline from 'vue-material-design-icons/FolderPlusOutline.vue'
 import FolderMoveOutline from 'vue-material-design-icons/FolderMoveOutline.vue'
 import FolderOutline from 'vue-material-design-icons/FolderOutline.vue'
 import CloudUpload from 'vue-material-design-icons/CloudUpload.vue'
 import FileOutline from 'vue-material-design-icons/FileOutline.vue'
 import ArrowLeft from 'vue-material-design-icons/ArrowLeft.vue'
+import Reload from 'vue-material-design-icons/Reload.vue'
 
 import { getClient, defaultRootPath } from '@nextcloud/files/dav'
 import { showError, showSuccess } from '@nextcloud/dialogs'
-import { NcActions, NcActionButton, NcButton } from '@nextcloud/vue'
+import { /* NcActions, NcActionButton, */ NcButton, NcDialog, NcTextField } from '@nextcloud/vue'
 
 export default {
 	name: 'FilesTab',
 	components: {
-		NcActions,
-		NcActionButton,
+		// NcActions,
+		// NcActionButton,
+		FolderPlusOutline,
 		FolderOutline,
 		NcButton,
 		FileOutline,
 		CloudUpload,
 		ArrowLeft,
 		FolderMoveOutline,
+		NcDialog,
+		NcTextField,
+		Reload,
 	},
 
 	props: {
@@ -113,6 +117,16 @@ export default {
 			navigationStack: [],
 			client: null,
 			response: null,
+			showDialogFolder: false,
+			buttons: [
+				{
+					label: 'Renombrar',
+					type: 'primary',
+					nativeType: 'submit',
+				},
+			],
+			Folder: '',
+			FolderLocation: '',
 		}
 	},
 
@@ -129,6 +143,17 @@ export default {
 	mounted() {
 		this.currentPath = `${defaultRootPath}/EMPLEADOS/${this.data.uid} - ${this.data.displayname.toUpperCase()}/`
 		this.fetchFiles()
+		// 🔄 Auto-actualizar la lista de archivos cada 30 segundos
+		this.autoRefreshInterval = setInterval(() => {
+			this.fetchFiles()
+		}, 10000) // 30 segundos
+	},
+
+	beforeDestroy() {
+		// 🛑 Detener la auto-actualización cuando el componente se destruya
+		if (this.autoRefreshInterval) {
+			clearInterval(this.autoRefreshInterval)
+		}
 	},
 
 	methods: {
@@ -140,14 +165,13 @@ export default {
 
 				if (Array.isArray(this.response.data)) {
 					// eslint-disable-next-line no-console
-					console.log('👀 Ver archivos:', this.response.data)
+					console.log('👀 Todos los archivos:', this.response)
 					this.files = this.response.data.map(file => ({
 						id: file.id || file.etag,
 						name: file.basename || file.name,
 						size: file.size || 0,
 						isFolder: file.type === 'directory', // Identificar si es carpeta
 						location: this.currentPath,
-						downloadUrl: file.href,
 					}))
 				} else {
 					showError('⚠️ La respuesta NO contiene un array en `data`')
@@ -177,26 +201,6 @@ export default {
 			}
 		},
 
-		// 📄 Ver archivo
-		viewFile(file) {
-			// eslint-disable-next-line no-console
-			console.log('📂 Archivo recibido:', file)
-			if (!file || !file.downloadUrl) {
-				// eslint-disable-next-line no-console
-				console.error('❌ No se puede abrir el archivo, falta la URL de descarga.')
-				return
-			}
-
-			// Construimos la URL de OnlyOffice
-			const onlyOfficeUrl = `${window.location.origin}/apps/onlyoffice/${encodeURIComponent(file.downloadUrl)}`
-
-			// eslint-disable-next-line no-console
-			console.log('🔗 Abriendo archivo en OnlyOffice:', onlyOfficeUrl)
-
-			// Abrir en una nueva pestaña
-			window.open(onlyOfficeUrl, '_blank')
-		},
-
 		// ⬇ Descargar archivo
 		downloadFile(file) {
 			window.location.href = file.downloadUrl
@@ -222,21 +226,21 @@ export default {
 		},
 
 		// ✏ Renombrar archivo
-		async renameFile(file) {
-			const newName = prompt('📝 Nuevo nombre del archivo:', file.name)
-			if (!newName || newName === file.name) return
+		CreateFolder() {
+			this.showDialogFolder = true
+		},
 
+		async FolderAction() {
 			try {
 				const client = getClient()
-				const newPath = `${this.currentPath}${newName}`
-				await client.move(file.downloadUrl, newPath)
-
-				showSuccess('✅ Archivo renombrado correctamente')
+				await client.createDirectory(this.currentPath + '/' + this.Folder)
+				this.Folder = ''
+				showSuccess('✅ Archivo eliminado correctamente')
 				this.fetchFiles()
 			} catch (error) {
 				// eslint-disable-next-line no-console
-				console.error('❌ Error al renombrar archivo:', error)
-				showError('❌ Error al renombrar archivo: ' + error.message)
+				console.error('❌ Error al eliminar archivo:', error)
+				showError('❌ Error al eliminar archivo: ' + error.message)
 			}
 		},
 
@@ -280,9 +284,45 @@ export default {
 			return `${(kb / 1024).toFixed(2)} MB`
 		},
 
-		truncateText(text, length = 50) {
+		truncateText(text, length = 75) {
 			if (!text) return '' // Si no hay texto, retorna vacío
 			return text.length > length ? text.substring(0, length) + '...' : text
+		},
+
+		OpenFolder() {
+			if (!this.currentPath) {
+				// eslint-disable-next-line no-console
+				console.error('⚠️ No se puede abrir la carpeta, `currentPath` no está definido.')
+				return
+			}
+
+			// Construir la URL para abrir en la app de archivos de Nextcloud
+			const nextcloudFilesUrl = `${window.location.origin}/apps/files?dir=${encodeURIComponent(this.getCleanPath(this.currentPath))}`
+
+			// eslint-disable-next-line no-console
+			console.log('🔗 Abriendo carpeta en Nextcloud Files:', nextcloudFilesUrl)
+
+			// Abrir en una nueva pestaña
+			window.open(nextcloudFilesUrl, '_blank')
+		},
+
+		getCleanPath(path) {
+			if (!path) return ''
+
+			// Dividir la ruta en segmentos
+			const pathSegments = path.split('/').filter(segment => segment !== '')
+
+			// Verificar que la ruta tenga al menos 3 segmentos para poder eliminar los primeros 2
+			if (pathSegments.length > 2) {
+				return '/' + pathSegments.slice(2).join('/') + '/'
+			}
+
+			// Si la ruta no tiene suficientes niveles, devolverla tal cual
+			return path
+		},
+
+		reloadFiles() {
+			this.fetchFiles()
 		},
 	},
 }

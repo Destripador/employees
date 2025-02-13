@@ -6,28 +6,31 @@ declare(strict_types=1);
 return [
 
 	'routes' => [
-		/******************************** EMPLEADOS ********************************************/ 
+		/********************************** INDEX **********************************************/ 
 		['name' => 'page#index', 'url' => '/', 'verb' => 'GET'],
-		['name' => 'page#GetUserLists', 'url' => '/GetUserLists', 'verb' => 'GET'],
-		['name' => 'page#GetEmpleadosList', 'url' => '/GetEmpleadosList', 'verb' => 'GET'],
-		['name' => 'page#GetEmpleadosArea', 'url' => '/GetEmpleadosArea/{id_area}', 'verb' => 'GET'],
-		['name' => 'page#GetEmpleadosPuesto', 'url' => '/GetEmpleadosPuesto/{id_puesto}', 'verb' => 'GET'],
-		['name' => 'page#GetEmpleadosListFix', 'url' => '/GetEmpleadosListFix', 'verb' => 'GET'],
-		['name' => 'page#ExportListEmpleados', 'url' => '/ExportListEmpleados', 'verb' => 'GET'],
+		['name' => 'page#Areas', 'url' => '/Areas', 'verb' => 'GET'],
+		['name' => 'page#Puestos', 'url' => '/Puestos', 'verb' => 'GET'],
 		
-		['name' => 'page#GuardarNota', 'url' => '/GuardarNota', 'verb' => 'POST'],
+		/******************************** EMPLEADOS ********************************************/ 
+		['name' => 'empleados#GetUserLists', 'url' => '/GetUserLists', 'verb' => 'GET'],
+		['name' => 'empleados#GetEmpleadosList', 'url' => '/GetEmpleadosList', 'verb' => 'GET'],
+		['name' => 'empleados#GetEmpleadosArea', 'url' => '/GetEmpleadosArea/{id_area}', 'verb' => 'GET'],
+		['name' => 'empleados#GetEmpleadosPuesto', 'url' => '/GetEmpleadosPuesto/{id_puesto}', 'verb' => 'GET'],
+		['name' => 'empleados#GetEmpleadosListFix', 'url' => '/GetEmpleadosListFix', 'verb' => 'GET'],
+		['name' => 'empleados#ExportListEmpleados', 'url' => '/ExportListEmpleados', 'verb' => 'GET'],
+		
+		['name' => 'empleados#GuardarNota', 'url' => '/GuardarNota', 'verb' => 'POST'],
 		['name' => 'empleados#CambiosEmpleado', 'url' => '/CambiosEmpleado', 'verb' => 'POST'],
 		['name' => 'empleados#CambiosPersonal', 'url' => '/CambiosPersonal', 'verb' => 'POST'],
 		['name' => 'empleados#ActivarEmpleado', 'url' => '/ActivarEmpleado', 'verb' => 'POST'],
-		['name' => 'page#ActivarUsuario', 'url' => '/ActivarUsuario', 'verb' => 'POST'],
-		['name' => 'page#EliminarEmpleado', 'url' => '/EliminarEmpleado', 'verb' => 'POST'],
-		['name' => 'page#DesactivarEmpleado', 'url' => '/DesactivarEmpleado', 'verb' => 'POST'],
-		['name' => 'page#ImportListEmpleados', 'url' => '/ImportListEmpleados', 'verb' => 'POST'],
+		['name' => 'empleados#ActivarUsuario', 'url' => '/ActivarUsuario', 'verb' => 'POST'],
+		['name' => 'empleados#EliminarEmpleado', 'url' => '/EliminarEmpleado', 'verb' => 'POST'],
+		['name' => 'empleados#DesactivarEmpleado', 'url' => '/DesactivarEmpleado', 'verb' => 'POST'],
+		['name' => 'empleados#ImportListEmpleados', 'url' => '/ImportListEmpleados', 'verb' => 'POST'],
 
 		/******************************** AREAS ********************************************/ 
-		['name' => 'page#Areas', 'url' => '/Areas', 'verb' => 'GET'],
 		['name' => 'areas#GetAreasFix', 'url' => '/GetAreasFix', 'verb' => 'GET'],
-		['name' => 'page#GetAreasList', 'url' => '/GetAreasList', 'verb' => 'GET'],
+		['name' => 'areas#GetAreasList', 'url' => '/GetAreasList', 'verb' => 'GET'],
 		['name' => 'areas#ExportListAreas', 'url' => '/ExportListAreas', 'verb' => 'GET'],
 
 		['name' => 'areas#GuardarCambioArea', 'url' => '/GuardarCambioArea', 'verb' => 'POST'],
@@ -36,7 +39,6 @@ return [
 		['name' => 'areas#crearArea', 'url' => '/crearArea', 'verb' => 'POST'],
 
 		/****************************** PUESTOS *********************************************/
-		['name' => 'page#Puestos', 'url' => '/Puestos', 'verb' => 'GET'],
 		['name' => 'puestos#GetPuestosFix', 'url' => '/GetPuestosFix', 'verb' => 'GET'],
 		['name' => 'puestos#GetPuestosList', 'url' => '/GetPuestosList', 'verb' => 'GET'],
 		['name' => 'puestos#ExportListPuestos', 'url' => '/ExportListPuestos', 'verb' => 'GET'],

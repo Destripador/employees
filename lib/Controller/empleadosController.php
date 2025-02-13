@@ -91,10 +91,12 @@ class empleadosController extends Controller {
 	public function GetUserLists(): array{
 		$empleados = $this->empleadosMapper->GetUserLists();
 		$users = $this->empleadosMapper->getAllUsers();
+		$deactivated = $this->empleadosMapper->GetUserListsDeactive();
 		
 		$data = array(
 			'Empleados' => $empleados,
 			'Users' => $users,
+			'Desactivados' => $deactivated,
         );
 
 		return $data;
@@ -198,7 +200,18 @@ class empleadosController extends Controller {
 		}
 	}
 
-	
+	public function ImportListEmpleados(): void {
+		$file = $this->getUploadedFile('fileXLSX');
+		if ( $xlsx = SimpleXLSX::parse($file['tmp_name']) ) {
+
+			$rows_info = $xlsx->rows();
+
+			foreach($rows_info as $row){
+				$this->empleadosMapper->updateEmpleado(	strval($row[0]), strval($row[2]), strval($row[3]), strval($row[4]), strval($row[5]), strval($row[6]), strval($row[7]), strval($row[8]), strval($row[9]), strval($row[10]), strval($row[11]), strval($row[12]), strval($row[13]), strval($row[14]), 
+				strval($row[15]), strval($row[16]) , strval($row[17]) , strval($row[18]) , strval($row[19]) , strval($row[20]) , strval($row[21]) , strval($row[22]) , strval($row[23]));
+			}
+		}
+	}
 
 	#[UseSession]
 	public function EliminarEmpleado(int $id_empleados): string {
@@ -293,7 +306,11 @@ class empleadosController extends Controller {
 
 		return $books; 
 	}
-	
+
+	public function GuardarNota(int $id_empleados, string $nota): void {
+		$this->empleadosMapper->GuardarNota(strval($id_empleados), $nota);
+	}
+
 	public function CambiosEmpleado($id_empleados, $numeroempleado, $ingreso, $area, $puesto, $socio, $gerente, $fondoclave, $numerocuenta, $equipoasignado, $sueldo): void {
 		$this->empleadosMapper->CambiosEmpleado($id_empleados, $numeroempleado, $ingreso, $area, $puesto, $socio, $gerente, $fondoclave, $numerocuenta, $equipoasignado, $sueldo);
 	}

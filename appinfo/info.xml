@@ -5,7 +5,7 @@
 	<name>Empleados</name>
 	<summary>Modulo de gestion de empleados</summary>
 	<description>Modulo de gestion de empleados</description>
-	<version>1.0.0</version>
+	<version>1.0.1</version>
 	<licence>agpl</licence>
 	<author mail="luis.alvarado@crowe.mx" homepage="https://gossler-torreon.com">Luis angel alvarado hernandez</author>
 	<namespace>Empleados</namespace>
@@ -15,7 +15,7 @@
 		<nextcloud min-version="27" max-version="29"/>
 	</dependencies>
 	<navigations>
-		<navigation>
+		<navigation role="admin">
 			<id>empleados</id>
 			<name>Empleados</name>
 			<route>empleados.page.index</route>

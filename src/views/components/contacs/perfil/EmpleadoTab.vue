@@ -3,7 +3,8 @@
 		<div class="top">
 			<div class="main">
 				<div class="box1">
-					<div v-if="show==true" class="main">
+					<!-- Socio and Gerente Select Inputs -->
+					<div v-if="show" class="main">
 						<div class="label-input-trabajo">
 							<NcSelect v-model="socio"
 								class="select"
@@ -23,6 +24,7 @@
 						</div>
 					</div>
 
+					<!-- Departamento and Puesto Select Inputs -->
 					<div class="main">
 						<div class="label-input-trabajo">
 							<NcSelect id="Id_departamento"
@@ -43,6 +45,7 @@
 						</div>
 					</div>
 
+					<!-- Various Input Fields -->
 					<div class="external-label">
 						<label for="Numero_empleado" class="labeltype">
 							<Badgeaccountoutline :size="20" />
@@ -115,6 +118,8 @@
 							class="inputtype">
 					</div>
 				</div>
+
+				<!-- Organization Chart -->
 				<div class="box2" :style="show ? { display: 'none' } : {}">
 					<div class="box-chart">
 						<OrganizationChart :datasource="generateChar(data.uid, gerente, socio)">
@@ -142,6 +147,7 @@
 				</div>
 			</div>
 			<br>
+			<!-- Employee Notes -->
 			<NcTextArea class="top"
 				label="NOTAS EMPLEADO"
 				resize="vertical"
@@ -177,15 +183,12 @@ import axios from '@nextcloud/axios'
 import debounce from 'debounce'
 
 // ICONOS
-// import Magnify from 'vue-material-design-icons/Magnify.vue'
 import Badgeaccountoutline from 'vue-material-design-icons/BadgeAccountOutline.vue'
-// import Briefcaseaccount from 'vue-material-design-icons/BriefcaseAccount.vue'
 import Piggybankoutline from 'vue-material-design-icons/PiggyBankOutline.vue'
 import Calendarrange from 'vue-material-design-icons/CalendarRange.vue'
 import Laptopaccount from 'vue-material-design-icons/LaptopAccount.vue'
 import Bank from 'vue-material-design-icons/Bank.vue'
 import Cash from 'vue-material-design-icons/Cash.vue'
-// import Cog from 'vue-material-design-icons/Cog.vue'
 
 import {
 	NcAvatar,
@@ -199,10 +202,8 @@ export default {
 
 	components: {
 		NcAvatar,
-		// Cog,
 		Badgeaccountoutline,
 		Calendarrange,
-		// Briefcaseaccount,
 		Bank,
 		Piggybankoutline,
 		Laptopaccount,
@@ -218,12 +219,10 @@ export default {
 			type: Object,
 			required: true,
 		},
-
 		show: {
 			type: Boolean,
 			required: true,
 		},
-
 		empleados: {
 			type: Array,
 			required: true,
@@ -235,13 +234,12 @@ export default {
 	},
 
 	data() {
-		const { notas } = ''
 		return {
 			area: '',
 			puesto: '',
 			gerente: null,
 			socio: null,
-			notas: notas ?? '',
+			notas: this.data.Notas ?? '',
 			optionsarea: [],
 			optionspuesto: [],
 			Numero_empleado: '',
@@ -273,9 +271,10 @@ export default {
 			}, 700)
 		},
 	},
+
 	watch: {
-		data(news, old) {
-			this.notas = this.data.Notas
+		data(news) {
+			this.notas = news.Notas
 			if (news) {
 				this.setAttr(
 					news.Numero_empleado,
@@ -294,7 +293,6 @@ export default {
 
 	mounted() {
 		this.notas = this.data.Notas
-
 		this.setAttr(
 			this.data.Numero_empleado,
 			this.data.Ingreso,
@@ -324,22 +322,16 @@ export default {
 			this.getAreas(this.area)
 			this.getPuestos(this.puesto)
 		},
+
 		async getAreas(Area) {
 			try {
-				await axios.get(generateUrl('/apps/empleados/GetAreasFix'))
-					.then(
-						(response) => {
-							this.optionsarea = response.data
-							if (Area && Area.length !== 0) {
-								this.area = this.optionsarea.find(areas => areas.value === parseInt(Area)).label
-							} else {
-								this.area = ''
-							}
-						},
-						(err) => {
-							showError(err)
-						},
-					)
+				const response = await axios.get(generateUrl('/apps/empleados/GetAreasFix'))
+				this.optionsarea = response.data
+				if (Area && Area.length !== 0) {
+					this.area = this.optionsarea.find(areas => areas.value === parseInt(Area)).label
+				} else {
+					this.area = ''
+				}
 			} catch (err) {
 				showError(t('empleados', 'Se ha producido una excepcion [01] [' + err + ']'))
 			}
@@ -347,33 +339,21 @@ export default {
 
 		async getPuestos(Puesto) {
 			try {
-				await axios.get(generateUrl('/apps/empleados/GetPuestosFix'))
-					.then(
-						(response) => {
-							this.optionspuesto = response.data
-							if (Puesto && Puesto.length !== 0) {
-								this.puesto = this.optionspuesto.find(role => role.value === parseInt(Puesto)).label
-							} else {
-								this.puesto = ''
-							}
-						},
-						(err) => {
-							showError(err)
-						},
-					)
+				const response = await axios.get(generateUrl('/apps/empleados/GetPuestosFix'))
+				this.optionspuesto = response.data
+				if (Puesto && Puesto.length !== 0) {
+					this.puesto = this.optionspuesto.find(role => role.value === parseInt(Puesto)).label
+				} else {
+					this.puesto = ''
+				}
 			} catch (err) {
 				showError(t('empleados', 'Se ha producido una excepcion [01] [' + err + ']'))
 			}
 		},
 
 		generateChar(user, gerente, socio) {
-			if (gerente === '' || gerente == null) {
-				gerente = 'Sin Asignar'
-			}
-			if (socio === '' || socio == null) {
-				socio = 'Sin asignar'
-			}
-			// eslint-disable-next-line comma-spacing
+			if (!gerente) gerente = 'Sin Asignar'
+			if (!socio) socio = 'Sin asignar'
 			return {
 				id: '1',
 				name: socio,
@@ -391,29 +371,18 @@ export default {
 			}
 		},
 
-		checknull(satanizar) {
-			if (!satanizar && satanizar === null) {
-				return ''
-			}
-			return satanizar
+		checknull(value) {
+			return value ?? ''
 		},
 
 		async guardarNota() {
 			try {
-				await axios.post(generateUrl('/apps/empleados/GuardarNota'),
-					{
-						id_empleados: this.data.Id_empleados,
-						nota: this.notas,
-					})
-					.then(
-						(response) => {
-							showSuccess('Nota ha sido actualizada')
-							this.$root.$emit('getall')
-						},
-						(err) => {
-							showError(err)
-						},
-					)
+				await axios.post(generateUrl('/apps/empleados/GuardarNota'), {
+					id_empleados: this.data.Id_empleados,
+					nota: this.notas,
+				})
+				showSuccess('Nota ha sido actualizada')
+				this.$root.$emit('getall')
 			} catch (err) {
 				showError(t('empleados', 'Se ha producido una excepcion [03] [' + err + ']'))
 			}
@@ -421,50 +390,27 @@ export default {
 
 		async CambiosEmpleado() {
 			try {
+				this.areaSend = this.optionsarea.find(role => role.label === this.area)?.value || ''
+				this.puestoSend = this.optionspuesto.find(role => role.label === this.puesto)?.value || ''
+				this.socio = this.socio?.id || this.socio
+				this.gerente = this.gerente?.id || this.gerente
 
-				if (this.area.label) {
-					this.area = this.area.label
-				}
-				this.areaSend = this.optionsarea.find(role => role.label === this.area).value
-
-				if (this.puesto.label) {
-					this.puesto = this.puesto.label
-				}
-				this.puestoSend = this.optionspuesto.find(role => role.label === this.puesto).value
-
-				if (this.socio.id) {
-					this.socio = this.checknull(this.socio.id)
-				}
-
-				if (this.gerente.id) {
-					this.gerente = this.checknull(this.gerente.id)
-				} else {
-					this.gerente = this.checknull(this.gerente)
-				}
-				await axios.post(generateUrl('/apps/empleados/CambiosEmpleado'),
-					{
-						id_empleados: this.data.Id_empleados,
-						numeroempleado: this.checknull(this.Numero_empleado),
-						ingreso: this.checknull(this.Ingreso),
-						area: this.areaSend,
-						puesto: this.puestoSend,
-						socio: this.socio,
-						gerente: this.checknull(this.gerente),
-						fondoclave: this.checknull(this.Fondo_clave),
-						numerocuenta: this.checknull(this.Numero_cuenta),
-						equipoasignado: this.checknull(this.Equipo_asignado),
-						sueldo: this.checknull(this.Sueldo),
-					})
-					.then(
-						(response) => {
-							this.$root.$emit('getall')
-							this.$root.$emit('show', false)
-							showSuccess('Datos actualizados')
-						},
-						(err) => {
-							showError(err)
-						},
-					)
+				await axios.post(generateUrl('/apps/empleados/CambiosEmpleado'), {
+					id_empleados: this.data.Id_empleados,
+					numeroempleado: this.checknull(this.Numero_empleado),
+					ingreso: this.checknull(this.Ingreso),
+					area: this.areaSend,
+					puesto: this.puestoSend,
+					socio: this.socio,
+					gerente: this.checknull(this.gerente),
+					fondoclave: this.checknull(this.Fondo_clave),
+					numerocuenta: this.checknull(this.Numero_cuenta),
+					equipoasignado: this.checknull(this.Equipo_asignado),
+					sueldo: this.checknull(this.Sueldo),
+				})
+				this.$root.$emit('getall')
+				this.$root.$emit('show', false)
+				showSuccess('Datos actualizados')
 			} catch (err) {
 				showError(t('empleados', 'Se ha producido una excepcion [03] [' + err + ']'))
 			}
@@ -472,26 +418,26 @@ export default {
 	},
 }
 </script>
+
 <style>
-.box-chart{
-  margin-top: 20px;
+.box-chart {
+	margin-top: 20px;
 }
 .box1 {
-  flex: 4;
+	flex: 4;
 }
 .box2 {
-  flex: 1;
+	flex: 1;
 }
 .main {
-  margin-top: 10px;
-  display: flex; /* Activa Flexbox */
-  gap: 5px; /* Espacio entre los divs */
+	margin-top: 10px;
+	display: flex;
+	gap: 5px;
 }
-
 .label-input-trabajo {
-    display: grid;
-    align-items: center;
-    width: 100%;
+	display: grid;
+	align-items: center;
+	width: 100%;
 }
 .wrapper {
 	display: flex;
@@ -500,27 +446,25 @@ export default {
 	flex-wrap: wrap;
 }
 .external-label {
-  display: flex; /* Activa Flexbox */
-  align-items: center; /* Alinea verticalmente */
-  gap: 10px; /* Espacio entre el label y el input */
-  margin-top: 10px;;
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	margin-top: 2px;
 }
-
 .labeltype {
-  font-weight: bold;
-  display: flex;
-  align-items: center;
-  gap: 5px; /* Espacio entre el icono y el texto */
-  min-width: 150px; /* Define un ancho mínimo para la etiqueta */
+	font-weight: bold;
+	display: flex;
+	align-items: center;
+	gap: 5px;
+	min-width: 150px;
 }
-
 .inputtype {
-  flex: 1; /* Hace que el input ocupe el espacio restante */
-  height: 40px;
-  padding: 8px 12px;
-  font-size: 14px;
-  border-radius: 5px;
-  border: 1px solid #ccc;
-  width: 100%;
+	flex: 1;
+	height: 40px;
+	padding: 8px 12px;
+	font-size: 14px;
+	border-radius: 5px;
+	border: 1px solid #ccc;
+	width: 100%;
 }
 </style>

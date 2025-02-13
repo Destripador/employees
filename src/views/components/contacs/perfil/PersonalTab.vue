@@ -1,5 +1,6 @@
 <template>
 	<div class="top">
+		<!-- Direccion -->
 		<div class="external-label">
 			<label for="Direccion" class="labeltype">
 				<MapMarkerOutline :size="20" />
@@ -11,6 +12,7 @@
 				:disabled="!show"
 				class="inputtype">
 		</div>
+		<!-- Rfc -->
 		<div class="external-label">
 			<label for="Rfc" class="labeltype">
 				<Badgeaccountoutline :size="20" />
@@ -22,6 +24,7 @@
 				:disabled="!show"
 				class="inputtype">
 		</div>
+		<!-- Imss -->
 		<div class="external-label">
 			<label for="Imss" class="labeltype">
 				<Badgeaccountoutline :size="20" />
@@ -33,6 +36,7 @@
 				:disabled="!show"
 				class="inputtype">
 		</div>
+		<!-- Curp -->
 		<div class="external-label">
 			<label for="Curp" class="labeltype">
 				<Badgeaccountoutline :size="20" />
@@ -44,6 +48,7 @@
 				:disabled="!show"
 				class="inputtype">
 		</div>
+		<!-- Fecha de Nacimiento -->
 		<div class="external-label">
 			<label for="Fecha_nacimiento" class="labeltype">
 				<CakeVariantOutline :size="20" />
@@ -55,6 +60,7 @@
 				:disabled="!show"
 				class="inputtype">
 		</div>
+		<!-- Correo -->
 		<div class="external-label">
 			<label for="Correo_contacto" class="labeltype">
 				<EmailOutline :size="20" />
@@ -62,11 +68,12 @@
 			</label>
 			<input id="Correo_contacto"
 				v-model="Correo_contacto"
-				type="mail"
+				type="email"
 				:disabled="!show"
 				class="inputtype">
 		</div>
 		<br>
+		<!-- Estado Civil -->
 		<div class="label-input-trabajo">
 			<NcSelect v-model="Estado_civil"
 				class="select"
@@ -74,6 +81,7 @@
 				input-label="Estado Civil"
 				:options="EstadoCiviloptions" />
 		</div>
+		<!-- Genero -->
 		<div class="label-input-trabajo">
 			<NcSelect v-model="Genero"
 				class="select"
@@ -82,6 +90,7 @@
 				:options="GeneroOptions" />
 		</div>
 		<br>
+		<!-- Contacto de Emergencia -->
 		<div class="emergency-contact">
 			<div class="external-label">
 				<label for="Telefono_contacto" class="labeltype">
@@ -119,6 +128,7 @@
 			<br>
 		</div>
 		<br>
+		<!-- Boton para aplicar cambios -->
 		<div class="div-center">
 			<NcButton
 				v-if="show"
@@ -165,12 +175,10 @@ export default {
 			type: Object,
 			required: true,
 		},
-
 		show: {
 			type: Boolean,
 			required: true,
 		},
-
 		empleados: {
 			type: Array,
 			required: true,
@@ -200,97 +208,63 @@ export default {
 	},
 
 	watch: {
-		data(news, old) {
+		data(news) {
 			if (news) {
-				this.setAttr(
-					news.Direccion,
-					news.Estado_civil,
-					news.Telefono_contacto,
-					news.Rfc,
-					news.Imss,
-					news.Contacto_emergencia,
-					news.Numero_emergencia,
-					news.Curp,
-					news.Fecha_nacimiento,
-					news.Correo_contacto,
-					news.Genero,
-				)
+				this.setAttr(news)
 			}
 		},
 	},
 
 	mounted() {
-		this.setAttr(
-			this.data.Direccion,
-			this.data.Estado_civil,
-			this.data.Telefono_contacto,
-			this.data.Rfc,
-			this.data.Imss,
-			this.data.Contacto_emergencia,
-			this.data.Numero_emergencia,
-			this.data.Curp,
-			this.data.Fecha_nacimiento,
-			this.data.Correo_contacto,
-			this.data.Genero,
-		)
+		this.setAttr(this.data)
 	},
 
 	methods: {
-		setAttr(Direccion, EstadoCivil, TelefonoContacto, Rfc, Imss, ContactoEmergencia, NumeroEmergencia, Curp, FechaNacimiento, CorreoContacto, Genero) {
-			this.Direccion = this.checknull(Direccion)
-			this.Estado_civil = this.checknull(EstadoCivil)
-			this.Telefono_contacto = this.checknull(TelefonoContacto)
-			this.Rfc = this.checknull(Rfc)
-			this.Imss = this.checknull(Imss)
-			this.Contacto_emergencia = this.checknull(ContactoEmergencia)
-			this.Numero_emergencia = this.checknull(NumeroEmergencia)
-			this.Curp = this.checknull(Curp)
-			this.Fecha_nacimiento = this.checknull(FechaNacimiento)
-			this.Correo_contacto = this.checknull(CorreoContacto)
-			this.Genero = this.checknull(Genero)
+		setAttr(data) {
+			this.Direccion = this.checknull(data.Direccion)
+			this.Estado_civil = this.checknull(data.Estado_civil)
+			this.Telefono_contacto = this.checknull(data.Telefono_contacto)
+			this.Rfc = this.checknull(data.Rfc)
+			this.Imss = this.checknull(data.Imss)
+			this.Contacto_emergencia = this.checknull(data.Contacto_emergencia)
+			this.Numero_emergencia = this.checknull(data.Numero_emergencia)
+			this.Curp = this.checknull(data.Curp)
+			this.Fecha_nacimiento = this.checknull(data.Fecha_nacimiento)
+			this.Correo_contacto = this.checknull(data.Correo_contacto)
+			this.Genero = this.checknull(data.Genero)
 		},
 
-		checknull(satanizar) {
-			if (!satanizar && satanizar === null) {
-				return ''
-			}
-			return satanizar
+		checknull(value) {
+			return value === null ? '' : value
 		},
 
 		async CambiosPersonal() {
 			try {
-				await axios.post(generateUrl('/apps/empleados/CambiosPersonal'),
-					{
-						Id_empleados: this.data.Id_empleados,
-						Direccion: this.checknull(this.Direccion),
-						Estado_civil: this.checknull(this.Estado_civil),
-						Telefono_contacto: this.checknull(this.Telefono_contacto),
-						Rfc: this.checknull(this.Rfc),
-						Imss: this.checknull(this.Imss),
-						Contacto_emergencia: this.checknull(this.Contacto_emergencia),
-						Numero_emergencia: this.checknull(this.Numero_emergencia),
-						Curp: this.checknull(this.Curp),
-						Fecha_nacimiento: this.checknull(this.Fecha_nacimiento),
-						Correo_contacto: this.checknull(this.Correo_contacto),
-						Genero: this.checknull(this.Genero),
-					})
-					.then(
-						(response) => {
-							this.$root.$emit('getall')
-							this.$root.$emit('show', false)
-							showSuccess('Datos actualizados')
-						},
-						(err) => {
-							showError(err)
-						},
-					)
+				await axios.post(generateUrl('/apps/empleados/CambiosPersonal'), {
+					Id_empleados: this.data.Id_empleados,
+					Direccion: this.checknull(this.Direccion),
+					Estado_civil: this.checknull(this.Estado_civil),
+					Telefono_contacto: this.checknull(this.Teléfono_contacto),
+					Rfc: this.checknull(this.Rfc),
+					Imss: this.checknull(this.Imss),
+					Contacto_emergencia: this.checknull(this.Contacto_emergencia),
+					Numero_emergencia: this.checknull(this.Numero_emergencia),
+					Curp: this.checknull(this.Curp),
+					Fecha_nacimiento: this.checknull(this.Fecha_nacimiento),
+					Correo_contacto: this.checknull(this.Correo_contacto),
+					Genero: this.checknull(this.Genero),
+				})
+				this.$root.$emit('getall')
+				this.$root.$emit('show', false)
+				showSuccess('Datos actualizados')
 			} catch (err) {
-				showError(t('empleados', 'Se ha producido una excepcion [03] [' + err + ']'))
+				showError(`Se ha producido una excepcion [03] [${err}]`)
 			}
 		},
 	},
 }
 </script>
+
 <style>
 .wrapper {
 	display: flex;
@@ -299,30 +273,31 @@ export default {
 	flex-wrap: wrap;
 }
 .external-label {
-  display: flex; /* Activa Flexbox */
-  align-items: center; /* Alinea verticalmente */
-  gap: 10px; /* Espacio entre el label y el input */
-  margin-top: 10px;;
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	margin-top: 3px;
 }
-
 .labeltype {
-  font-weight: bold;
-  display: flex;
-  align-items: center;
-  gap: 5px; /* Espacio entre el icono y el texto */
-  min-width: 150px; /* Define un ancho mínimo para la etiqueta */
+	font-weight: bold;
+	display: flex;
+	align-items: center;
+	gap: 5px;
+	min-width: 150px;
 }
-
 .inputtype {
-  flex: 1; /* Hace que el input ocupe el espacio restante */
-  height: 40px;
-  padding: 8px 12px;
-  font-size: 14px;
-  border-radius: 5px;
-  border: 1px solid #ccc;
-  width: 100%;
+	flex: 1;
+	height: 40px;
+	padding: 8px 12px;
+	font-size: 14px;
+	border-radius: 5px;
+	border: 1px solid #ccc;
+	width: 100%;
 }
 .emergency-contact {
 	border: 1px solid rgba(0,0,0,0.17);
+}
+.top {
+	margin-top: 20px;
 }
 </style>

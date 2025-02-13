@@ -1,11 +1,11 @@
 <template>
 	<NcAppNavigation>
 		<template #list>
-			<NcAppNavigationItem name="Inicio" href="/index.php/apps/empleados/">
+			<!-- NcAppNavigationItem name="Inicio" href="/index.php/apps/empleados/">
 				<template #icon>
-					<!--Home :size="20" /-->
+					<Home :size="20" />
 				</template>
-			</NcAppNavigationItem>
+			</NcAppNavigationItem -->
 
 			<NcAppNavigationItem name="Empleados" href="/index.php/apps/empleados">
 				<template #icon>
