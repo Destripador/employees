@@ -39,9 +39,8 @@
 			class="contacts-list"
 			data-key="Id_empleados"
 			:data-sources="filteredList"
-			:data-component="ContactsListItem"
-			:estimate-size="60"
-			:extra-props="{reloadBus}" />
+			:data-component="EmployeeListItem"
+			:estimate-size="60" />
 		<input
 			ref="file"
 			type="file"
@@ -60,19 +59,17 @@ import {
 } from '@nextcloud/vue'
 
 import { showError, showSuccess } from '@nextcloud/dialogs'
-import ContactsListItem from './ContactsListItem.vue'
+import EmployeeListItem from './EmployeeListItem.vue'
 import VirtualList from 'vue-virtual-scroll-list'
 import { generateUrl } from '@nextcloud/router'
 import axios from '@nextcloud/axios'
-// import mitt from 'mitt'
 
 import DatabaseExport from 'vue-material-design-icons/DatabaseExport.vue'
-// import Download from 'vue-material-design-icons/Download.vue'
 import Upload from 'vue-material-design-icons/Upload.vue'
 import Cog from 'vue-material-design-icons/Cog.vue'
 
 export default {
-	name: 'ContactList',
+	name: 'ContentList',
 
 	components: {
 		AppContentList,
@@ -81,17 +78,12 @@ export default {
 		NcActionButton,
 		Cog,
 		Upload,
-		// Download,
 		DatabaseExport,
 		NcActionSeparator,
 	},
 
 	props: {
-		list: {
-			type: Array,
-			required: true,
-		},
-		contacts: {
+		employees: {
 			type: Array,
 			required: true,
 		},
@@ -99,22 +91,18 @@ export default {
 			type: String,
 			default: '',
 		},
-		reloadBus: {
-			type: Object,
-			required: true,
-		},
 	},
 
 	data() {
 		return {
-			ContactsListItem,
+			EmployeeListItem,
 			query: '',
 		}
 	},
 
 	computed: {
 		filteredList() {
-			return this.contacts
+			return this.employees
 				.filter(item => this.matchSearch(item.displayname, item.uid))
 		},
 	},
@@ -174,7 +162,7 @@ export default {
 					})
 					.then(
 						(response) => {
-							this.$root.$emit('getall')
+							this.$bus.emit('getall')
 							showSuccess(t('empleados', 'Se actualizo la base de datos exitosamente'))
 						},
 						(err) => {

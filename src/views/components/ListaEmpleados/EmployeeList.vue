@@ -1,5 +1,5 @@
 <template id="EmployeeList">
-	<NcAppContent v-if="loading" name="Loading">
+	<NcAppContent v-if="loadingProp" name="Loading">
 		<NcEmptyContent class="empty-content" name="Cargando">
 			<template #icon>
 				<NcLoadingIcon :size="20" />
@@ -10,27 +10,20 @@
 	<NcAppContent v-else name="Loading">
 		<!-- contacts list -->
 		<template #list>
-			<ContactsList
-				:list="contactsList"
-				:contacts="Empleados"
-				:search-query="searchQuery"
-				:reload-bus="reloadBus" />
+			<ContentList
+				:employees="empleadosProp"
+				:search-query="searchQuery" />
 		</template>
 
 		<!-- main contacts details -->
-		<ContactDetails :data="data_empleado" />
+		<EmployeeDetails :data="data_empleado" />
 	</NcAppContent>
 </template>
 
 <script>
 // agregados
-import ContactsList from './ContactList.vue'
-import ContactDetails from './ContactDetails.vue'
-
-import { showError /* showSuccess */ } from '@nextcloud/dialogs'
-import { generateUrl } from '@nextcloud/router'
-import axios from '@nextcloud/axios'
-import mitt from 'mitt'
+import ContentList from './ContentList.vue'
+import EmployeeDetails from './EmployeeDetails.vue'
 
 import {
 	NcEmptyContent,
@@ -44,48 +37,32 @@ export default {
 		NcEmptyContent,
 		NcAppContent,
 		NcLoadingIcon,
-		ContactsList,
-		ContactDetails,
+		ContentList,
+		EmployeeDetails,
+	},
+
+	props: {
+		empleadosProp: {
+			type: Array,
+			required: true,
+		},
+		loadingProp: {
+			type: Boolean,
+			required: true,
+		},
 	},
 
 	data() {
 		return {
-			loading: true,
-			Empleados: [],
 			searchQuery: '',
-			reloadBus: mitt(),
-			contactsList: [],
 			data_empleado: {},
 		}
 	},
 
-	async mounted() {
-		this.getall()
-		this.$root.$on('send-data', (data) => {
+	mounted() {
+		this.$bus.on('send-data', (data) => {
 			this.data_empleado = data
 		})
-		this.$root.$on('getall', () => {
-			this.getall()
-		})
-	},
-
-	methods: {
-		async getall() {
-			try {
-				await axios.get(generateUrl('/apps/empleados/GetEmpleadosList'))
-					.then(
-						(response) => {
-							this.Empleados = response.data.Empleados
-							this.loading = false
-						},
-						(err) => {
-							showError(err)
-						},
-					)
-			} catch (err) {
-				showError(t('empleados', 'Se ha producido una excepcion [01] [' + err + ']'))
-			}
-		},
 	},
 }
 </script>

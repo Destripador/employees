@@ -32,7 +32,7 @@ import {
 } from '@nextcloud/vue'
 
 export default {
-	name: 'ContactsListItem',
+	name: 'EmployeeListItem',
 
 	components: {
 		ListItem,
@@ -48,16 +48,12 @@ export default {
 			type: Object,
 			required: true,
 		},
-		reloadBus: {
-			type: Object,
-			required: true,
-		},
 	},
 
 	methods: {
 		showDetails(data) {
-			this.$root.$emit('send-data', data)
-			this.$root.$emit('show', false)
+			this.$bus.emit('send-data', data)
+			this.$bus.emit('show', false)
 		},
 	},
 }

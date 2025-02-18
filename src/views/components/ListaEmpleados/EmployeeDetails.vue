@@ -111,7 +111,7 @@ import {
 } from '@nextcloud/vue'
 
 export default {
-	name: 'ContactDetails',
+	name: 'EmployeeDetails',
 
 	components: {
 		EmpleadoTab,
@@ -167,16 +167,7 @@ export default {
 			this.show = !this.show
 			this.hability = this.show ? 'Deshabilitar' : 'Habilitar'
 			if (this.show) {
-				this.getall()
-			}
-		},
-
-		async getall() {
-			try {
-				const response = await axios.get(generateUrl('/apps/empleados/GetEmpleadosListFix'))
-				this.Empleados = response.data
-			} catch (err) {
-				showError(t('empleados', 'Se ha producido una excepcion [01] [' + err + ']'))
+				this.$bus.emit('getall')
 			}
 		},
 
@@ -195,7 +186,8 @@ export default {
 					})
 					.then(
 						(response) => {
-							this.getall()
+							this.$bus.emit('getall')
+							this.$bus.emit('send-data', {})
 						},
 						(err) => {
 							showError(err)
