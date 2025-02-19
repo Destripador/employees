@@ -157,7 +157,7 @@ export default {
 	},
 
 	mounted() {
-		this.$root.$on('show', (data) => {
+		this.$bus.on('show', (data) => {
 			this.show = data
 		})
 	},

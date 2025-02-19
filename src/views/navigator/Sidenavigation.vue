@@ -7,23 +7,26 @@
 				</template>
 			</NcAppNavigationItem -->
 
-			<NcAppNavigationItem name="Empleados" href="/index.php/apps/empleados">
+			<NcAppNavigationItem name="Empleados"
+				:to="{ name: 'Empleados' }">
 				<template #icon>
 					<!--FileDocumentPlusOutline :size="20" /-->
 				</template>
 			</NcAppNavigationItem>
 
-			<NcAppNavigationItem name="Puestos" href="/index.php/apps/empleados/Puestos">
+			<!--NcAppNavigationItem name="Puestos"
+				:to="{ name: 'Puestos' }">
 				<template #icon>
-					<!--FileDocumentPlusOutline :size="20" /-->
+					<FileDocumentPlusOutline :size="20" />
 				</template>
 			</NcAppNavigationItem>
 
-			<NcAppNavigationItem name="Areas" href="/index.php/apps/empleados/Areas">
+			<NcAppNavigationItem name="Areas"
+				:to="{ name: 'Areas' }">
 				<template #icon>
-					<!--FileDocumentPlusOutline :size="20" /-->
+					<FileDocumentPlusOutline :size="20" />
 				</template>
-			</NcAppNavigationItem>
+			</NcAppNavigationItem-->
 		</template>
 	</NcAppNavigation>
 </template>
@@ -39,6 +42,12 @@ export default {
 	components: {
 		NcAppNavigation,
 		NcAppNavigationItem,
+	},
+
+	methods: {
+		navigateTo(route) {
+			this.$router.push({ name: route })
+		},
 	},
 }
 </script>

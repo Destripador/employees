@@ -265,7 +265,7 @@ export default {
 		debouncePropertyChange() {
 			return debounce(function(value) {
 				this.notas = value
-				if (this.automaticsave) {
+				if (this.automaticsave === 'true') {
 					this.guardarNota()
 				}
 			}, 700)
