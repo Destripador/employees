@@ -8,21 +8,18 @@
 			</NcAppNavigationItem -->
 
 			<NcAppNavigationItem name="Empleados"
-				:to="{ name: 'Empleados' }">
+				:to="{ name: 'Empleados' }"
+				exact>
 				<template #icon>
 					<!--FileDocumentPlusOutline :size="20" /-->
 				</template>
 			</NcAppNavigationItem>
 
+			<NcAppNavigationItem name="Areas"
+				:to="{ name: 'Areas' }" />
+
 			<!--NcAppNavigationItem name="Puestos"
 				:to="{ name: 'Puestos' }">
-				<template #icon>
-					<FileDocumentPlusOutline :size="20" />
-				</template>
-			</NcAppNavigationItem>
-
-			<NcAppNavigationItem name="Areas"
-				:to="{ name: 'Areas' }">
 				<template #icon>
 					<FileDocumentPlusOutline :size="20" />
 				</template>
