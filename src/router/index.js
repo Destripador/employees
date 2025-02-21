@@ -7,7 +7,7 @@ import Areas from '../views/components/areas/Areas.vue'
 Vue.use(Router)
 
 export default new Router({
-	mode: 'history',
+	mode: 'hash',
 	linkActiveClass: 'active',
 	// if index.php is in the url AND we got this far, then it's working:
 	// let's keep using index.php in the url

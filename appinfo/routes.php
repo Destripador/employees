@@ -8,8 +8,6 @@ return [
 	'routes' => [
 		/********************************** INDEX **********************************************/ 
 		['name' => 'page#index', 'url' => '/', 'verb' => 'GET'],
-		['name' => 'page#Areas', 'url' => '/Areas', 'verb' => 'GET'],
-		['name' => 'page#Puestos', 'url' => '/Puestos', 'verb' => 'GET'],
 		
 		/******************************** EMPLEADOS ********************************************/ 
 		['name' => 'empleados#GetUserLists', 'url' => '/GetUserLists', 'verb' => 'GET'],
