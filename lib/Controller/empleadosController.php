@@ -33,6 +33,7 @@ use OCA\Empleados\UploadException;
 #dependencias agregadas
 use OCP\IUserSession;
 use OCP\IUserManager;
+use OCP\IGroupManager;
 
 use OCA\Empleados\Db\empleadosMapper;
 use OCA\Empleados\Db\empleados;
@@ -53,6 +54,10 @@ use Shuchkin\SimpleXLSXGen;
 require_once 'SimpleXLSX.php';
 use Shuchkin\SimpleXLSX;
 
+
+use OCP\AppFramework\Http;
+use OCP\AppFramework\Http\ForbiddenException;
+
 /**
  * @psalm-suppress UnusedClass
  */
@@ -69,9 +74,10 @@ class empleadosController extends Controller {
 	private $session;
 	private IL10N $l10n;
 
-	public function __construct(IRequest $request, ISession $session, IUserSession $userSession, IUserManager $userManager, empleadosMapper $empleadosMapper, departamentosMapper $departamentosMapper, IL10N $l10n, IRootFolder $rootFolder, configuracionesMapper $configuracionesMapper) {
+	public function __construct(IRequest $request, ISession $session, IUserSession $userSession, IUserManager $userManager, empleadosMapper $empleadosMapper, departamentosMapper $departamentosMapper, IL10N $l10n, IRootFolder $rootFolder, configuracionesMapper $configuracionesMapper, IGroupManager $groupManager) {
 		parent::__construct(Application::APP_ID, $request);
 
+		$this->groupManager = $groupManager;
 		$this->userSession = $userSession;
 		$this->userManager = $userManager;
 		$this->empleadosMapper = $empleadosMapper;
@@ -103,7 +109,12 @@ class empleadosController extends Controller {
 	}
 
 	#[UseSession]
+	#[NoCSRFRequired]
+	#[NoAdminRequired] // Asegura que no requiera ser admin
 	public function GetEmpleadosList(): array{
+		if (!$this->userHasAccess()) {
+			throw new \OCP\AppFramework\Http\ForbiddenException("No tienes permiso para acceder a este módulo.");
+		}
 		$empleados = $this->empleadosMapper->GetUserLists();
 		
 		$data = array(
@@ -250,8 +261,8 @@ class empleadosController extends Controller {
 					(string) $row[4], (string) $row[5], (string) $row[6], (string) $row[7], 
 					(string) $row[8], (string) $row[9], (string) $row[10], (string) $row[11], 
 					(string) $row[12], (string) $row[13],
-					$this->convertExcelDate($row[14]), (string) $row[15], 
-					(string) $row[16], (string) $row[17], (string) $row[18], (string) $row[19], 
+					$this->convertExcelDate($row[14]),// Fecha validada y convertida
+					(string) $row[15], (string) $row[16], (string) $row[17], (string) $row[18], (string) $row[19], 
 					(string) $row[20], (string) $row[21], (string) $row[22], (string) $row[23], 
 					(string) $row[24]
 				);
@@ -409,5 +420,24 @@ class empleadosController extends Controller {
 	public function CambiosPersonal($Id_empleados, $Direccion, $Estado_civil, $Telefono_contacto, $Rfc, $Imss, $Contacto_emergencia, $Numero_emergencia, $Curp, $Fecha_nacimiento, $Correo_contacto, $Genero): void {
 		$this->empleadosMapper->CambiosPersonal($Id_empleados, $Direccion, $Estado_civil, $Telefono_contacto, $Rfc, $Imss, $Contacto_emergencia, $Numero_emergencia, $Curp, $Fecha_nacimiento, $Correo_contacto, $Genero);
 	}
-
+	private function userHasAccess(): bool {
+		$allowedGroups = ['admin', 'empleados', 'recursos_humanos']; // Define los grupos permitidos
+		$user = $this->userSession->getUser();
+	
+		if (!$user) {
+			return false; // Usuario no autenticado
+		}
+	
+		// Obtener los grupos a los que pertenece el usuario
+		$userGroups = $this->groupManager->getUserGroups($user);
+	
+		foreach ($userGroups as $group) {
+			if (in_array($group->getGID(), $allowedGroups)) {
+				return true; // El usuario pertenece a un grupo permitido
+			}
+		}
+	
+		return false;
+	}
+	
 }

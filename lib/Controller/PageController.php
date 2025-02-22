@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 namespace OCA\Empleados\Controller;
+use OCP\AppFramework\Http;
+use OCP\AppFramework\Http\ForbiddenException;
 
 use OCA\Empleados\AppInfo\Application;
 use OCP\AppFramework\Controller;
@@ -33,6 +35,7 @@ use OCA\Empleados\UploadException;
 #dependencias agregadas
 use OCP\IUserSession;
 use OCP\IUserManager;
+use OCP\IGroupManager;
 
 use OCA\Empleados\Db\empleadosMapper;
 use OCA\Empleados\Db\empleados;
@@ -64,13 +67,17 @@ class PageController extends Controller {
 	private $departamentosMapper;
 	private $configuracionesMapper;
 
+	private $groupManager;
+
 	protected IRootFolder $rootFolder;
 
 	private $session;
 	private IL10N $l10n;
 
-	public function __construct(IRequest $request, ISession $session, IUserSession $userSession, IUserManager $userManager, empleadosMapper $empleadosMapper, departamentosMapper $departamentosMapper, IL10N $l10n, IRootFolder $rootFolder, configuracionesMapper $configuracionesMapper) {
+	public function __construct(IRequest $request, ISession $session, IUserSession $userSession, IUserManager $userManager, empleadosMapper $empleadosMapper, departamentosMapper $departamentosMapper, IL10N $l10n, IRootFolder $rootFolder, configuracionesMapper $configuracionesMapper, IGroupManager $groupManager) {
 		parent::__construct(Application::APP_ID, $request);
+
+		$this->groupManager = $groupManager;
 
 		$this->userSession = $userSession;
 		$this->userManager = $userManager;
@@ -88,8 +95,11 @@ class PageController extends Controller {
 
 	#[UseSession]
 	#[NoCSRFRequired]
+	#[NoAdminRequired] // Asegura que no requiera ser admin
 	public function index(): TemplateResponse {
-
+		if (!$this->userHasAccess()) {
+			throw new \OCP\AppFramework\Http\ForbiddenException("No tienes permiso para acceder a este módulo.");
+		}
 		$configuraciones = $this->configuracionesMapper->GetConfig();
 
 		$configMap = [];
@@ -145,7 +155,12 @@ class PageController extends Controller {
 	}
 
 	#[UseSession]
+	#[NoCSRFRequired]
+	#[NoAdminRequired] // Asegura que no requiera ser admin
 	public function GetEmpleadosList(): array{
+		if (!$this->userHasAccess()) {
+			throw new \OCP\AppFramework\Http\ForbiddenException("No tienes permiso para acceder a este módulo.");
+		}
 		$empleados = $this->empleadosMapper->GetUserLists();
 		
 		$data = array(
@@ -393,4 +408,26 @@ class PageController extends Controller {
 
         return null;
     }
+	private function userHasAccess(): bool {
+		$allowedGroups = ['admin', 'empleados', 'recursos_humanos']; // Define los grupos permitidos
+		$user = $this->userSession->getUser();
+	
+		if (!$user) {
+			return false; // Usuario no autenticado
+		}
+	
+		// Obtener los grupos a los que pertenece el usuario
+		$userGroups = $this->groupManager->getUserGroups($user);
+	
+		foreach ($userGroups as $group) {
+			if (in_array($group->getGID(), $allowedGroups)) {
+				return true; // El usuario pertenece a un grupo permitido
+			}
+		}
+	
+		return false;
+	}
+	
+	
+	
 }
