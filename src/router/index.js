@@ -3,6 +3,7 @@ import Router from 'vue-router'
 import { generateUrl } from '@nextcloud/router'
 
 import Employees from '../views/components/ListaEmpleados/Employees.vue'
+import Puestos from '../views/components/puestos/Puestos.vue'
 import Areas from '../views/components/areas/Areas.vue'
 Vue.use(Router)
 
@@ -18,12 +19,11 @@ export default new Router({
 			component: Employees,
 			name: 'Empleados',
 		},
-		/*
 		{
-			path: '/puestos',
-			name: 'puestos',
+			path: '/Puestos',
+			component: Puestos,
+			name: 'Puestos',
 		},
-		*/
 		{
 			path: '/Areas',
 			component: Areas,

@@ -83,6 +83,18 @@
 					</div>
 
 					<div class="external-label">
+						<label for="Fondo_ahorro" class="labeltype">
+							<Piggybankoutline :size="20" />
+							Fondo ahorro
+						</label>
+						<input id="Fondo_ahorro"
+							v-model="Fondo_ahorro"
+							type="text"
+							:disabled="!show"
+							class="inputtype">
+					</div>
+
+					<div class="external-label">
 						<label for="Numero_cuenta" class="labeltype">
 							<Bank :size="20" />
 							Cuenta Bancaria
@@ -245,6 +257,7 @@ export default {
 			Numero_empleado: '',
 			Ingreso: '',
 			Fondo_clave: '',
+			Fondo_ahorro: '',
 			Numero_cuenta: '',
 			Equipo_asignado: '',
 			Sueldo: '',
@@ -284,6 +297,7 @@ export default {
 					news.Id_gerente,
 					news.Id_socio,
 					news.Fondo_clave,
+					news.Fondo_ahorro,
 					news.Numero_cuenta,
 					news.Equipo_asignado,
 					news.Sueldo)
@@ -301,13 +315,14 @@ export default {
 			this.data.Id_gerente,
 			this.data.Id_socio,
 			this.data.Fondo_clave,
+			this.data.Fondo_ahorro,
 			this.data.Numero_cuenta,
 			this.data.Equipo_asignado,
 			this.data.Sueldo)
 	},
 
 	methods: {
-		setAttr(NumeroEmpleado, Ingreso, Area, Puesto, Gerente, Socio, FondoClave, NumeroCuenta, EquipoAsignado, Sueldo) {
+		setAttr(NumeroEmpleado, Ingreso, Area, Puesto, Gerente, Socio, FondoClave, FondoAhorro, NumeroCuenta, EquipoAsignado, Sueldo) {
 			this.Numero_empleado = this.checknull(NumeroEmpleado)
 			this.Ingreso = this.checknull(Ingreso)
 			this.area = this.checknull(Area)
@@ -315,6 +330,7 @@ export default {
 			this.gerente = this.checknull(Gerente)
 			this.socio = this.checknull(Socio)
 			this.Fondo_clave = this.checknull(FondoClave)
+			this.Fondo_ahorro = this.checknull(FondoAhorro)
 			this.Numero_cuenta = this.checknull(NumeroCuenta)
 			this.Equipo_asignado = this.checknull(EquipoAsignado)
 			this.Sueldo = this.checknull(Sueldo)
@@ -382,7 +398,7 @@ export default {
 					nota: this.notas,
 				})
 				showSuccess('Nota ha sido actualizada')
-				this.$root.$emit('getall')
+				this.$bus.emit('getall')
 			} catch (err) {
 				showError(t('empleados', 'Se ha producido una excepcion [03] [' + err + ']'))
 			}
@@ -404,12 +420,13 @@ export default {
 					socio: this.socio,
 					gerente: this.checknull(this.gerente),
 					fondoclave: this.checknull(this.Fondo_clave),
+					fondoahorro: this.checknull(this.Fondo_ahorro),
 					numerocuenta: this.checknull(this.Numero_cuenta),
 					equipoasignado: this.checknull(this.Equipo_asignado),
 					sueldo: this.checknull(this.Sueldo),
 				})
-				this.$root.$emit('getall')
-				this.$root.$emit('show', false)
+				this.$bus.emit('getall')
+				this.$bus.emit('show', false)
 				showSuccess('Datos actualizados')
 			} catch (err) {
 				showError(t('empleados', 'Se ha producido una excepcion [03] [' + err + ']'))

@@ -1,30 +1,19 @@
 <template>
 	<NcAppNavigation>
-		<template #list>
-			<!-- NcAppNavigationItem name="Inicio" href="/index.php/apps/empleados/">
-				<template #icon>
-					<Home :size="20" />
-				</template>
-			</NcAppNavigationItem -->
-
+		<NcAppNavigationCaption heading-id="Administrativo"
+			is-heading
+			name="Administrativo" />
+		<NcAppNavigationList aria-labelledby="Administrativo">
 			<NcAppNavigationItem name="Empleados"
 				:to="{ name: 'Empleados' }"
-				exact>
-				<template #icon>
-					<!--FileDocumentPlusOutline :size="20" /-->
-				</template>
-			</NcAppNavigationItem>
+				exact />
 
 			<NcAppNavigationItem name="Areas"
 				:to="{ name: 'Areas' }" />
 
-			<!--NcAppNavigationItem name="Puestos"
-				:to="{ name: 'Puestos' }">
-				<template #icon>
-					<FileDocumentPlusOutline :size="20" />
-				</template>
-			</NcAppNavigationItem-->
-		</template>
+			<NcAppNavigationItem name="Puestos"
+				:to="{ name: 'Puestos' }" />
+		</NcAppNavigationList>
 	</NcAppNavigation>
 </template>
 
@@ -32,6 +21,8 @@
 import {
 	NcAppNavigation,
 	NcAppNavigationItem,
+	NcAppNavigationList,
+	NcAppNavigationCaption,
 } from '@nextcloud/vue'
 
 export default {
@@ -39,6 +30,8 @@ export default {
 	components: {
 		NcAppNavigation,
 		NcAppNavigationItem,
+		NcAppNavigationList,
+		NcAppNavigationCaption,
 	},
 
 	methods: {

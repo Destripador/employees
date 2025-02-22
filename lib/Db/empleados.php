@@ -19,6 +19,7 @@ class empleados extends Entity {
 	protected string $idgerente = '';
 	protected string $idsocio = '';
 	protected string $fondoclave = '';
+	protected string $fondoahorro = '';
 	protected string $numerocuenta = '';
 	protected string $equipoasignado = '';
 	protected string $sueldo = '';
@@ -48,6 +49,7 @@ class empleados extends Entity {
 		$this->addType('Id_gerente', 'integer');
 		$this->addType('Id_socio', 'integer');
 		$this->addType('Fondo_clave', 'string');
+		$this->addType('Fondo_ahorro', 'string');
 		$this->addType('Numero_cuenta', 'string');
 		$this->addType('Equipo_asignado', 'string');
 		$this->addType('Sueldo', 'decimal');
@@ -79,6 +81,7 @@ class empleados extends Entity {
 			'Id_gerente' => $this->idgerente,
 			'Id_socio' => $this->idsocio,
 			'Fondo_clave' => $this->fondoclave,
+			'Fondo_ahorro' => $this->fondoahorro,
 			'Numero_cuenta' => $this->numerocuenta,
 			'Equipo_asignado' => $this->equipoasignado,
 			'Sueldo' => $this->sueldo,

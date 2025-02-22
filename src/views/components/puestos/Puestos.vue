@@ -1,37 +1,18 @@
 <template id="content">
-	<NcContent app-name="empleados">
-		<navigator />
-		<!--NcAppContent>
-			<div>
-				<h2 class="board-title">
-					<AccountGroup :size="20" decorative class="icon" />
-					<span>{{ t('empleados', 'Puestos') }}</span>
-				</h2>
-			</div>
-		</NcAppContent-->
-		<puestos />
-	</NcContent>
+	<PuestosList />
 </template>
 
 <script>
-// navigator
-import navigator from './navigator/Sidenavigation.vue'
-import puestos from './components/puestos/PuestosList.vue'
+import PuestosList from './PuestosList.vue'
 
 import { showError /* showSuccess */ } from '@nextcloud/dialogs'
 import { generateUrl } from '@nextcloud/router'
 import axios from '@nextcloud/axios'
 
-import {
-	NcContent,
-} from '@nextcloud/vue'
-
 export default {
 	name: 'Puestos',
 	components: {
-		navigator,
-		puestos,
-		NcContent,
+		PuestosList,
 	},
 
 	data() {

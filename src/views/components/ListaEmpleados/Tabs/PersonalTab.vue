@@ -250,8 +250,8 @@ export default {
 					Correo_contacto: this.checknull(this.Correo_contacto),
 					Genero: this.checknull(this.Genero),
 				})
-				this.$root.$emit('getall')
-				this.$root.$emit('show', false)
+				this.$bus.emit('getall')
+				this.$bus.emit('show', false)
 				showSuccess('Datos actualizados')
 			} catch (err) {
 				showError(`Se ha producido una excepcion [03] [${err}]`)

@@ -99,7 +99,31 @@ class empleadosMapper extends QBMapper {
 		$result = $qb->execute();
 	}
 
-	public function updateEmpleado(string $Id_empleados, string $Numero_empleado, string $Ingreso, string $Correo_contacto, string $Id_departamento, string $Id_puesto, string $Id_gerente, string $Id_socio, string $Fondo_clave, string $Numero_cuenta, string $Equipo_asignado, string $Sueldo, string $Fecha_nacimiento, string $Estado, string $Direccion, string $Estado_civil, string $Telefono_contacto, string $Curp, string $Rfc, string $Imss, string $Genero, string $Contacto_emergencia, string $Numero_emergencia,
+	public function updateEmpleado(
+		string $Id_empleados, 
+		string $Numero_empleado, 
+		string $Ingreso, 
+		string $Correo_contacto, 
+		string $Id_departamento, 
+		string $Id_puesto, 
+		string $Id_gerente, 
+		string $Id_socio, 
+		string $Fondo_clave, 
+		string $Fondo_ahorro, 
+		string $Numero_cuenta, 
+		string $Equipo_asignado, 
+		string $Sueldo, 
+		string $Fecha_nacimiento, 
+		string $Estado, 
+		string $Direccion, 
+		string $Estado_civil, 
+		string $Telefono_contacto, 
+		string $Curp, 
+		string $Rfc, 
+		string $Imss, 
+		string $Genero, 
+		string $Contacto_emergencia, 
+		string $Numero_emergencia,
 	): void {
 		try{
 			$timestamp = date('Y-m-d');
@@ -112,6 +136,7 @@ class empleadosMapper extends QBMapper {
 			if(empty($Id_gerente) && $Id_gerente != 0){ $Id_gerente = null; }
 			if(empty($Id_socio) && $Id_socio != 0){ $Id_socio = null; }
 			if(empty($Fondo_clave) && $Fondo_clave != 0){ $Fondo_clave = null; }
+			if(empty($Fondo_ahorro) && $Fondo_ahorro != 0){ $Fondo_ahorro = null; }
 			if(empty($Numero_cuenta) && $Numero_cuenta != 0){ $Numero_cuenta = null; }
 			if(empty($Equipo_asignado) && $Equipo_asignado != 0){ $Equipo_asignado = null; }
 			if(empty($Sueldo) && $Sueldo != 0){ $Sueldo = null; }
@@ -137,6 +162,7 @@ class empleadosMapper extends QBMapper {
 				->set('Id_gerente', $query->createNamedParameter($Id_gerente))
 				->set('Id_socio', $query->createNamedParameter($Id_socio))
 				->set('Fondo_clave', $query->createNamedParameter($Fondo_clave))
+				->set('Fondo_ahorro', $query->createNamedParameter($Fondo_ahorro))
 				->set('Numero_cuenta', $query->createNamedParameter($Numero_cuenta))
 				->set('Equipo_asignado', $query->createNamedParameter($Equipo_asignado))
 				->set('Sueldo', $query->createNamedParameter($Sueldo))
@@ -208,7 +234,20 @@ class empleadosMapper extends QBMapper {
 	
 		return $users;
 	}
-	public function CambiosEmpleado($Id_empleados, $Numero_empleado, $Ingreso, $Id_departamento, $Id_puesto, $Id_socio, $Id_gerente, $Fondo_clave, $Numero_cuenta, $Equipo_asignado, $Sueldo): void {
+	public function CambiosEmpleado(
+		$Id_empleados, 
+		$Numero_empleado, 
+		$Ingreso, 
+		$Id_departamento, 
+		$Id_puesto, 
+		$Id_socio, 
+		$Id_gerente, 
+		$Fondo_clave, 
+		$Fondo_ahorro, 
+		$Numero_cuenta, 
+		$Equipo_asignado, 
+		$Sueldo): void {
+
 		try{
 			$timestamp = date('Y-m-d');
 
@@ -219,6 +258,7 @@ class empleadosMapper extends QBMapper {
 			if(empty($Id_gerente) && $Id_gerente != 0){ $Id_gerente = null; }
 			if(empty($Id_socio) && $Id_socio != 0){ $Id_socio = null; }
 			if(empty($Fondo_clave) && $Fondo_clave != 0){ $Fondo_clave = null; }
+			if(empty($Fondo_ahorro) && $Fondo_ahorro != 0){ $Fondo_ahorro = null; }
 			if(empty($Numero_cuenta) && $Numero_cuenta != 0){ $Numero_cuenta = null; }
 			if(empty($Equipo_asignado) && $Equipo_asignado != 0){ $Equipo_asignado = null; }
 			if(empty($Sueldo) && $Sueldo != 0){ $Sueldo = null; }
@@ -231,7 +271,7 @@ class empleadosMapper extends QBMapper {
 				->set('Id_puesto', $query->createNamedParameter($Id_puesto))
 				->set('Id_gerente', $query->createNamedParameter($Id_gerente))
 				->set('Id_socio', $query->createNamedParameter($Id_socio))
-				->set('Fondo_clave', $query->createNamedParameter($Fondo_clave))
+				->set('Fondo_ahorro', $query->createNamedParameter($Fondo_ahorro))
 				->set('Numero_cuenta', $query->createNamedParameter($Numero_cuenta))
 				->set('Equipo_asignado', $query->createNamedParameter($Equipo_asignado))
 				->set('Sueldo', $query->createNamedParameter($Sueldo))

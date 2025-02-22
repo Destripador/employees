@@ -229,18 +229,77 @@ class empleadosController extends Controller {
 			return $e;
 		}
 	}
-
 	public function ImportListEmpleados(): void {
 		$file = $this->getUploadedFile('fileXLSX');
-		if ( $xlsx = SimpleXLSX::parse($file['tmp_name']) ) {
-
+		if ($xlsx = SimpleXLSX::parse($file['tmp_name'])) {
+	
 			$rows_info = $xlsx->rows();
+			$firstRow = true; // Para omitir el encabezado si es necesario
+	
+			foreach ($rows_info as $row) {
+				// Omitir la primera fila si contiene encabezados
+				if ($firstRow) {
+					$firstRow = false;
+					continue;
+				}
 
-			foreach($rows_info as $row){
-				$this->empleadosMapper->updateEmpleado(	strval($row[0]), strval($row[2]), strval($row[3]), strval($row[4]), strval($row[5]), strval($row[6]), strval($row[7]), strval($row[8]), strval($row[9]), strval($row[10]), strval($row[11]), strval($row[12]), strval($row[13]), strval($row[14]), 
-				strval($row[15]), strval($row[16]) , strval($row[17]) , strval($row[18]) , strval($row[19]) , strval($row[20]) , strval($row[21]) , strval($row[22]) , strval($row[23]));
+				$this->empleadosMapper->updateEmpleado(
+					(string) $row[0], 
+					(string) $row[2], 
+					$this->convertExcelDate($row[3]), // Fecha validada y convertida
+					(string) $row[4], (string) $row[5], (string) $row[6], (string) $row[7], 
+					(string) $row[8], (string) $row[9], (string) $row[10], (string) $row[11], 
+					(string) $row[12], (string) $row[13],
+					$this->convertExcelDate($row[14]), (string) $row[15], 
+					(string) $row[16], (string) $row[17], (string) $row[18], (string) $row[19], 
+					(string) $row[20], (string) $row[21], (string) $row[22], (string) $row[23], 
+					(string) $row[24]
+				);
 			}
 		}
+	}
+	
+	private function convertExcelDate($excelDate): string {
+		if (empty($excelDate) || trim($excelDate) == 'dd/mm/aaaa') {
+			return ''; // Devolver vacío si la fecha no es válida
+		}
+	
+		if (is_numeric($excelDate)) {
+			$timestamp = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToTimestamp($excelDate);
+			return date('Y-m-d', $timestamp); // Formato correcto para input type="date"
+		}
+	
+		if (strtotime($excelDate) !== false) {
+			return date('Y-m-d', strtotime($excelDate));
+		}
+	
+		return ''; // Si no es una fecha válida, devolver vacío
+	}
+	
+	
+	
+
+	private function getUploadedFile(string $key): array {
+		$file = $this->request->getUploadedFile($key);
+		$error = null;
+		$phpFileUploadErrors = [
+			UPLOAD_ERR_OK => $this->l10n->t('The file was uploaded'),
+			UPLOAD_ERR_INI_SIZE => $this->l10n->t('The uploaded file exceeds the upload_max_filesize directive in php.ini'),
+			UPLOAD_ERR_FORM_SIZE => $this->l10n->t('The uploaded file exceeds the MAX_FILE_SIZE directive that was specified in the HTML form'),
+			UPLOAD_ERR_PARTIAL => $this->l10n->t('The file was only partially uploaded'),
+			UPLOAD_ERR_NO_FILE => $this->l10n->t('No file was uploaded'),
+			UPLOAD_ERR_NO_TMP_DIR => $this->l10n->t('Missing a temporary folder'),
+			UPLOAD_ERR_CANT_WRITE => $this->l10n->t('Could not write file to disk'),
+			UPLOAD_ERR_EXTENSION => $this->l10n->t('A PHP extension stopped the file upload'),
+		];
+
+		if (empty($file)) {
+			throw new UploadException($this->l10n->t('No file uploaded or file size exceeds maximum of %s', [Util::humanFileSize(Util::uploadLimit())]));
+		}
+		if (array_key_exists('error', $file) && $file['error'] !== UPLOAD_ERR_OK) {
+			throw new UploadException($phpFileUploadErrors[$file['error']]);
+		}
+		return $file;
 	}
 
 	#[UseSession]
@@ -277,7 +336,8 @@ class empleadosController extends Controller {
 		'Id_puesto', 
 		'Id_gerente', 
 		'Id_socio', 
-		'Fondo_clave', 
+		'Fondo_clave',
+		'Fondo_ahorro',
 		'Numero_cuenta', 
 		'Equipo_asignado', 
 		'Sueldo', 
@@ -310,6 +370,7 @@ class empleadosController extends Controller {
 					$datas['Id_gerente'], 
 					$datas['Id_socio'], 
 					$datas['Fondo_clave'], 
+					$datas['Fondo_ahorro'], 
 					$datas['Numero_cuenta'], 
 					$datas['Equipo_asignado'], 
 					$datas['Sueldo'], 
@@ -341,8 +402,8 @@ class empleadosController extends Controller {
 		$this->empleadosMapper->GuardarNota(strval($id_empleados), $nota);
 	}
 
-	public function CambiosEmpleado($id_empleados, $numeroempleado, $ingreso, $area, $puesto, $socio, $gerente, $fondoclave, $numerocuenta, $equipoasignado, $sueldo): void {
-		$this->empleadosMapper->CambiosEmpleado($id_empleados, $numeroempleado, $ingreso, $area, $puesto, $socio, $gerente, $fondoclave, $numerocuenta, $equipoasignado, $sueldo);
+	public function CambiosEmpleado($id_empleados, $numeroempleado, $ingreso, $area, $puesto, $socio, $gerente, $fondoclave, $fondoahorro, $numerocuenta, $equipoasignado, $sueldo): void {
+		$this->empleadosMapper->CambiosEmpleado($id_empleados, $numeroempleado, $ingreso, $area, $puesto, $socio, $gerente, $fondoclave, $fondoahorro, $numerocuenta, $equipoasignado, $sueldo);
 	}
 
 	public function CambiosPersonal($Id_empleados, $Direccion, $Estado_civil, $Telefono_contacto, $Rfc, $Imss, $Contacto_emergencia, $Numero_emergencia, $Curp, $Fecha_nacimiento, $Correo_contacto, $Genero): void {

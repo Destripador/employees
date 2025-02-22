@@ -94,6 +94,11 @@ class Version1Date20240627154849 extends SimpleMigrationStep {
 				'notnull' => false,
 			]);
 
+			
+			$table->addColumn('Fondo_ahorro', 'string', [
+				'notnull' => false,
+			]);
+
 			$table->addColumn('Numero_cuenta', 'string', [
 				'notnull' => false,
 			]);
@@ -117,7 +122,6 @@ class Version1Date20240627154849 extends SimpleMigrationStep {
 			$table->addColumn('Estado', 'string', [
 				'notnull' => false,
 			]);
-
 
 			$table->addColumn('Direccion', 'string', [
 				'notnull' => false,
