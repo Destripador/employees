@@ -7,9 +7,7 @@ use OCA\Empleados\AppInfo\Application;
 use OCP\AppFramework\Controller;
 use OCP\AppFramework\Http\Attribute\UseSession;
 use OCP\AppFramework\Http\Attribute\NoCSRFRequired;
-use OCP\Files\IRootFolder;
 use OCP\IRequest;
-use OCP\ISession;
 use OCP\IL10N;
 use OCP\IUserSession;
 use OCP\IUserManager;
@@ -19,196 +17,204 @@ use OCA\Empleados\Db\configuracionesMapper;
 use OCA\Empleados\UploadException;
 use Shuchkin\SimpleXLSXGen;
 use Shuchkin\SimpleXLSX;
+use OCP\IGroupManager;
 
 /**
- * @psalm-suppress UnusedClass
+ * Controlador para la gestión de puestos de empleados en Nextcloud.
  */
-class PuestosController extends Controller {
+class PuestosController extends BaseController {
 
-	private $userSession;
-	private $userManager;
-	private $empleadosMapper;
-	private $puestosMapper;
-	private $configuracionesMapper;
-	protected IRootFolder $rootFolder;
-	private $session;
-	private IL10N $l10n;
+    protected $userSession;
+    protected $userManager;
+    protected $empleadosMapper;
+    protected $puestosMapper;
+    protected $configuracionesMapper;
+    protected $l10n;
 
-	public function __construct(IRequest $request, ISession $session, IUserSession $userSession, IUserManager $userManager, empleadosMapper $empleadosMapper, puestosMapper $puestosMapper, IL10N $l10n, IRootFolder $rootFolder, configuracionesMapper $configuracionesMapper) {
-		parent::__construct(Application::APP_ID, $request);
+    public function __construct(
+        IRequest $request,
+        IUserSession $userSession,
+        IUserManager $userManager,
+        empleadosMapper $empleadosMapper,
+        puestosMapper $puestosMapper,
+        configuracionesMapper $configuracionesMapper,
+        IL10N $l10n,
+		IGroupManager $groupManager
+    ) {
+		parent::__construct(Application::APP_ID, $request, $userSession, $groupManager, $configuracionesMapper);
 
-		$this->userSession = $userSession;
-		$this->userManager = $userManager;
-		$this->empleadosMapper = $empleadosMapper;
-		$this->puestosMapper = $puestosMapper;
-		$this->configuracionesMapper = $configuracionesMapper;
-		$this->rootFolder = $rootFolder;
-		$this->session = $session;
-		$this->l10n = $l10n;
-	}
+        $this->userSession = $userSession;
+        $this->userManager = $userManager;
+        $this->empleadosMapper = $empleadosMapper;
+        $this->puestosMapper = $puestosMapper;
+        $this->configuracionesMapper = $configuracionesMapper;
+        $this->l10n = $l10n;
+    }
 
-	#[UseSession]
-	public function GetUserLists(): array {
-		$empleados = $this->empleadosMapper->GetUserLists();
-		$users = $this->empleadosMapper->getAllUsers();
-		
-		return [
-			'Empleados' => $empleados,
-			'Users' => $users,
-		];
-	}
+    /**
+     * Obtiene la lista de empleados y usuarios.
+     */
+    #[UseSession]
+    public function GetUserLists(): array {
+        return [
+            'Empleados' => $this->empleadosMapper->GetUserLists(),
+            'Users' => $this->empleadosMapper->getAllUsers(),
+        ];
+    }
 
-	#[UseSession]
-	public function GetPuestosFix(): array {
-		$Puestos = $this->puestosMapper->GetPuestosList();
-		$data = [];
-		foreach ($Puestos as $puesto) {
-			$data[] = [
-				'value' => $puesto['Id_puestos'],
-				'label' => $puesto['Nombre'],
-			];
-		}
-		return $data;
-	}
+    /**
+     * Obtiene la lista de puestos en formato clave-valor.
+     */
+    #[UseSession]
+    public function GetPuestosFix(): array {
+        return array_map(fn($puesto) => [
+            'value' => $puesto['Id_puestos'],
+            'label' => $puesto['Nombre'],
+        ], $this->puestosMapper->GetPuestosList());
+    }
 
-	#[UseSession]
-	public function GetEmpleadosList(): array {
-		$empleados = $this->empleadosMapper->GetUserLists();
-		return ['Empleados' => $empleados];
-	}
+    /**
+     * Obtiene la lista de empleados.
+     */
+    #[UseSession]
+    public function GetEmpleadosList(): array {
+        return ['Empleados' => $this->empleadosMapper->GetUserLists()];
+    }
 
-	#[UseSession]
-	public function GetEmpleadosListFix(): array {
-		$empleados = $this->empleadosMapper->GetUserLists();
-		$data = [];
-		foreach ($empleados as $empleado) {
-			if (empty($empleado['displayname'])) {
-				$empleado['displayname'] = $empleado['uid'];
-			}
-			$data[] = [
-				'id' => $empleado['uid'],
-				'displayName' => $empleado['displayname'],
-				'user' => $empleado['uid'],
-				'showUserStatus' => false,
-			];
-		}
-		return $data;
-	}
+    /**
+     * Obtiene la lista de empleados con nombres corregidos si están vacíos.
+     */
+    #[UseSession]
+    public function GetEmpleadosListFix(): array {
+        return array_map(fn($empleado) => [
+            'id' => $empleado['uid'],
+            'displayName' => $empleado['displayname'] ?: $empleado['uid'],
+            'user' => $empleado['uid'],
+            'showUserStatus' => false,
+        ], $this->empleadosMapper->GetUserLists());
+    }
 
-	#[UseSession]
-	public function ActivarEmpleado(string $id_user): string {
-		try {
-			$timestamp = date('Y-m-d');
-			$user = new empleados();
-			$user->setid_user($id_user);
-			$user->setcreated_at($timestamp);
-			$user->setupdated_at($timestamp);
-			$this->empleadosMapper->insert($user);
-			return "ok"; 
-		} catch (Exception $e) {
-			return $e->getMessage();
-		}
-	}
+    /**
+     * Activa un empleado.
+     */
+    #[UseSession]
+    public function ActivarEmpleado(string $id_user): string {
+        try {
+            $timestamp = date('Y-m-d');
+            $user = new empleados();
+            $user->setid_user($id_user);
+            $user->setcreated_at($timestamp);
+            $user->setupdated_at($timestamp);
+            $this->empleadosMapper->insert($user);
+            return "ok";
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
 
-	#[UseSession]
-	public function EliminarEmpleado(int $id_empleados): string {
-		try {
-			$this->empleadosMapper->deleteByIdEmpleado($id_empleados);
-			return "ok"; 
-		} catch (Exception $e) {
-			return $e->getMessage();
-		}
-	}
+    /**
+     * Elimina un empleado por ID.
+     */
+    #[UseSession]
+    public function EliminarEmpleado(int $id_empleados): string {
+        try {
+            $this->empleadosMapper->deleteByIdEmpleado($id_empleados);
+            return "ok";
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
 
-	#[UseSession]
-	#[NoCSRFRequired]
-	public function GetPuestosList(): array {
-		return $this->puestosMapper->GetPuestosList();
-	}
+    /**
+     * Obtiene la lista de puestos.
+     */
+    #[UseSession]
+    #[NoCSRFRequired]
+    public function GetPuestosList(): array {
+        return $this->puestosMapper->GetPuestosList();
+    }
 
-	public function ExportListPuestos(): array {
-		$empleados = $this->puestosMapper->GetPuestosList();
-		$books = [['Id_puesto', 'Nombre', 'created_at', 'updated_at']];
-		foreach ($empleados as $datas) {
-			$books[] = [
-				$datas['Id_puesto'],
-				$datas['Nombre'], 
-				$datas['created_at'], 
-				$datas['updated_at'],
-			];
-		}
-		$xlsx = SimpleXLSXGen::fromArray($books);
-		$xlsx->downloadAs('php://memory');
-		return $books; 
-	}
+    /**
+     * Exporta la lista de puestos a un archivo XLSX.
+     */
+    public function ExportListPuestos(): array {
+        $puestos = $this->puestosMapper->GetPuestosList();
+        $books = [['Id_puesto', 'Nombre', 'created_at', 'updated_at']];
 
-	public function ImportListPuestos(): void {
-		$file = $this->getUploadedFile('puestofileXLSX');
-		if ($xlsx = SimpleXLSX::parse($file['tmp_name'])) {
-			$rows_info = $xlsx->rows();
-			foreach ($rows_info as $row) {
-				if (strval($row[0])) {
-					$this->puestosMapper->updatePuestos(strval($row[0]), strval($row[1]));
-				} else {
-					$timestamp = date('Y-m-d');
-					$puesto = new puestos();
-					$puesto->setnombre(strval($row[1]));
-					$puesto->setcreated_at($timestamp);
-					$puesto->setupdated_at($timestamp);
-					$this->puestosMapper->insert($puesto);
-				}
-			}
-		}
-	}
+        foreach ($puestos as $puesto) {
+            $books[] = [
+                $puesto['Id_puesto'],
+                $puesto['Nombre'],
+                $puesto['created_at'],
+                $puesto['updated_at'],
+            ];
+        }
 
-	private function getUploadedFile(string $key): array {
-		$file = $this->request->getUploadedFile($key);
-		$phpFileUploadErrors = [
-			UPLOAD_ERR_OK => $this->l10n->t('The file was uploaded'),
-			UPLOAD_ERR_INI_SIZE => $this->l10n->t('The uploaded file exceeds the upload_max_filesize directive in php.ini'),
-			UPLOAD_ERR_FORM_SIZE => $this->l10n->t('The uploaded file exceeds the MAX_FILE_SIZE directive that was specified in the HTML form'),
-			UPLOAD_ERR_PARTIAL => $this->l10n->t('The file was only partially uploaded'),
-			UPLOAD_ERR_NO_FILE => $this->l10n->t('No file was uploaded'),
-			UPLOAD_ERR_NO_TMP_DIR => $this->l10n->t('Missing a temporary folder'),
-			UPLOAD_ERR_CANT_WRITE => $this->l10n->t('Could not write file to disk'),
-			UPLOAD_ERR_EXTENSION => $this->l10n->t('A PHP extension stopped the file upload'),
-		];
+        SimpleXLSXGen::fromArray($books)->downloadAs('puestos.xlsx');
+        return $books;
+    }
 
-		if (empty($file)) {
-			throw new UploadException($this->l10n->t('No file uploaded or file size exceeds maximum of %s', [Util::humanFileSize(Util::uploadLimit())]));
-		}
-		if (array_key_exists('error', $file) && $file['error'] !== UPLOAD_ERR_OK) {
-			throw new UploadException($phpFileUploadErrors[$file['error']]);
-		}
-		return $file;
-	}
+    /**
+     * Importa la lista de puestos desde un archivo XLSX.
+     */
+    public function ImportListPuestos(): void {
+        $file = $this->getUploadedFile('puestofileXLSX');
+        if ($xlsx = SimpleXLSX::parse($file['tmp_name'])) {
+            foreach ($xlsx->rows() as $row) {
+                if (!empty($row[0])) {
+                    $this->puestosMapper->updatePuestos((string) $row[0], (string) $row[1]);
+                } else {
+                    $timestamp = date('Y-m-d');
+                    $puesto = new puestos();
+                    $puesto->setnombre((string) $row[1]);
+                    $puesto->setcreated_at($timestamp);
+                    $puesto->setupdated_at($timestamp);
+                    $this->puestosMapper->insert($puesto);
+                }
+            }
+        }
+    }
 
-	public function getAdminUser() {
-		$adminGroup = 'admin';
-		$adminUsers = $this->userManager->search('admin', $adminGroup, 10, 0);
-		return !empty($adminUsers) ? $adminUsers : null;
-	}
+    /**
+     * Elimina un puesto por ID.
+     */
+    #[UseSession]
+    public function EliminarPuesto(int $id_puesto): string {
+        try {
+            $this->puestosMapper->EliminarPuesto((string) $id_puesto);
+            return "ok";
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
 
-	#[UseSession]
-	public function EliminarPuesto(int $id_puesto): string {
-		try {
-			$this->puestosMapper->EliminarPuesto(strval($id_puesto));
-			return "ok"; 
-		} catch (Exception $e) {
-			return $e->getMessage();
-		}
-	}
+    /**
+     * Guarda cambios en los puestos.
+     */
+    public function GuardarCambioPuestos(int $id_puestos, string $nombre): void {
+        $this->puestosMapper->updatePuestos((string) $id_puestos, $nombre);
+    }
 
-	public function GuardarCambioPuestos(int $id_puestos, string $nombre): void {
-		$this->puestosMapper->updatePuestos(strval($id_puestos), $nombre);
-	}
+    /**
+     * Crea un nuevo puesto.
+     */
+    public function crearPuesto(string $nombre): void {
+        $timestamp = date('Y-m-d');
+        $puesto = new puestos();
+        $puesto->setnombre($nombre);
+        $puesto->setcreated_at($timestamp);
+        $puesto->setupdated_at($timestamp);
+        $this->puestosMapper->insert($puesto);
+    }
 
-	public function crearPuesto(string $nombre): void {
-		$timestamp = date('Y-m-d');
-		$puesto = new puestos();
-		$puesto->setnombre($nombre);
-		$puesto->setcreated_at($timestamp);
-		$puesto->setupdated_at($timestamp);
-		$this->puestosMapper->insert($puesto);
-	}
+    /**
+     * Obtiene un archivo subido y maneja posibles errores.
+     */
+    private function getUploadedFile(string $key): array {
+        $file = $this->request->getUploadedFile($key);
+        if (empty($file) || ($file['error'] ?? UPLOAD_ERR_OK) !== UPLOAD_ERR_OK) {
+            throw new UploadException($this->l10n->t('Error en la subida del archivo.'));
+        }
+        return $file;
+    }
 }
