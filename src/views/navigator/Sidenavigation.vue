@@ -1,19 +1,29 @@
 <template>
 	<NcAppNavigation>
-		<NcAppNavigationCaption heading-id="Administrativo"
+		<NcAppNavigationCaption heading-id="General"
 			is-heading
-			name="Administrativo" />
-		<NcAppNavigationList aria-labelledby="Administrativo">
-			<NcAppNavigationItem name="Empleados"
-				:to="{ name: 'Empleados' }"
+			name="General" />
+		<NcAppNavigationList aria-labelledby="General">
+			<NcAppNavigationItem name="Inicio"
+				:to="{ name: 'Home' }"
 				exact />
-
-			<NcAppNavigationItem name="Areas"
-				:to="{ name: 'Areas' }" />
-
-			<NcAppNavigationItem name="Puestos"
-				:to="{ name: 'Puestos' }" />
 		</NcAppNavigationList>
+
+		<div v-if="isAdmin()">
+			<NcAppNavigationCaption heading-id="Administrativo"
+				is-heading
+				name="Administrativo" />
+			<NcAppNavigationList aria-labelledby="Administrativo">
+				<NcAppNavigationItem name="Empleados"
+					:to="{ name: 'Empleados' }" />
+
+				<NcAppNavigationItem name="Areas"
+					:to="{ name: 'Areas' }" />
+
+				<NcAppNavigationItem name="Puestos"
+					:to="{ name: 'Puestos' }" />
+			</NcAppNavigationList>
+		</div>
 	</NcAppNavigation>
 </template>
 
@@ -34,9 +44,14 @@ export default {
 		NcAppNavigationCaption,
 	},
 
+	inject: ['groupuser'],
+
 	methods: {
 		navigateTo(route) {
 			this.$router.push({ name: route })
+		},
+		isAdmin() {
+			return 'admin' in this.groupuser || 'recursos_humanos' in this.groupuser
 		},
 	},
 }

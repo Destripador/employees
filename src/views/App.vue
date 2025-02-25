@@ -20,6 +20,7 @@ export default {
 	provide() {
 		return {
 			configuraciones: this.configuraciones,
+			groupuser: this.groupsuser,
 		}
 	},
 
@@ -29,11 +30,16 @@ export default {
 			type: Object,
 			required: true,
 		},
+		groupsUser: {
+			type: Object,
+			required: true,
+		},
 	},
 
 	data() {
 		return {
 			configuraciones: this.parameters,
+			groupsuser: this.groupsUser,
 		}
 	},
 }

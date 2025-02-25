@@ -19,9 +19,10 @@ use OCA\Empleados\Db\empleados;
 use OCA\Empleados\Db\puestos;
 use OCA\Empleados\Db\configuraciones;
 use OCA\Empleados\UploadException;
-use Shuchkin\SimpleXLSXGen;
-use Shuchkin\SimpleXLSX;
 use OCP\IGroupManager;
+
+require_once 'SimpleXLSXGen.php';
+require_once 'SimpleXLSX.php';
 
 /**
  * Controlador para la gestión de puestos de empleados en Nextcloud.
@@ -160,7 +161,7 @@ class PuestosController extends BaseController {
             ];
         }
 
-        SimpleXLSXGen::fromArray($books)->downloadAs('puestos.xlsx');
+        \Shuchkin\SimpleXLSXGen::fromArray($books)->downloadAs('puestos.xlsx');
         return $books;
     }
 
@@ -169,7 +170,7 @@ class PuestosController extends BaseController {
      */
     public function ImportListPuestos(): void {
         $file = $this->getUploadedFile('puestofileXLSX');
-        if ($xlsx = SimpleXLSX::parse($file['tmp_name'])) {
+        if ($xlsx = \Shuchkin\SimpleXLSX::parse($file['tmp_name'])) {
             foreach ($xlsx->rows() as $row) {
                 if (!empty($row[0])) {
                     $this->puestosMapper->updatePuestos((string) $row[0], (string) $row[1]);

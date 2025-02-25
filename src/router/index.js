@@ -5,6 +5,7 @@ import { generateUrl } from '@nextcloud/router'
 import Employees from '../views/components/ListaEmpleados/Employees.vue'
 import Puestos from '../views/components/puestos/Puestos.vue'
 import Areas from '../views/components/areas/Areas.vue'
+import Dashboard from '../views/components/Dashboard/Dashboard.vue'
 Vue.use(Router)
 
 export default new Router({
@@ -16,6 +17,11 @@ export default new Router({
 	routes: [
 		{
 			path: '/',
+			component: Dashboard,
+			name: 'Home',
+		},
+		{
+			path: '/Empleados',
 			component: Employees,
 			name: 'Empleados',
 		},

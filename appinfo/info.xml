@@ -7,12 +7,12 @@
 	<description>Modulo de gestion de empleados</description>
 	<version>1.0.1</version>
 	<licence>agpl</licence>
-	<author mail="luis.alvarado@crowe.mx" homepage="https://gossler-torreon.com">Luis angel alvarado hernandez</author>
+	<author mail="luis.alvarado@crowe.mx" homepage="https://gossler-torreon.com">Luis Angel Alvarado Hernandez</author>
 	<namespace>Empleados</namespace>
 	<category>organization</category>
 	<bugs>https://gossler-torreon.com</bugs>
 	<dependencies>
-		<nextcloud min-version="27" max-version="29"/>
+		<nextcloud min-version="27" max-version="30"/>
 	</dependencies>
 	<navigations>
 		<navigation>

@@ -16,6 +16,9 @@ Vue.prototype.OCA = window.OCA
 // Obtener configuraciones del módulo desde el DOM
 const dataElement = document.getElementById('data')
 const configuraciones = dataElement ? JSON.parse(dataElement.getAttribute('data-parameters') || '{}') : {}
+
+const groupElement = document.getElementById('group-user')
+const groups = groupElement ? JSON.parse(groupElement.getAttribute('data-parameters') || '{}') : {}
 const emitter = mitt()
 
 Vue.prototype.$bus = emitter // ✅ Esto hace que $bus esté disponible globalmente
@@ -27,5 +30,6 @@ new View({
 	router,
 	propsData: {
 		parameters: configuraciones,
+		groupsUser: groups,
 	},
 }).$mount('#content')

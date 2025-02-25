@@ -18,14 +18,16 @@ use OCA\Empleados\Db\configuracionesMapper;
 use OCA\Empleados\Db\empleados;
 use OCA\Empleados\Db\departamentos;
 use OCA\Empleados\Db\configuraciones;
-use Shuchkin\SimpleXLSXGen;
-use Shuchkin\SimpleXLSX;
 
 use OCP\Files\IRootFolder;
 
 use OCP\AppFramework\Http\Attribute\UseSession;
 use OCP\AppFramework\Http\Attribute\NoCSRFRequired;
 use OCP\AppFramework\Http\Attribute\NoAdminRequired;
+
+
+require_once 'SimpleXLSXGen.php';
+require_once 'SimpleXLSX.php';
 
 /**
  * Controlador principal para la gestión de empleados en Nextcloud.
@@ -67,6 +69,7 @@ class EmpleadosController extends BaseController {
         $this->l10n = $l10n;
 
         $this->rootFolder = $rootFolder;
+        $this->AdminCheckAccess(); // 🔥 Validar accesos automáticamente
     }
 
     /**
@@ -192,9 +195,11 @@ class EmpleadosController extends BaseController {
     /**
      * Importa lista de empleados desde un archivo XLSX.
      */
+    #[UseSession]
+    #[NoAdminRequired]
     public function ImportListEmpleados(): void {
         $file = $this->getUploadedFile('fileXLSX');
-        if ($xlsx = SimpleXLSX::parse($file['tmp_name'])) {
+        if ($xlsx = \Shuchkin\SimpleXLSX::parse($file['tmp_name'])) {
             $rows_info = $xlsx->rows();
             foreach (array_slice($rows_info, 1) as $row) { // Omitir encabezado
                 $this->empleadosMapper->updateEmpleado(
@@ -238,6 +243,82 @@ class EmpleadosController extends BaseController {
             ? date('Y-m-d', \PhpOffice\PhpSpreadsheet\Shared\Date::excelToTimestamp($excelDate))
             : (strtotime($excelDate) !== false ? date('Y-m-d', strtotime($excelDate)) : '');
     }
+
+    public function ExportListEmpleados(): array{
+		$empleados = $this->empleadosMapper->GetUserLists();
+		
+		$books = [[
+		'Id_empleados', 
+		'Id_user', 
+		'Numero_empleado', 
+		'Ingreso', 
+		'Correo_contacto', 
+		'Id_departamento', 
+		'Id_puesto', 
+		'Id_gerente', 
+		'Id_socio', 
+		'Fondo_clave',
+		'Fondo_ahorro',
+		'Numero_cuenta', 
+		'Equipo_asignado', 
+		'Sueldo', 
+		'Fecha_nacimiento', 
+		'Estado',
+		'Direccion',
+		'Estado_civil',
+		'Telefono_contacto',
+		'Curp',
+		'Rfc',
+		'Imss',
+		'Genero',
+		'Contacto_emergencia',
+		'Numero_emergencia',
+		'created_at', 
+		'updated_at', 
+		]];
+
+		foreach($empleados as $datas){
+			array_push(
+				$books, 
+				[
+					$datas['Id_empleados'], 
+					$datas['Id_user'], 
+					$datas['Numero_empleado'], 
+					$datas['Ingreso'], 
+					$datas['Correo_contacto'], 
+					$datas['Id_departamento'], 
+					$datas['Id_puesto'], 
+					$datas['Id_gerente'], 
+					$datas['Id_socio'], 
+					$datas['Fondo_clave'], 
+					$datas['Fondo_ahorro'], 
+					$datas['Numero_cuenta'], 
+					$datas['Equipo_asignado'], 
+					$datas['Sueldo'], 
+					$datas['Fecha_nacimiento'], 
+					$datas['Estado'],
+					$datas['Direccion'],
+					$datas['Estado_civil'],
+					$datas['Telefono_contacto'],
+					$datas['Curp'],
+					$datas['Rfc'],
+					$datas['Imss'],
+					$datas['Genero'],
+					$datas['Contacto_emergencia'],
+					$datas['Numero_emergencia'],
+					$datas['created_at'], 
+					$datas['updated_at'], 
+				]);
+		}
+
+		$xlsx = \Shuchkin\SimpleXLSXGen::fromArray( $books );
+		//$xlsx->saveAs('books.xlsx'); // or downloadAs('books.xlsx') or $xlsx_content = (string) $xlsx 
+	
+		$fileContent = $xlsx->downloadAs('php://memory');
+
+		return $books; 
+	}
+
 
     /**
      * Obtiene el archivo subido y maneja errores.

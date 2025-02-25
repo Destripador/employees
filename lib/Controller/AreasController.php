@@ -20,8 +20,9 @@ use OCA\Empleados\Db\empleados;
 use OCA\Empleados\Db\departamentos;
 use OCA\Empleados\Db\configuraciones;
 use OCA\Empleados\UploadException;
-use Shuchkin\SimpleXLSXGen;
-use Shuchkin\SimpleXLSX;
+
+require_once 'SimpleXLSXGen.php';
+require_once 'SimpleXLSX.php';
 
 /**
  * Controlador para la gestión de áreas en Nextcloud.
@@ -128,7 +129,7 @@ class AreasController extends BaseController {
             ];
         }
 
-        SimpleXLSXGen::fromArray($books)->downloadAs('areas.xlsx');
+        \Shuchkin\SimpleXLSXGen::fromArray($books)->downloadAs('areas.xlsx');
         return $books;
     }
 
@@ -137,7 +138,7 @@ class AreasController extends BaseController {
      */
     public function ImportListAreas(): void {
         $file = $this->getUploadedFile('AreafileXLSX');
-        if ($xlsx = SimpleXLSX::parse($file['tmp_name'])) {
+        if ($xlsx = \Shuchkin\SimpleXLSX::parse($file['tmp_name'])) {
             foreach ($xlsx->rows() as $row) {
                 if (!empty($row[0])) {
                     $this->departamentosMapper->updateAreas((string) $row[0], (string) $row[1], (string) $row[2]);

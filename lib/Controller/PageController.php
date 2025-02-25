@@ -39,7 +39,8 @@ class PageController extends BaseController {
 	#[NoAdminRequired]
 	public function index(): TemplateResponse {
 		$params = $this->getConfigParams();
+		$group = $this->GroupCheckAccess();
 
-		return new TemplateResponse(Application::APP_ID, 'index', ['config' => $params]);
+		return new TemplateResponse(Application::APP_ID, 'index', ['config' => $params, 'group' => $group]);
 	}
 }
