@@ -5,8 +5,8 @@ namespace OCA\Empleados\Controller;
 
 use OCA\Empleados\AppInfo\Application;
 use OCP\AppFramework\Http\Attribute\UseSession;
-use OCP\AppFramework\Http\Attribute\NoAdminRequired;
 use OCP\AppFramework\Http\Attribute\NoCSRFRequired;
+use OCP\AppFramework\Http\Attribute\NoAdminRequired;
 use OCP\AppFramework\Http\TemplateResponse;
 use OCP\IRequest;
 use OCP\ISession;

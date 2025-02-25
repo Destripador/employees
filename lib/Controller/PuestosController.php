@@ -7,6 +7,7 @@ use OCA\Empleados\AppInfo\Application;
 use OCP\AppFramework\Controller;
 use OCP\AppFramework\Http\Attribute\UseSession;
 use OCP\AppFramework\Http\Attribute\NoCSRFRequired;
+use OCP\AppFramework\Http\Attribute\NoAdminRequired;
 use OCP\IRequest;
 use OCP\IL10N;
 use OCP\IUserSession;
@@ -14,6 +15,9 @@ use OCP\IUserManager;
 use OCA\Empleados\Db\empleadosMapper;
 use OCA\Empleados\Db\puestosMapper;
 use OCA\Empleados\Db\configuracionesMapper;
+use OCA\Empleados\Db\empleados;
+use OCA\Empleados\Db\puestos;
+use OCA\Empleados\Db\configuraciones;
 use OCA\Empleados\UploadException;
 use Shuchkin\SimpleXLSXGen;
 use Shuchkin\SimpleXLSX;
@@ -55,6 +59,7 @@ class PuestosController extends BaseController {
      * Obtiene la lista de empleados y usuarios.
      */
     #[UseSession]
+    #[NoAdminRequired]
     public function GetUserLists(): array {
         return [
             'Empleados' => $this->empleadosMapper->GetUserLists(),
@@ -66,6 +71,7 @@ class PuestosController extends BaseController {
      * Obtiene la lista de puestos en formato clave-valor.
      */
     #[UseSession]
+    #[NoAdminRequired]
     public function GetPuestosFix(): array {
         return array_map(fn($puesto) => [
             'value' => $puesto['Id_puestos'],
@@ -77,6 +83,7 @@ class PuestosController extends BaseController {
      * Obtiene la lista de empleados.
      */
     #[UseSession]
+    #[NoAdminRequired]
     public function GetEmpleadosList(): array {
         return ['Empleados' => $this->empleadosMapper->GetUserLists()];
     }
@@ -85,6 +92,7 @@ class PuestosController extends BaseController {
      * Obtiene la lista de empleados con nombres corregidos si están vacíos.
      */
     #[UseSession]
+    #[NoAdminRequired]
     public function GetEmpleadosListFix(): array {
         return array_map(fn($empleado) => [
             'id' => $empleado['uid'],
@@ -98,6 +106,7 @@ class PuestosController extends BaseController {
      * Activa un empleado.
      */
     #[UseSession]
+    #[NoAdminRequired]
     public function ActivarEmpleado(string $id_user): string {
         try {
             $timestamp = date('Y-m-d');
@@ -116,6 +125,7 @@ class PuestosController extends BaseController {
      * Elimina un empleado por ID.
      */
     #[UseSession]
+    #[NoAdminRequired]
     public function EliminarEmpleado(int $id_empleados): string {
         try {
             $this->empleadosMapper->deleteByIdEmpleado($id_empleados);
@@ -129,7 +139,7 @@ class PuestosController extends BaseController {
      * Obtiene la lista de puestos.
      */
     #[UseSession]
-    #[NoCSRFRequired]
+    #[NoAdminRequired]
     public function GetPuestosList(): array {
         return $this->puestosMapper->GetPuestosList();
     }
@@ -179,6 +189,7 @@ class PuestosController extends BaseController {
      * Elimina un puesto por ID.
      */
     #[UseSession]
+    #[NoAdminRequired]
     public function EliminarPuesto(int $id_puesto): string {
         try {
             $this->puestosMapper->EliminarPuesto((string) $id_puesto);
@@ -191,6 +202,8 @@ class PuestosController extends BaseController {
     /**
      * Guarda cambios en los puestos.
      */
+    #[UseSession]
+    #[NoAdminRequired]
     public function GuardarCambioPuestos(int $id_puestos, string $nombre): void {
         $this->puestosMapper->updatePuestos((string) $id_puestos, $nombre);
     }
@@ -198,6 +211,8 @@ class PuestosController extends BaseController {
     /**
      * Crea un nuevo puesto.
      */
+    #[UseSession]
+    #[NoAdminRequired]
     public function crearPuesto(string $nombre): void {
         $timestamp = date('Y-m-d');
         $puesto = new puestos();

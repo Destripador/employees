@@ -15,8 +15,17 @@ use OCP\IL10N;
 use OCA\Empleados\Db\empleadosMapper;
 use OCA\Empleados\Db\departamentosMapper;
 use OCA\Empleados\Db\configuracionesMapper;
+use OCA\Empleados\Db\empleados;
+use OCA\Empleados\Db\departamentos;
+use OCA\Empleados\Db\configuraciones;
 use Shuchkin\SimpleXLSXGen;
 use Shuchkin\SimpleXLSX;
+
+use OCP\Files\IRootFolder;
+
+use OCP\AppFramework\Http\Attribute\UseSession;
+use OCP\AppFramework\Http\Attribute\NoCSRFRequired;
+use OCP\AppFramework\Http\Attribute\NoAdminRequired;
 
 /**
  * Controlador principal para la gestión de empleados en Nextcloud.
@@ -32,6 +41,8 @@ class EmpleadosController extends BaseController {
     protected $session;
     protected $l10n;
 
+    protected IRootFolder $rootFolder;
+
     public function __construct(
         IRequest $request,
         ISession $session,
@@ -41,7 +52,8 @@ class EmpleadosController extends BaseController {
         departamentosMapper $departamentosMapper,
         configuracionesMapper $configuracionesMapper,
         IL10N $l10n,
-        IGroupManager $groupManager
+        IGroupManager $groupManager,
+        IRootFolder $rootFolder
     ) {
 		parent::__construct(Application::APP_ID, $request, $userSession, $groupManager, $configuracionesMapper);
 
@@ -53,12 +65,15 @@ class EmpleadosController extends BaseController {
         $this->departamentosMapper = $departamentosMapper;
         $this->configuracionesMapper = $configuracionesMapper;
         $this->l10n = $l10n;
+
+        $this->rootFolder = $rootFolder;
     }
 
     /**
      * Obtiene la lista de empleados, usuarios y desactivados.
      */
     #[UseSession]
+    #[NoAdminRequired]
     public function GetUserLists(): array {
         return [
             'Empleados' => $this->empleadosMapper->GetUserLists(),
@@ -71,7 +86,6 @@ class EmpleadosController extends BaseController {
      * Obtiene la lista de empleados con validación de acceso.
      */
     #[UseSession]
-    #[NoCSRFRequired]
     #[NoAdminRequired]
     public function GetEmpleadosList(): array {
         return ['Empleados' => $this->empleadosMapper->GetUserLists()];
@@ -81,6 +95,7 @@ class EmpleadosController extends BaseController {
      * Obtiene empleados de un área específica.
      */
     #[UseSession]
+    #[NoAdminRequired]
     public function GetEmpleadosArea(string $id_area): array {
         return ['area' => $this->empleadosMapper->GetEmpleadosArea($id_area)];
     }
@@ -89,6 +104,7 @@ class EmpleadosController extends BaseController {
      * Obtiene empleados de un puesto específico.
      */
     #[UseSession]
+    #[NoAdminRequired]
     public function GetEmpleadosPuesto(string $id_puesto): array {
         return ['puesto' => $this->empleadosMapper->GetEmpleadosPuesto($id_puesto)];
     }
@@ -97,6 +113,7 @@ class EmpleadosController extends BaseController {
      * Activa un empleado y crea sus carpetas en Nextcloud.
      */
     #[UseSession]
+    #[NoAdminRequired]
     public function ActivarEmpleado(string $id_user): string {
         try {
             $user = $this->userManager->get($id_user);
@@ -128,6 +145,49 @@ class EmpleadosController extends BaseController {
             return $e->getMessage();
         }
     }
+    #[UseSession]
+    #[NoAdminRequired]
+	public function DesactivarEmpleado(int $id_empleados): string {
+		try{
+
+			$this->empleadosMapper->DesactivarByIdEmpleado($id_empleados);
+
+			
+			return "ok"; 
+		}
+		catch(Exception $e){
+			return $e;
+		}
+	}
+
+    #[UseSession]
+    #[NoAdminRequired]
+	public function ActivarUsuario(int $id_empleados): string {
+		try{
+
+			$this->empleadosMapper->ActivarByIdEmpleado($id_empleados);
+
+			
+			return "ok"; 
+		}
+		catch(Exception $e){
+			return $e;
+		}
+	}
+
+    #[UseSession]
+    #[NoAdminRequired]
+	public function EliminarEmpleado(int $id_empleados): string {
+		try{
+
+			$this->empleadosMapper->deleteByIdEmpleado($id_empleados);
+
+			return "ok"; 
+		}
+		catch(Exception $e){
+			return $e;
+		}
+	}
 
     /**
      * Importa lista de empleados desde un archivo XLSX.
@@ -149,6 +209,24 @@ class EmpleadosController extends BaseController {
             }
         }
     }
+
+    #[UseSession]
+    #[NoAdminRequired]
+    public function GuardarNota(int $id_empleados, string $nota): void {
+		$this->empleadosMapper->GuardarNota(strval($id_empleados), $nota);
+	}
+
+    #[UseSession]
+    #[NoAdminRequired]
+	public function CambiosEmpleado($id_empleados, $numeroempleado, $ingreso, $area, $puesto, $socio, $gerente, $fondoclave, $fondoahorro, $numerocuenta, $equipoasignado, $sueldo): void {
+		$this->empleadosMapper->CambiosEmpleado($id_empleados, $numeroempleado, $ingreso, $area, $puesto, $socio, $gerente, $fondoclave, $fondoahorro, $numerocuenta, $equipoasignado, $sueldo);
+	}
+
+    #[UseSession]
+    #[NoAdminRequired]
+	public function CambiosPersonal($Id_empleados, $Direccion, $Estado_civil, $Telefono_contacto, $Rfc, $Imss, $Contacto_emergencia, $Numero_emergencia, $Curp, $Fecha_nacimiento, $Correo_contacto, $Genero): void {
+		$this->empleadosMapper->CambiosPersonal($Id_empleados, $Direccion, $Estado_civil, $Telefono_contacto, $Rfc, $Imss, $Contacto_emergencia, $Numero_emergencia, $Curp, $Fecha_nacimiento, $Correo_contacto, $Genero);
+	}
 
     /**
      * Convierte fechas de Excel a formato `Y-m-d`.

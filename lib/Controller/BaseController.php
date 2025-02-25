@@ -56,6 +56,30 @@ abstract class BaseController extends Controller {
         throw new OCSForbiddenException("🚫 No tienes permiso para acceder a este módulo. Contacta al administrador.");
     }
 
+    
+    private function AdminCheckAccess(): bool {
+        $allowedGroups = ['admin', 'recursos_humanos'];
+        $user = $this->userSession->getUser();
+
+        if (!$user) {
+           return false;
+        }
+
+        $userGroups = $this->groupManager->getUserGroups($user);
+        if (!$userGroups || count($userGroups) === 0) {
+            return false;
+        }
+
+        foreach ($userGroups as $group) {
+            $groupId = $group->getGID();
+            if ($groupId && in_array($groupId, $allowedGroups)) {
+                return true;
+            }
+        }
+
+        throw new OCSForbiddenException("🚫 No tienes permiso para acceder a este módulo. Contacta al administrador.");
+    }
+
     /**
      * 🔥 Carga la configuración automáticamente para todos los controladores.
      */

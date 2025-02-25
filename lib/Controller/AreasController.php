@@ -7,6 +7,7 @@ use OCA\Empleados\AppInfo\Application;
 use OCP\AppFramework\Controller;
 use OCP\AppFramework\Http\Attribute\UseSession;
 use OCP\AppFramework\Http\Attribute\NoCSRFRequired;
+use OCP\AppFramework\Http\Attribute\NoAdminRequired;
 use OCP\IRequest;
 use OCP\IL10N;
 use OCP\IUserSession;
@@ -15,6 +16,9 @@ use OCP\IGroupManager;
 use OCA\Empleados\Db\empleadosMapper;
 use OCA\Empleados\Db\departamentosMapper;
 use OCA\Empleados\Db\configuracionesMapper;
+use OCA\Empleados\Db\empleados;
+use OCA\Empleados\Db\departamentos;
+use OCA\Empleados\Db\configuraciones;
 use OCA\Empleados\UploadException;
 use Shuchkin\SimpleXLSXGen;
 use Shuchkin\SimpleXLSX;
@@ -55,6 +59,7 @@ class AreasController extends BaseController {
      * Obtiene la lista de empleados y usuarios.
      */
     #[UseSession]
+    #[NoAdminRequired]
     public function GetUserLists(): array {
         return [
             'Empleados' => $this->empleadosMapper->GetUserLists(),
@@ -66,6 +71,7 @@ class AreasController extends BaseController {
      * Obtiene la lista de áreas en formato clave-valor.
      */
     #[UseSession]
+    #[NoAdminRequired]
     public function GetAreasFix(): array {
         return array_map(fn($area) => [
             'value' => $area['Id_departamento'],
@@ -77,6 +83,7 @@ class AreasController extends BaseController {
      * Obtiene la lista de empleados.
      */
     #[UseSession]
+    #[NoAdminRequired]
     public function GetEmpleadosList(): array {
         return ['Empleados' => $this->empleadosMapper->GetUserLists()];
     }
@@ -85,6 +92,7 @@ class AreasController extends BaseController {
      * Obtiene la lista de empleados con nombres corregidos si están vacíos.
      */
     #[UseSession]
+    #[NoAdminRequired]
     public function GetEmpleadosListFix(): array {
         return array_map(fn($empleado) => [
             'id' => $empleado['uid'],
@@ -98,7 +106,7 @@ class AreasController extends BaseController {
      * Obtiene la lista de áreas.
      */
     #[UseSession]
-    #[NoCSRFRequired]
+    #[NoAdminRequired]
     public function GetAreasList(): array {
         return $this->departamentosMapper->GetAreasList();
     }
@@ -150,6 +158,7 @@ class AreasController extends BaseController {
      * Elimina un área por ID.
      */
     #[UseSession]
+    #[NoAdminRequired]
     public function EliminarArea(int $id_departamento): string {
         try {
             $this->departamentosMapper->EliminarArea((string) $id_departamento);
@@ -162,6 +171,8 @@ class AreasController extends BaseController {
     /**
      * Guarda cambios en las áreas.
      */
+    #[UseSession]
+    #[NoAdminRequired]
     public function GuardarCambioArea(int $id_departamento, string $padre, string $nombre): void {
         $this->departamentosMapper->updateAreas((string) $id_departamento, $padre, $nombre);
     }
@@ -169,6 +180,8 @@ class AreasController extends BaseController {
     /**
      * Crea una nueva área.
      */
+    #[UseSession]
+    #[NoAdminRequired]
     public function crearArea(string $nombre, string $padre): void {
         $timestamp = date('Y-m-d');
         $area = new departamentos();
@@ -182,6 +195,8 @@ class AreasController extends BaseController {
     /**
      * Obtiene un archivo subido y maneja posibles errores.
      */
+    #[UseSession]
+    #[NoAdminRequired]
     private function getUploadedFile(string $key): array {
         $file = $this->request->getUploadedFile($key);
         if (empty($file) || ($file['error'] ?? UPLOAD_ERR_OK) !== UPLOAD_ERR_OK) {
