@@ -119,7 +119,19 @@ class EmpleadosController extends BaseController {
     #[NoAdminRequired]
     public function ActivarEmpleado(string $id_user): string {
         try {
+            // verificar que el usuario exista en nextcloud
             $user = $this->userManager->get($id_user);
+            // Verificar si el grupo "empleados" existe
+            $group = $this->groupManager->get("empleados");
+            if (!$group) {
+                return "Error: El grupo 'empleados' no existe en Nextcloud.";
+            }
+
+            // Verificar si el usuario ya pertenece al grupo
+            if (!$group->inGroup($user)) {
+                $group->addUser($user);
+            }
+            
             $gestor = $this->configuracionesMapper->GetGestor()[0]['Data'] ?? null;
 
             if ($gestor) {
@@ -140,10 +152,12 @@ class EmpleadosController extends BaseController {
                 $empleado->setupdated_at($timestamp);
 
                 $this->empleadosMapper->insert($empleado);
+
                 return "ok";
             } else {
                 return "No existe usuario gestor";
             }
+            
         } catch (\Exception $e) {
             return $e->getMessage();
         }
@@ -154,7 +168,6 @@ class EmpleadosController extends BaseController {
 		try{
 
 			$this->empleadosMapper->DesactivarByIdEmpleado($id_empleados);
-
 			
 			return "ok"; 
 		}
@@ -169,8 +182,8 @@ class EmpleadosController extends BaseController {
 		try{
 
 			$this->empleadosMapper->ActivarByIdEmpleado($id_empleados);
-
-			
+            
+    
 			return "ok"; 
 		}
 		catch(Exception $e){
@@ -180,10 +193,20 @@ class EmpleadosController extends BaseController {
 
     #[UseSession]
     #[NoAdminRequired]
-	public function EliminarEmpleado(int $id_empleados): string {
+	public function EliminarEmpleado(int $id_empleados, string $id_user): string {
 		try{
 
 			$this->empleadosMapper->deleteByIdEmpleado($id_empleados);
+            // verificar que el usuario exista en nextcloud
+            $user = $this->userManager->get($id_user);
+            // Verificar si el grupo "empleados" existe
+            $group = $this->groupManager->get("empleados");
+
+            // Verificar si el usuario ya pertenece al grupo
+            if ($group->inGroup($user)) {
+                $group->removeUser($user);
+            }
+            
 
 			return "ok"; 
 		}

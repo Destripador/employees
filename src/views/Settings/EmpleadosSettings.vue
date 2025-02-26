@@ -313,6 +313,7 @@ export default {
 				await axios.post(generateUrl('/apps/empleados/EliminarEmpleado'),
 					{
 						id_empleados: this.Desactivados[index].Id_empleados,
+						id_user: this.Desactivados[index].Id_user,
 					})
 					.then(
 						(response) => {
