@@ -52,6 +52,11 @@ return [
 
 		['name' => 'configuraciones#ActualizarGestor', 'url' => '/ActualizarGestor', 'verb' => 'POST'],
 		['name' => 'configuraciones#ActualizarConfiguracion', 'url' => '/ActualizarConfiguracion', 'verb' => 'POST'],
+
+		
+		/***************************** CAPITAL HUMANO ***************************************/
+		['name' => 'capitalhumano#GetCapitalHumano', 'url' => '/GetCapitalHumano', 'verb' => 'GET'],
+		['name' => 'capitalhumano#UpdateCapitalHumano', 'url' => '/UpdateCapitalHumano', 'verb' => 'POST'],
 	],
 	
 ];

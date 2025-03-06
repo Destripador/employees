@@ -214,6 +214,7 @@ export default {
 			Usuarios: [],
 			Desactivados: [],
 			map: {},
+			selectArray: [],
 			ButtonsEliminarUser: [
 				{
 					label: 'Ok',

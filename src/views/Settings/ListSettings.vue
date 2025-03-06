@@ -1,28 +1,36 @@
 <!-- eslint-disable vue/require-v-for-key -->
 <template>
 	<div v-if="loading">
-		<div class="center-screen" style="background-color: #fff;">
+		<!-- Sección de carga -->
+		<div class="center-screen">
 			<NcLoadingIcon :size="64" appearance="dark" name="Loading on light background" />
 		</div>
 	</div>
+
 	<div v-else id="admin">
+		<!-- Título principal -->
 		<div>
 			<h2 class="board-title">
-				<AccountGroup :size="20"
-					decorative
-					class="icon" />
+				<AccountGroup :size="20" decorative class="icon" />
 				<span>Configuraciones globales</span>
 			</h2>
 		</div>
 
 		<div class="container">
+			<!-- Bloque: Selector único para el Gestor de datos -->
 			<div class="grid">
 				<NcNoteCard v-if="selected_user" type="warning" heading="ATENCION">
-					<p>Si decide cambiar el usuario gestor de archivos cuando ya haya sido asignado, puede generar perdida de archivos, considere generar un respaldo antes de realizar este proceso</p>
+					<p>
+						Si decide cambiar el usuario gestor de archivos cuando ya haya sido asignado,
+						puede generarse pérdida de archivos.
+						Considere generar un respaldo antes de realizar este proceso.
+					</p>
 				</NcNoteCard>
-				<NcSelect v-model="selected_user"
+
+				<NcSelect
+					v-model="selected_user"
 					input-label="Usuario gestor de datos"
-					:options="options"
+					:options="optionsGestor"
 					:user-select="true" />
 
 				<NcButton
@@ -32,30 +40,52 @@
 					Aplicar cambios
 				</NcButton>
 			</div>
+
 			<br>
+
+			<!-- Bloque: Switch para “guardado automático de notas” -->
 			<div class="grid">
 				<NcCheckboxRadioSwitch
 					:checked="guardado_notas"
 					type="switch"
 					@update:checked="onChangeGuardadoNotas">
-					Guardado automatico de notas
+					Guardado automático de notas
 				</NcCheckboxRadioSwitch>
+			</div>
+
+			<br>
+
+			<!-- Bloque: Selector múltiple para Capital Humano -->
+			<div class="grid">
+				<NcSelect
+					v-bind="propsCapitalHumano"
+					v-model="selectedUsers" />
+
+				<NcButton
+					aria-label="Aplicar cambios"
+					type="primary"
+					@click="saveCapitalHumano">
+					Aplicar cambios
+				</NcButton>
 			</div>
 		</div>
 	</div>
 </template>
 
 <script>
-// iconos
+// Iconos
 import AccountGroup from 'vue-material-design-icons/AccountGroup.vue'
-// import Delete from 'vue-material-design-icons/Delete.vue'
-// import Plus from 'vue-material-design-icons/Plus.vue'
-// import WalletPlus from 'vue-material-design-icons/WalletPlus'
-// import Cog from 'vue-material-design-icons/Cog'
-// import Check from 'vue-material-design-icons/Check'
 
-// imports
-import { /* NcActions, NcActionButton, */ NcButton, NcLoadingIcon, NcSelect, NcNoteCard, NcCheckboxRadioSwitch /*, NcAvatar */ } from '@nextcloud/vue'
+// Componentes de @nextcloud/vue
+import {
+	NcButton,
+	NcLoadingIcon,
+	NcSelect,
+	NcNoteCard,
+	NcCheckboxRadioSwitch,
+} from '@nextcloud/vue'
+
+// Utilidades de Nextcloud
 import { showError, showSuccess } from '@nextcloud/dialogs'
 import { generateUrl } from '@nextcloud/router'
 import axios from '@nextcloud/axios'
@@ -63,192 +93,190 @@ import axios from '@nextcloud/axios'
 export default {
 	name: 'ListSettings',
 	components: {
-		// NcAvatar,
-		// NcActions,
-		// NcActionButton,
-		NcNoteCard,
-		NcLoadingIcon,
 		AccountGroup,
 		NcSelect,
 		NcButton,
+		NcNoteCard,
+		NcLoadingIcon,
 		NcCheckboxRadioSwitch,
-		// Delete,
-		// Plus,
 	},
 
 	data() {
 		return {
 			loading: true,
+
+			// Configuraciones generales
 			configuraciones: [],
-			options: [],
-			selected_user: null,
+
+			/**
+			 * LISTA COMPLETA de usuarios (desde GetConfigurations)
+			 * para el "usuario gestor" y para el selector múltiple.
+			 */
+			optionsGestor: [], // Se llena con response.data.Users
+
+			selected_user: null, // Gestor de datos seleccionado
 			guardado_notas: false,
+
+			/**
+			 * SELECTOR MÚLTIPLE - Capital Humano
+			 */
+			propsCapitalHumano: {
+				inputLabel: 'Seleccionar usuarios de Capital Humano',
+				userSelect: true,
+				multiple: true,
+				closeOnSelect: false,
+				options: [], // Se llena con todos los usuarios (optionsGestor)
+			},
+			/**
+			 * Arreglo con los IDs (uid) de los usuarios que se van a preseleccionar
+			 * al cargar Capital Humano.
+			 */
+			selectedUsers: [],
+
+			/**
+			 * Arreglo con información proveniente de GetCapitalHumano
+			 * (usuarios que realmente pertenecen a capital humano).
+			 */
+			capitalHumano: [],
 		}
 	},
 
 	async mounted() {
-		this.getall()
+		// Cargar configuraciones generales y la lista de Capital Humano en paralelo
+		await Promise.all([
+			this.getall(),
+			this.fetchCapitalHumano(),
+		])
+
+		// Ajustar el selector múltiple para usar “optionsGestor” y preseleccionar "capitalHumano"
+		this.setupCapitalHumanoSelector()
+
+		// Desactivar loader
+		this.loading = false
 	},
 
 	methods: {
+		/**
+		 * Carga la configuración global, incluido "Users" para el Gestor de datos.
+		 */
 		async getall() {
-			this.loading = false
 			try {
-				await axios.get(generateUrl('/apps/empleados/GetConfigurations'))
-					.then(
-						(response) => {
-							// usuarios nextcloud
-							this.options = response.data.Users
+				this.loading = true
+				const response = await axios.get(generateUrl('/apps/empleados/GetConfigurations'))
+				// Lista de usuarios disponibles
+				this.optionsGestor = response.data.Users
 
-							// Gestor de datos
-							this.selected_user = response.data.Gestor_actual
+				// Gestor de datos actual
+				this.selected_user = response.data.Gestor_actual
 
-							// Guardado de notas automatico
-							this.guardado_notas = (response.data.Guardado_notas === 'true')
+				// Guardado automático de notas
+				this.guardado_notas = (response.data.Guardado_notas === 'true')
 
-							// Desactivar animacion de guardado
-							this.loading = false
-						},
-						(err) => {
-							showError(err)
-						},
-					)
+				this.loading = false
 			} catch (err) {
-				showError(t('empleados', 'Se ha producido una excepcion [01] [' + err + ']'))
+				this.loading = false
+				showError('Se ha producido una excepción [GetConfigurations]: ' + err)
+				console.error(err)
 			}
 		},
 
-		async EliminarUser(index) {
-			try {
-				await axios.post(generateUrl('/apps/empleados/EliminarEmpleado'),
-					{
-						id_empleados: this.Empleados[index].Id_empleados,
-					})
-					.then(
-						(response) => {
-							this.getall()
-						},
-						(err) => {
-							showError(err)
-						},
-					)
-			} catch (err) {
-				showError(t('empleados', 'Se ha producido una excepcion [03] [' + err + ']'))
-			}
-		},
-
-		async ActivarUser(index) {
-			try {
-				await axios.post(generateUrl('/apps/empleados/ActivarEmpleado'),
-					{
-						id_user: this.Usuarios[index].uid,
-					})
-					.then(
-						(response) => {
-							this.getall()
-						},
-						(err) => {
-							showError(err)
-						},
-					)
-			} catch (err) {
-				showError(t('empleados', 'Se ha producido una excepcion [02] [' + err + ']'))
-			}
-		},
-
+		/**
+		 * Actualiza el gestor de datos seleccionado
+		 */
 		async saveGestor() {
-			if (this.selected_user.id == null) {
-				showError('No has realizado ningun cambio')
-			} else {
-				try {
-					await axios.post(generateUrl('/apps/empleados/ActualizarGestor'),
-						{
-							id_gestor: this.selected_user.id,
-						})
-						.then(
-							(response) => {
-								showSuccess('Gestor actualizado')
-							},
-							(err) => {
-								showError(err)
-							},
-						)
-				} catch (err) {
-					showError(t('empleados', 'Se ha producido una excepcion [03] [' + err + ']'))
-				}
+			if (!this.selected_user || !this.selected_user.id) {
+				showError('No has seleccionado ningún Gestor de datos')
+				return
+			}
+			try {
+				await axios.post(generateUrl('/apps/empleados/ActualizarGestor'), {
+					id_gestor: this.selected_user.id,
+				})
+				showSuccess('Gestor actualizado')
+			} catch (err) {
+				showError('Error al actualizar el Gestor: ' + err)
+				console.error(err)
 			}
 		},
 
+		/**
+		 * Actualiza el gestor de datos seleccionado
+		 */
+		 async saveCapitalHumano() {
+			// eslint-disable-next-line no-console
+			console.log('ejemplo:   ', this.selectedUsers)
+
+			try {
+				await axios.post(generateUrl('/apps/empleados/UpdateCapitalHumano'), {
+					capitalhumano: this.selectedUsers,
+				})
+				showSuccess('Capital humano actualizado')
+			} catch (err) {
+				showError('Error al actualizar capital humano: ' + err)
+				console.error(err)
+			}
+
+		},
+
+		/**
+		 * Cambia la configuración de guardado de notas
+		 */
 		async onChangeGuardadoNotas() {
 			this.guardado_notas = !this.guardado_notas
 			try {
-				await axios.post(generateUrl('/apps/empleados/ActualizarConfiguracion'),
-					{
-						id_configuracion: 'automatic_save_note',
-						data: this.guardado_notas.toString(),
-					})
-					.then(
-						(response) => {
-							showSuccess('Configuracion actualizada')
-						},
-						(err) => {
-							showError(err)
-						},
-					)
+				await axios.post(generateUrl('/apps/empleados/ActualizarConfiguracion'), {
+					id_configuracion: 'automatic_save_note',
+					data: this.guardado_notas.toString(),
+				})
+				showSuccess('Configuración actualizada')
 			} catch (err) {
-				showError(t('empleados', 'Se ha producido una excepcion [03] [' + err + ']'))
+				showError('Excepción [ActualizarConfiguracion]: ' + err)
+				console.error(err)
 			}
+		},
+
+		/**
+		 * Obtiene la lista de usuarios que SON Capital Humano
+		 */
+		async fetchCapitalHumano() {
+			try {
+				const response = await fetch('/apps/empleados/GetCapitalHumano')
+				if (!response.ok) throw new Error('Error al obtener datos de Capital Humano')
+				this.capitalHumano = await response.json()
+			} catch (error) {
+				showError('Error al obtener usuarios de Capital Humano')
+				console.error(error)
+			}
+		},
+
+		/**
+		 * Configura el selector múltiple de Capital Humano:
+		 * - Usa TODOS los usuarios de "optionsGestor" como opciones
+		 * - Preselecciona solo aquellos que están en "capitalHumano"
+		 */
+		setupCapitalHumanoSelector() {
+			// 1. Convertir la lista de "optionsGestor" a formato de NcSelect
+			this.propsCapitalHumano.options = this.optionsGestor.map(user => ({
+				id: user.id,
+				displayName: user.displayName || user.uid,
+				isNoUser: false,
+				icon: '',
+				user: user.uid,
+				preloadedUserStatus: {
+					icon: '',
+					status: user.isEnabled ? 'online' : 'offline',
+					message: user.isEnabled ? 'Activo' : 'Inactivo',
+				},
+			}))
+
+			// 2. Obtener los 'uid' de los usuarios de Capital Humano
+			const capitalHumanoUids = this.capitalHumano.map(u => u.id)
+
+			// 3. selectedUsers = IDs que coincidan con capitalHumano
+			this.selectedUsers = this.propsCapitalHumano.options
+				.filter(opt => capitalHumanoUids.includes(opt.id))
+				.map(opt => opt.id)
 		},
 	},
 }
 </script>
-
-<style>
-
-.board-title {
-	padding-left: 20px;
-	margin-right: 10px;
-	margin-top: 14px;
-	font-size: 25px;
-	display: flex;
-	align-items: center;
-	font-weight: bold;
-	.icon {
-		margin-right: 8px;
-	}
-}
-
-.center-screen {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  min-height: 100vh;
-}
-
-.titles {
-	margin-right: 10px;
-	margin-top: 14px;
-	font-size: 17px;
-	display: flex;
-	align-items: center;
-	.icon {
-		margin-right: 8px;
-	}
-}
-.container {
-	padding-left: 20px;
-	padding-right: 20px;
-}
-
-.rsg {
-	padding-top: 16px;
-	padding-bottom: 16px;
-	border: 1px solid rgb(232, 232, 232);
-	border-radius: 3px;
-	display: flex;
-	margin-left: 20px;
-	margin-right: 20px;
-	width: auto;
-}
-</style>

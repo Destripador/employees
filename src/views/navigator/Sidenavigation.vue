@@ -10,10 +10,10 @@
 		</NcAppNavigationList>
 
 		<div v-if="isAdmin()">
-			<NcAppNavigationCaption heading-id="Administrativo"
+			<NcAppNavigationCaption heading-id="CapitalHumano"
 				is-heading
-				name="Administrativo" />
-			<NcAppNavigationList aria-labelledby="Administrativo">
+				name="Capital Humano" />
+			<NcAppNavigationList aria-labelledby="CapitalHumano">
 				<NcAppNavigationItem name="Empleados"
 					:to="{ name: 'Empleados' }" />
 
