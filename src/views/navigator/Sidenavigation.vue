@@ -24,6 +24,16 @@
 					:to="{ name: 'Puestos' }" />
 			</NcAppNavigationList>
 		</div>
+
+		<div>
+			<NcAppNavigationCaption heading-id="Tiempo Laboral"
+				is-heading
+				name="Tiempo Laboral" />
+			<NcAppNavigationList aria-labelledby="Tiempo Laboral">
+				<NcAppNavigationItem name="Calendario"
+					:to="{ name: 'Calendario' }" />
+			</NcAppNavigationList>
+		</div>
 	</NcAppNavigation>
 </template>
 
