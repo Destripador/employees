@@ -10,10 +10,12 @@ return [
 		['name' => 'page#index', 'url' => '/', 'verb' => 'GET'],
 		
 		/******************************** EMPLEADOS ********************************************/ 
+		['name' => 'empleados#GetUser', 'url' => '/GetUser', 'verb' => 'GET'],
 		['name' => 'empleados#GetUserLists', 'url' => '/GetUserLists', 'verb' => 'GET'],
 		['name' => 'empleados#GetEmpleadosList', 'url' => '/GetEmpleadosList', 'verb' => 'GET'],
 		['name' => 'empleados#GetEmpleadosArea', 'url' => '/GetEmpleadosArea/{id_area}', 'verb' => 'GET'],
 		['name' => 'empleados#GetEmpleadosPuesto', 'url' => '/GetEmpleadosPuesto/{id_puesto}', 'verb' => 'GET'],
+		['name' => 'empleados#GetEmpleadosEquipo', 'url' => '/GetEmpleadosEquipo/{id_equipo}', 'verb' => 'GET'],
 		['name' => 'empleados#GetEmpleadosListFix', 'url' => '/GetEmpleadosListFix', 'verb' => 'GET'],
 		['name' => 'empleados#ExportListEmpleados', 'url' => '/ExportListEmpleados', 'verb' => 'GET'],
 		
@@ -46,6 +48,16 @@ return [
 		['name' => 'puestos#EliminarPuesto', 'url' => '/EliminarPuesto', 'verb' => 'POST'],
 		['name' => 'puestos#crearPuesto', 'url' => '/crearPuesto', 'verb' => 'POST'],
 
+		/****************************** EQUIPOS *********************************************/
+		['name' => 'equipos#GetEquiposFix', 'url' => '/GetEquiposFix', 'verb' => 'GET'],
+		['name' => 'equipos#GetEquiposList', 'url' => '/GetEquiposList', 'verb' => 'GET'],
+		['name' => 'equipos#ExportListEquipos', 'url' => '/ExportListEquipos', 'verb' => 'GET'],
+				
+		['name' => 'equipos#GuardarCambioEquipo', 'url' => '/GuardarCambioEquipo', 'verb' => 'POST'],
+		['name' => 'equipos#ImportListEquipo', 'url' => '/ImportListEquipo', 'verb' => 'POST'],
+		['name' => 'equipos#EliminarEquipo', 'url' => '/EliminarEquipo', 'verb' => 'POST'],
+		['name' => 'equipos#crearEquipo', 'url' => '/crearEquipo', 'verb' => 'POST'],
+		
 
 		/***************************** CONFIGURACIONES ***************************************/
 		['name' => 'configuraciones#GetConfigurations', 'url' => '/GetConfigurations', 'verb' => 'GET'],

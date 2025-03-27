@@ -4,6 +4,7 @@ import { generateUrl } from '@nextcloud/router'
 
 import Employees from '../views/components/ListaEmpleados/Employees.vue'
 import Calendario from '../views/components/TiempoLibre/TiempoLibre.vue'
+import Equipos from '../views/components/Equipos/Equipos.vue'
 import Puestos from '../views/components/puestos/Puestos.vue'
 import Areas from '../views/components/areas/Areas.vue'
 import Dashboard from '../views/components/Dashboard/Dashboard.vue'
@@ -35,6 +36,11 @@ export default new Router({
 			path: '/Areas',
 			component: Areas,
 			name: 'Areas',
+		},
+		{
+			path: '/Equipos',
+			component: Equipos,
+			name: 'Equipos',
 		},
 		{
 			path: '/Calendario',

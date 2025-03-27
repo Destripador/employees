@@ -112,6 +112,17 @@ class EmpleadosController extends BaseController {
         return ['puesto' => $this->empleadosMapper->GetEmpleadosPuesto($id_puesto)];
     }
 
+
+    
+    /**
+     * Obtiene empleados de un equipo específico.
+     */
+    #[UseSession]
+    #[NoAdminRequired]
+    public function GetEmpleadosEquipo(string $id_equipo): array {
+        return ['equipo' => $this->empleadosMapper->GetEmpleadosEquipo($id_equipo)];
+    }
+
     /**
      * Activa un empleado y crea sus carpetas en Nextcloud.
      */
@@ -246,8 +257,34 @@ class EmpleadosController extends BaseController {
 
     #[UseSession]
     #[NoAdminRequired]
-	public function CambiosEmpleado($id_empleados, $numeroempleado, $ingreso, $area, $puesto, $socio, $gerente, $fondoclave, $fondoahorro, $numerocuenta, $equipoasignado, $sueldo): void {
-		$this->empleadosMapper->CambiosEmpleado($id_empleados, $numeroempleado, $ingreso, $area, $puesto, $socio, $gerente, $fondoclave, $fondoahorro, $numerocuenta, $equipoasignado, $sueldo);
+	public function CambiosEmpleado(
+        $id_empleados, 
+        $numeroempleado, 
+        $ingreso, 
+        $area, 
+        $puesto, 
+        $socio, 
+        $gerente, 
+        $fondoclave, 
+        $fondoahorro, 
+        $numerocuenta, 
+        $equipoasignado,
+        $equipo, 
+        $sueldo): void {
+		$this->empleadosMapper->CambiosEmpleado(
+            $id_empleados, 
+            $numeroempleado, 
+            $ingreso, 
+            $area, 
+            $puesto, 
+            $socio, 
+            $gerente, 
+            $fondoclave, 
+            $fondoahorro, 
+            $numerocuenta, 
+            $equipoasignado, 
+            $equipo, 
+            $sueldo);
 	}
 
     #[UseSession]
@@ -353,4 +390,32 @@ class EmpleadosController extends BaseController {
         }
         return $file;
     }
+
+    
+	#[NoCSRFRequired]
+	#[NoAdminRequired]    
+	public function GetUsers(): array {
+
+        $users = $this->userManager->search('');
+
+        $userList = [];
+        foreach ($users as $user) {
+            $userList[] = [
+                'id' => $user->getUID(),
+                'displayName' => $user->getDisplayName(),
+                'icon' => $user->getUID(),
+                'user' => $user->getUID(),
+                'showUserStatus' => false,
+            ];
+        }
+
+        
+		$data = array(
+			'Users' => $userList,
+        );
+
+
+        return $data;
+	}
+
 }

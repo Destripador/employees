@@ -1,8 +1,18 @@
 <template id="content">
 	<NcAppContent name="Loading">
 		<div class="container">
-			<VCalendar expanded />
+			<div class="text-center section">
+				<p>Fecha seleccionada: {{ date }}</p>
+				<DatePicker v-model="date"
+					is-expanded
+					is-range
+					@input="onRangeSelected" />
+			</div>
 		</div>
+		<NcModal
+			v-if="modal"
+			name="Name inside modal"
+			@close="closeModal" />
 	</NcAppContent>
 </template>
 
@@ -12,25 +22,26 @@
 // import { showError /* showSuccess */ } from '@nextcloud/dialogs'
 // import { generateUrl } from '@nextcloud/router'
 // import axios from '@nextcloud/axios'
-
-import { Calendar } from 'v-calendar'
+import 'v-calendar/src/styles/base.css'
+import { DatePicker } from 'v-calendar'
 
 import {
 	NcAppContent,
+	NcModal,
 } from '@nextcloud/vue'
 export default {
 	name: 'TiempoLibre',
 
 	components: {
 		NcAppContent,
-		VCalendar: Calendar,
+		DatePicker,
+		NcModal,
 	},
 
 	data() {
 		return {
-			events: [
-				{ key: 'event-1', start: new Date(), title: 'Evento de prueba' },
-			],
+			date: new Date(),
+			modal: false,
 		}
 	},
 
@@ -38,13 +49,14 @@ export default {
 	},
 
 	methods: {
+		onRangeSelected(range) {
+			// eslint-disable-next-line no-console
+			console.log('Rango seleccionado:', range)
+			this.modal = true
+		},
+		closeModal() {
+			this.modal = false
+		},
 	},
 }
 </script>
-
-<style scoped lang="scss">
-	.container {
-		padding-left: 10px;
-		padding-top:30px;
-	}
-</style>

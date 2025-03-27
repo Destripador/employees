@@ -129,6 +129,14 @@
 							:disabled="!show"
 							class="inputtype">
 					</div>
+
+					<div class="external-label">
+						<NcSelect v-model="Equipo"
+							class="select"
+							:disabled="!show"
+							input-label="Equipo"
+							:options="optionsequipos" />
+					</div>
 				</div>
 
 				<!-- Organization Chart -->
@@ -254,6 +262,7 @@ export default {
 			notas: this.data.Notas ?? '',
 			optionsarea: [],
 			optionspuesto: [],
+			optionsequipos: [],
 			Numero_empleado: '',
 			Ingreso: '',
 			Fondo_clave: '',
@@ -261,8 +270,10 @@ export default {
 			Numero_cuenta: '',
 			Equipo_asignado: '',
 			Sueldo: '',
+			Equipo: '',
 			areaSend: '',
 			puestoSend: '',
+			EquipoSend: '',
 		}
 	},
 
@@ -299,6 +310,7 @@ export default {
 					news.Fondo_clave,
 					news.Fondo_ahorro,
 					news.Numero_cuenta,
+					news.Id_equipo,
 					news.Equipo_asignado,
 					news.Sueldo)
 			}
@@ -317,12 +329,13 @@ export default {
 			this.data.Fondo_clave,
 			this.data.Fondo_ahorro,
 			this.data.Numero_cuenta,
+			this.data.Id_equipo,
 			this.data.Equipo_asignado,
 			this.data.Sueldo)
 	},
 
 	methods: {
-		setAttr(NumeroEmpleado, Ingreso, Area, Puesto, Gerente, Socio, FondoClave, FondoAhorro, NumeroCuenta, EquipoAsignado, Sueldo) {
+		setAttr(NumeroEmpleado, Ingreso, Area, Puesto, Gerente, Socio, FondoClave, FondoAhorro, NumeroCuenta, Equipo, EquipoAsignado, Sueldo) {
 			this.Numero_empleado = this.checknull(NumeroEmpleado)
 			this.Ingreso = this.checknull(Ingreso)
 			this.area = this.checknull(Area)
@@ -332,11 +345,13 @@ export default {
 			this.Fondo_clave = this.checknull(FondoClave)
 			this.Fondo_ahorro = this.checknull(FondoAhorro)
 			this.Numero_cuenta = this.checknull(NumeroCuenta)
+			this.Equipo = this.checknull(Equipo)
 			this.Equipo_asignado = this.checknull(EquipoAsignado)
 			this.Sueldo = this.checknull(Sueldo)
 
 			this.getAreas(this.area)
 			this.getPuestos(this.puesto)
+			this.getEquipos(this.Equipo)
 		},
 
 		async getAreas(Area) {
@@ -362,6 +377,31 @@ export default {
 				} else {
 					this.puesto = ''
 				}
+			} catch (err) {
+				showError(t('empleados', 'Se ha producido una excepcion [01] [' + err + ']'))
+			}
+		},
+
+		async getEquipos(Equipo) {
+			this.loading = false
+			try {
+				await axios.get(generateUrl('/apps/empleados/GetEquiposList'))
+					.then(
+						(response) => {
+							this.optionsequipos = response.data.map(equipo => ({
+								value: equipo.Id_equipo,
+								label: equipo.Nombre,
+							}))
+							if (Equipo && Equipo.length !== 0) {
+								this.Equipo = this.optionsequipos.find(role => role.value === parseInt(Equipo)).label
+							} else {
+								this.Equipo = ''
+							}
+						},
+						(err) => {
+							showError(err)
+						},
+					)
 			} catch (err) {
 				showError(t('empleados', 'Se ha producido una excepcion [01] [' + err + ']'))
 			}
@@ -423,6 +463,7 @@ export default {
 					fondoahorro: this.checknull(this.Fondo_ahorro),
 					numerocuenta: this.checknull(this.Numero_cuenta),
 					equipoasignado: this.checknull(this.Equipo_asignado),
+					equipo: this.Equipo.value,
 					sueldo: this.checknull(this.Sueldo),
 				})
 				this.$bus.emit('getall')

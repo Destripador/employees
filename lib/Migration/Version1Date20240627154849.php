@@ -82,6 +82,10 @@ class Version1Date20240627154849 extends SimpleMigrationStep {
 				'notnull' => false,
 			]);
 
+			$table->addColumn('Id_equipo', 'string', [
+				'notnull' => false,
+			]);
+
 			$table->addColumn('Id_gerente', 'string', [
 				'notnull' => false,
 			]);

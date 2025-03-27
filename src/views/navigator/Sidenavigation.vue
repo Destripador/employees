@@ -22,6 +22,9 @@
 
 				<NcAppNavigationItem name="Puestos"
 					:to="{ name: 'Puestos' }" />
+
+				<NcAppNavigationItem name="Equipos"
+					:to="{ name: 'Equipos' }" />
 			</NcAppNavigationList>
 		</div>
 

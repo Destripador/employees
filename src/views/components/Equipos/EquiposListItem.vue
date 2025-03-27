@@ -1,17 +1,26 @@
 <template>
 	<div class="contacts-list__item-wrapper">
 		<ListItem
-			:key="source.Id_empleados"
+			:key="source.Id_Equipos"
 			:compact="true"
 			class="list-item-style envelope"
 			:name="source.Nombre"
 			:counter-number="source.cantidad_empleados"
 			@click="showDetails(source)">
+			<template #icon>
+				<div class="app-content-list-item-icon">
+					<NcAvatar
+						:display-name="source.Id_jefe_equipo"
+						:user="source.Id_jefe_equipo"
+						:show-user-status="false"
+						:size="40" />
+				</div>
+			</template>
 			<template #name>
 				{{ source.Nombre }}
 			</template>
-			<template v-if="source.Id_padre" #subname>
-				<small>Area padre: {{ source.Id_padre }}</small>
+			<template #subname>
+				<small>jefe: {{ source.Id_jefe_equipo }}</small>
 			</template>
 		</ListItem>
 	</div>
@@ -21,13 +30,15 @@
 
 import {
 	NcListItem as ListItem,
+	NcAvatar,
 } from '@nextcloud/vue'
 
 export default {
-	name: 'AreasListItem',
+	name: 'EquiposListItem',
 
 	components: {
 		ListItem,
+		NcAvatar,
 	},
 
 	props: {
@@ -47,7 +58,7 @@ export default {
 
 	methods: {
 		showDetails(data) {
-			this.$root.$emit('send-data-areas', data)
+			this.$root.$emit('send-data-equipos', data)
 			this.$root.$emit('show', false)
 		},
 	},

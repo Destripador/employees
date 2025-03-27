@@ -234,6 +234,21 @@ class empleadosMapper extends QBMapper {
 	
 		return $users;
 	}
+
+	public function GetEmpleadosEquipo(string $id_equipo): array {
+		$qb = $this->db->getQueryBuilder();
+
+		$qb->select('*')
+			->from($this->getTableName())
+			->where($qb->expr()->eq('Id_equipo', $qb->createNamedParameter($id_equipo)));
+		
+		$result = $qb->execute();
+		$users = $result->fetchAll();
+		$result->closeCursor();
+	
+		return $users;
+	}
+
 	public function CambiosEmpleado(
 		$Id_empleados, 
 		$Numero_empleado, 
@@ -245,7 +260,8 @@ class empleadosMapper extends QBMapper {
 		$Fondo_clave, 
 		$Fondo_ahorro, 
 		$Numero_cuenta, 
-		$Equipo_asignado, 
+		$Equipo_asignado,
+		$Id_equipo,
 		$Sueldo): void {
 
 		try{
@@ -261,6 +277,7 @@ class empleadosMapper extends QBMapper {
 			if(empty($Fondo_ahorro) && $Fondo_ahorro != 0){ $Fondo_ahorro = null; }
 			if(empty($Numero_cuenta) && $Numero_cuenta != 0){ $Numero_cuenta = null; }
 			if(empty($Equipo_asignado) && $Equipo_asignado != 0){ $Equipo_asignado = null; }
+			if(empty($Id_equipo) && $Id_equipo != 0){ $Id_equipo = null; }
 			if(empty($Sueldo) && $Sueldo != 0){ $Sueldo = null; }
 	
 			$query = $this->db->getQueryBuilder();
@@ -271,9 +288,11 @@ class empleadosMapper extends QBMapper {
 				->set('Id_puesto', $query->createNamedParameter($Id_puesto))
 				->set('Id_gerente', $query->createNamedParameter($Id_gerente))
 				->set('Id_socio', $query->createNamedParameter($Id_socio))
+				->set('Fondo_clave', $query->createNamedParameter($Fondo_clave))
 				->set('Fondo_ahorro', $query->createNamedParameter($Fondo_ahorro))
 				->set('Numero_cuenta', $query->createNamedParameter($Numero_cuenta))
 				->set('Equipo_asignado', $query->createNamedParameter($Equipo_asignado))
+				->set('Id_equipo', $query->createNamedParameter($Id_equipo))
 				->set('Sueldo', $query->createNamedParameter($Sueldo))
 				->set('updated_at', $query->createNamedParameter($timestamp))
 				->where($query->expr()->eq('Id_empleados', $query->createNamedParameter($Id_empleados)));
