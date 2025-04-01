@@ -46,21 +46,43 @@
 					</div>
 				</div>
 			</div>
-			<div class="center">
-				<NcAvatar :user="data.uid" :display-name="data.uid" :size="120" />
-				<div v-if="data.displayname">
-					<h2>{{ data.displayname }}</h2>
+			<div>
+				<!-- Display avatar and name -->
+				<div class="card-container">
+					<div class="user-card">
+						<!-- Avatar -->
+						<div class="avatar">
+							<NcAvatar :user="data.uid" :display-name="data.uid" :size="100" />
+						</div>
+
+						<!-- Info -->
+						<div class="info">
+							<h2 v-if="data.displayname">
+								{{ data.displayname }}
+							</h2>
+							<h2 v-if="data.mail">
+								{{ data.mail }}
+							</h2>
+							<h2 v-else>
+								{{ data.uid }}
+							</h2>
+						</div>
+					</div>
 				</div>
-				<div v-else>
-					<h2>{{ data.uid }}</h2>
-				</div>
-				<div>
+
+				<div class="center">
 					<VueTabs active-tab-color="#fdb913c"
 						active-text-color="white"
 						type="pills"
 						centered>
 						<VTab title="Empleado">
 							<EmpleadoTab :data="data"
+								:show="show"
+								:empleados="empleadosProp"
+								:automaticsave="automatic_save_note" />
+						</VTab>
+						<VTab title="Notas">
+							<NotasTab :data="data"
 								:show="show"
 								:empleados="Empleados"
 								:automaticsave="automatic_save_note" />
@@ -90,6 +112,7 @@
 <script>
 import EmpleadoTab from './Tabs/EmpleadoTab.vue'
 import PersonalTab from './Tabs/PersonalTab.vue'
+import NotasTab from './Tabs/NotasTab.vue'
 import FilesTab from './Tabs/FilesTab.vue'
 import { VueTabs, VTab } from 'vue-nav-tabs/dist/vue-tabs.js'
 import 'vue-nav-tabs/themes/vue-tabs.css'
@@ -126,6 +149,7 @@ export default {
 		NcActionButton,
 		FilesTab,
 		NcDialog,
+		NotasTab,
 	},
 
 	inject: ['configuraciones'],
@@ -133,6 +157,10 @@ export default {
 	props: {
 		data: {
 			type: Object,
+			required: true,
+		},
+		empleadosProp: {
+			type: Array,
 			required: true,
 		},
 
@@ -273,7 +301,42 @@ export default {
 }
 
 .button-container-profile {
-	float: right;
-	margin-top: -10px;
+	margin-top: -30px;
+	position: absolute;
+	right: 30px;
+	z-index: 9999;
+}
+
+.well{
+  margin: 0 auto;
+  padding: 20px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.user-card {
+  display: flex;
+  align-items: center;
+  padding: 0px 10px 10px 10px;
+}
+
+.info {
+  display: flex;
+  flex-direction: column;
+}
+
+.info h2 {
+  margin: 0;
+  width: 100%;
+}
+.card-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.avatar{
+padding-right: 10px;
 }
 </style>

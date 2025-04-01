@@ -1,185 +1,136 @@
 <template>
-	<div>
+	<div class="well">
 		<div class="top">
 			<div class="main">
 				<div class="box1">
-					<!-- Socio and Gerente Select Inputs -->
-					<div v-if="show" class="main">
-						<div class="label-input-trabajo">
-							<NcSelect v-model="socio"
-								class="select"
-								input-label="Socio"
-								:disabled="!show"
-								:options="empleados"
-								:user-select="true" />
-						</div>
-
-						<div class="label-input-trabajo">
-							<NcSelect v-model="gerente"
-								class="select"
-								:disabled="!show"
-								input-label="Gerente"
-								:options="empleados"
-								:user-select="true" />
-						</div>
+					<div class="divider">
+						<span>Informacion Laboral</span>
 					</div>
-
-					<!-- Departamento and Puesto Select Inputs -->
-					<div class="main">
-						<div class="label-input-trabajo">
-							<NcSelect id="Id_departamento"
-								v-model="area"
-								class="container__select"
-								:disabled="!show"
-								:options="optionsarea"
-								input-label="Departamento" />
-						</div>
-
-						<div class="label-input-trabajo">
-							<NcSelect id="Id_puesto"
-								v-model="puesto"
-								class="container__select"
-								:disabled="!show"
-								:options="optionspuesto"
-								input-label="Puesto" />
-						</div>
-					</div>
-
-					<!-- Various Input Fields -->
-					<div class="external-label">
-						<label for="Numero_empleado" class="labeltype">
-							<Badgeaccountoutline :size="20" />
-							Num. Empleado
-						</label>
-						<input id="Numero_empleado"
-							v-model="Numero_empleado"
-							type="text"
-							:disabled="!show"
-							class="inputtype">
-					</div>
-
-					<div class="external-label">
-						<label for="Ingreso" class="labeltype">
-							<Calendarrange :size="20" />
-							Fecha de Ingreso
-						</label>
-						<input id="Ingreso"
-							v-model="Ingreso"
-							type="date"
-							:disabled="!show"
-							class="inputtype">
-					</div>
-
-					<div class="external-label">
-						<label for="Fondo_clave" class="labeltype">
-							<Piggybankoutline :size="20" />
-							Fondo Clave
-						</label>
-						<input id="Fondo_clave"
-							v-model="Fondo_clave"
-							type="text"
-							:disabled="!show"
-							class="inputtype">
-					</div>
-
-					<div class="external-label">
-						<label for="Fondo_ahorro" class="labeltype">
-							<Piggybankoutline :size="20" />
-							Fondo ahorro
-						</label>
-						<input id="Fondo_ahorro"
-							v-model="Fondo_ahorro"
-							type="text"
-							:disabled="!show"
-							class="inputtype">
-					</div>
-
-					<div class="external-label">
-						<label for="Numero_cuenta" class="labeltype">
-							<Bank :size="20" />
-							Cuenta Bancaria
-						</label>
-						<input id="Numero_cuenta"
-							v-model="Numero_cuenta"
-							type="text"
-							:disabled="!show"
-							class="inputtype">
-					</div>
-
-					<div class="external-label">
-						<label for="Equipo_asignado" class="labeltype">
-							<Laptopaccount :size="20" />
-							Equipo Asignado
-						</label>
-						<input id="Equipo_asignado"
-							v-model="Equipo_asignado"
-							type="text"
-							:disabled="!show"
-							class="inputtype">
-					</div>
-
-					<div class="external-label">
-						<label for="Sueldo" class="labeltype">
-							<Cash :size="20" />
-							Sueldo
-						</label>
-						<input id="Sueldo"
-							v-model="Sueldo"
-							type="text"
-							:disabled="!show"
-							class="inputtype">
-					</div>
-
-					<div class="external-label">
-						<NcSelect v-model="Equipo"
-							class="select"
-							:disabled="!show"
-							input-label="Equipo"
-							:options="optionsequipos" />
-					</div>
+					<h2>csa</h2>
 				</div>
+				<div class="box2">
+					<div class="divider">
+						<span>Extructura Laboral</span>
+					</div>
+					<div>
+						<!-- Organization Chart -->
+						<div class="box2" :style="show ? { display: 'none' } : {}">
+							<div class="box-chart">
+								<OrganizationChart :datasource="generateChar(data.uid, gerente, socio)">
+									<template slot-scope="{ nodeData }">
+										<div class="title">
+											{{ nodeData.title }}
+										</div>
+										<div class="content">
+											<div class="center">
+												<div class="avatar-chart mini-top">
+													<NcAvatar
+														:user="nodeData.name"
+														:display-name="nodeData.name"
+														:size="40"
+														:show-user-status="false" />
+												</div>
+												<div class="name-chart">
+													{{ nodeData.name }}
+												</div>
+											</div>
+										</div>
+									</template>
+								</OrganizationChart>
+							</div>
+						</div>
 
-				<!-- Organization Chart -->
-				<div class="box2" :style="show ? { display: 'none' } : {}">
-					<div class="box-chart">
-						<OrganizationChart :datasource="generateChar(data.uid, gerente, socio)">
-							<template slot-scope="{ nodeData }">
-								<div class="title">
-									{{ nodeData.title }}
-								</div>
-								<div class="content">
-									<div class="center">
-										<div class="avatar-chart mini-top">
-											<NcAvatar
-												:user="nodeData.name"
-												:display-name="nodeData.name"
-												:size="40"
-												:show-user-status="false" />
-										</div>
-										<div class="name-chart">
-											{{ nodeData.name }}
-										</div>
+						<!-- Departamento and Puesto Select Inputs -->
+						<div class="main">
+							<div class="label-input-trabajo">
+								<NcSelect id="Id_departamento"
+									v-model="area"
+									class="container__select"
+									:disabled="!show"
+									:options="optionsarea"
+									input-label="Departamento" />
+							</div>
+
+							<div class="label-input-trabajo">
+								<NcSelect id="Id_puesto"
+									v-model="puesto"
+									class="container__select_puesto"
+									:disabled="!show"
+									:options="optionspuesto"
+									input-label="Puesto" />
+							</div>
+						</div>
+
+						<!-- Socio and Gerente Select Inputs -->
+						<div v-if="show" class="main">
+							<div class="label-input-trabajo">
+								<NcSelect v-model="socio"
+									class="select"
+									input-label="Socio"
+									:disabled="!show"
+									:options="EmpleadosList"
+									:user-select="true" />
+							</div>
+
+							<div class="label-input-trabajo">
+								<NcSelect v-model="gerente"
+									class="select"
+									:disabled="!show"
+									input-label="Gerente"
+									:options="EmpleadosList"
+									:user-select="true" />
+							</div>
+						</div>
+						<!-- equipo edit -->
+						<div v-if="show" class="main">
+							<div class="label-input-puesto">
+								<NcSelect v-model="Equipo"
+									class="select"
+									:disabled="!show"
+									input-label="Equipo"
+									:options="optionsequipos" />
+							</div>
+						</div>
+						<div v-else class="">
+							<div class="rst-title">
+								<div class="title_flex">
+									<div class="subtitle_flex">
+										<NcAvatar :user="Equipo.jefe" :display-name="Equipo.jefe" :size="20" />
+									</div>
+									<div>
+										<h1> {{ Equipo.label }} </h1>
 									</div>
 								</div>
-							</template>
-						</OrganizationChart>
+							</div>
+							<div class="rst">
+								<!--ul class="container flex">
+									<li v-for="(item) in peopleEquipo.equipo"
+										:key="item.Id_empleados"
+										class="item flex-item">
+										<NcAvatar :user="item.Id_user" :display-name="item.Id_user" style="margin-top: inherit;" />
+										<h3>{{ item.Id_user }}</h3>
+										<NcAvatar :user="item.Id_user" :display-name="item.Id_user" />
+										<h3>{{ item.Id_user }}</h3>
+									</li>
+								</ul-->
+								<ul>
+									<NcListItem
+										v-for="(item) in peopleEquipo.equipo"
+										:key="item.Id_empleados"
+										:name="item.displayname ? item.displayname : item.Id_user">
+										<template #icon>
+											<NcAvatar disable-menu
+												:size="44"
+												:user="item.Id_user"
+												:display-name="item.Id_user" />
+										</template>
+									</NcListItem>
+								</ul>
+							</div>
+						</div>
 					</div>
 				</div>
 			</div>
-			<br>
-			<!-- Employee Notes -->
-			<NcTextArea class="top"
-				label="NOTAS EMPLEADO"
-				resize="vertical"
-				:disabled="show"
-				:value.sync="inputValue" />
-			<NcButton
-				v-if="automaticsave === 'false'"
-				aria-label="Guardar nota"
-				type="primary"
-				@click="guardarNota()">
-				Guardar nota
-			</NcButton>
 			<br>
 			<div class="div-center">
 				<NcButton
@@ -200,21 +151,21 @@ import OrganizationChart from 'vue-organization-chart'
 import { generateUrl } from '@nextcloud/router'
 import 'vue-nav-tabs/themes/vue-tabs.css'
 import axios from '@nextcloud/axios'
-import debounce from 'debounce'
+// import debounce from 'debounce'
 
 // ICONOS
-import Badgeaccountoutline from 'vue-material-design-icons/BadgeAccountOutline.vue'
-import Piggybankoutline from 'vue-material-design-icons/PiggyBankOutline.vue'
-import Calendarrange from 'vue-material-design-icons/CalendarRange.vue'
-import Laptopaccount from 'vue-material-design-icons/LaptopAccount.vue'
-import Bank from 'vue-material-design-icons/Bank.vue'
-import Cash from 'vue-material-design-icons/Cash.vue'
+// import Badgeaccountoutline from 'vue-material-design-icons/BadgeAccountOutline.vue'
+// import Piggybankoutline from 'vue-material-design-icons/PiggyBankOutline.vue'
+// import Calendarrange from 'vue-material-design-icons/CalendarRange.vue'
+// import Laptopaccount from 'vue-material-design-icons/LaptopAccount.vue'
+// import Bank from 'vue-material-design-icons/Bank.vue'
+// import Cash from 'vue-material-design-icons/Cash.vue'
 
 import {
 	NcAvatar,
-	NcTextArea,
 	NcButton,
 	NcSelect,
+	NcListItem,
 } from '@nextcloud/vue'
 
 export default {
@@ -222,16 +173,16 @@ export default {
 
 	components: {
 		NcAvatar,
-		Badgeaccountoutline,
-		Calendarrange,
-		Bank,
-		Piggybankoutline,
-		Laptopaccount,
-		Cash,
+		// Badgeaccountoutline,
+		// Calendarrange,
+		// Bank,
+		// Piggybankoutline,
+		// Laptopaccount,
+		// Cash,
 		OrganizationChart,
-		NcTextArea,
 		NcButton,
 		NcSelect,
+		NcListItem,
 	},
 
 	props: {
@@ -259,7 +210,6 @@ export default {
 			puesto: '',
 			gerente: null,
 			socio: null,
-			notas: this.data.Notas ?? '',
 			optionsarea: [],
 			optionspuesto: [],
 			optionsequipos: [],
@@ -274,31 +224,13 @@ export default {
 			areaSend: '',
 			puestoSend: '',
 			EquipoSend: '',
+			peopleEquipo: {},
+			EmpleadosList: [],
 		}
-	},
-
-	computed: {
-		inputValue: {
-			get() {
-				return this.notas
-			},
-			set(value) {
-				this.debouncePropertyChange(value.trim())
-			},
-		},
-		debouncePropertyChange() {
-			return debounce(function(value) {
-				this.notas = value
-				if (this.automaticsave === 'true') {
-					this.guardarNota()
-				}
-			}, 700)
-		},
 	},
 
 	watch: {
 		data(news) {
-			this.notas = news.Notas
 			if (news) {
 				this.setAttr(
 					news.Numero_empleado,
@@ -318,7 +250,13 @@ export default {
 	},
 
 	mounted() {
-		this.notas = this.data.Notas
+		this.EmpleadosList = this.empleados.map(empleados => ({
+			id: empleados.Id_user,
+			displayName: empleados.displayname ? empleados.displayname : empleados.Id_user,
+			isNoUser: false,
+			icon: '',
+			user: empleados.Id_user,
+		}))
 		this.setAttr(
 			this.data.Numero_empleado,
 			this.data.Ingreso,
@@ -336,6 +274,7 @@ export default {
 
 	methods: {
 		setAttr(NumeroEmpleado, Ingreso, Area, Puesto, Gerente, Socio, FondoClave, FondoAhorro, NumeroCuenta, Equipo, EquipoAsignado, Sueldo) {
+
 			this.Numero_empleado = this.checknull(NumeroEmpleado)
 			this.Ingreso = this.checknull(Ingreso)
 			this.area = this.checknull(Area)
@@ -384,6 +323,7 @@ export default {
 
 		async getEquipos(Equipo) {
 			this.loading = false
+			this.GetAllEquipo(Equipo)
 			try {
 				await axios.get(generateUrl('/apps/empleados/GetEquiposList'))
 					.then(
@@ -391,12 +331,29 @@ export default {
 							this.optionsequipos = response.data.map(equipo => ({
 								value: equipo.Id_equipo,
 								label: equipo.Nombre,
+								jefe: equipo.Id_jefe_equipo,
 							}))
 							if (Equipo && Equipo.length !== 0) {
-								this.Equipo = this.optionsequipos.find(role => role.value === parseInt(Equipo)).label
+								this.Equipo = this.optionsequipos.find(role => role.value === parseInt(Equipo))
 							} else {
 								this.Equipo = ''
 							}
+						},
+						(err) => {
+							showError(err)
+						},
+					)
+			} catch (err) {
+				showError(t('empleados', 'Se ha producido una excepcion [01] [' + err + ']'))
+			}
+		},
+
+		async GetAllEquipo(equipo) {
+			try {
+				await axios.get(generateUrl('/apps/empleados/GetEmpleadosEquipo/' + equipo))
+					.then(
+						(response) => {
+							this.peopleEquipo = response.data
 						},
 						(err) => {
 							showError(err)
@@ -411,37 +368,17 @@ export default {
 			if (!gerente) gerente = 'Sin Asignar'
 			if (!socio) socio = 'Sin asignar'
 			return {
-				id: '1',
-				name: socio,
-				title: 'Socio',
+				id: 'nodo-oculto',
 				children: [
-					{
-						id: '2',
-						name: gerente,
-						title: 'Gerente',
-						children: [
-							{ id: '3', name: user, title: 'Empleado' },
-						],
-					},
+					{ id: '1', name: socio, title: 'Socio' },
+					{ id: '2', name: gerente, title: 'Gerente' },
+					{ id: '3', name: user, title: 'Empleado' },
 				],
 			}
 		},
 
 		checknull(value) {
 			return value ?? ''
-		},
-
-		async guardarNota() {
-			try {
-				await axios.post(generateUrl('/apps/empleados/GuardarNota'), {
-					id_empleados: this.data.Id_empleados,
-					nota: this.notas,
-				})
-				showSuccess('Nota ha sido actualizada')
-				this.$bus.emit('getall')
-			} catch (err) {
-				showError(t('empleados', 'Se ha producido una excepcion [03] [' + err + ']'))
-			}
 		},
 
 		async CambiosEmpleado() {
@@ -466,6 +403,7 @@ export default {
 					equipo: this.Equipo.value,
 					sueldo: this.checknull(this.Sueldo),
 				})
+				this.GetAllEquipo(this.Equipo.value)
 				this.$bus.emit('getall')
 				this.$bus.emit('show', false)
 				showSuccess('Datos actualizados')
@@ -479,13 +417,16 @@ export default {
 
 <style>
 .box-chart {
-	margin-top: 20px;
+	margin-top: 10px;
+}
+.box{
+	display: flex;
 }
 .box1 {
-	flex: 4;
+	flex: 3;
 }
 .box2 {
-	flex: 1;
+	flex: 2;
 }
 .main {
 	margin-top: 10px;
@@ -524,5 +465,100 @@ export default {
 	border-radius: 5px;
 	border: 1px solid #ccc;
 	width: 100%;
+}
+
+.divider {
+  position: relative;
+  text-align: center;
+  margin: 2rem 0;
+}
+
+.divider::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: #ccc;
+  z-index: 0;
+}
+
+.divider span {
+  position: relative;
+  background: #fff; /* o el color del fondo */
+  padding: 0 1rem;
+  z-index: 1;
+  font-weight: 500;
+}
+
+.label-input-puesto {
+	display: grid;
+	margin-top: 5px;
+	align-items: center;
+	width: 100%;
+}
+
+.rst {
+	padding-top: 5px;
+	padding-bottom: 5px;
+	border: 1px solid rgb(232, 232, 232);
+	border-radius: 3px;
+}
+.rst-title {
+	background-color: rgba(240, 240, 240, 0.37);
+	border: 1px solid rgb(232, 232, 232);
+	border-radius: 3px;
+	width: auto;
+	margin-top: 20px;
+}
+
+.item {
+  box-shadow: rgba(0, 41, 0, 0.15) 0px 0px 11px 1px;
+  width: 100px;
+  margin: 10px;
+  border-radius: 15px;
+}
+
+/*float layout*/
+.float {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+.float:after {
+  content: ".";
+  display: block;
+  height: 0;
+  clear: both;
+  visibility: hidden;
+}
+.float-item {
+  float: left;
+}
+
+/*inline-block*/
+.inline-b {
+  max-width:1200px;
+  margin:0 auto;
+}
+.inline-b-item {
+  display: inline-block;
+}
+.title_flex {
+	display: flex;
+	justify-content: center;
+}
+.subtitle_flex {
+	padding-top: 5px;
+	margin-right: 20px;
+}
+#nodo-oculto {
+  display: none;
+  height: 0;
+  padding: 0;
+  margin: 0;
+}
+.orgchart{
+	min-height: 10px;
 }
 </style>

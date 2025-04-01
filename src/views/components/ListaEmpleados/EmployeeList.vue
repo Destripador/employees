@@ -16,7 +16,7 @@
 		</template>
 
 		<!-- main contacts details -->
-		<EmployeeDetails :data="data_empleado" />
+		<EmployeeDetails :data="data_empleado" :empleados-prop="empleadosProp" />
 	</NcAppContent>
 </template>
 
