@@ -3,11 +3,152 @@
 		<div class="top">
 			<div class="main">
 				<div class="box1">
-					<div class="divider">
-						<span>Informacion Laboral</span>
+					<div>
+						<div class="divider">
+							<span>Informacion Laboral</span>
+						</div>
+						<div class="flexible">
+							<!-- numero de empleado -->
+							<div class="box1Inside">
+								<label for="Numero_empleado" class="labeltype">
+									<Badgeaccountoutline :size="20" />
+									Num. Empleado
+								</label>
+								<input id="Numero_empleado"
+									v-model="Numero_empleado"
+									type="text"
+									:disabled="!show"
+									class="inputtype">
+							</div>
+
+							<!-- Sueldo -->
+							<div class="box1Inside">
+								<label for="Sueldo" class="labeltype">
+									<Cash :size="20" />
+									Sueldo
+								</label>
+								<input id="Sueldo"
+									v-model="Sueldo"
+									type="text"
+									:disabled="!show"
+									class="inputtype">
+							</div>
+
+							<!-- Numero de cuenta bancaria -->
+							<div class="box1Inside">
+								<label for="Numero_cuenta" class="labeltype">
+									<Bank :size="20" />
+									Cuenta Bancaria
+								</label>
+								<input id="Numero_cuenta"
+									v-model="Numero_cuenta"
+									type="text"
+									:disabled="!show"
+									class="inputtype">
+							</div>
+						</div>
+						<div class="flexible top">
+							<!-- Fecha de ingreso -->
+							<div class="box1Inside">
+								<label for="Ingreso" class="labeltype">
+									<Calendarrange :size="20" />
+									Fecha de Ingreso
+								</label>
+								<input id="Ingreso"
+									v-model="Ingreso"
+									type="date"
+									:disabled="!show"
+									class="inputtype">
+							</div>
+
+							<!-- Aniversario -->
+							<div class="box1Inside">
+								<label for="Aniversario" class="labeltype">
+									<PartyPopper :size="20" />
+									Aniversario
+								</label>
+								<input id="Aniversario"
+									v-model="Aniversario"
+									type="text"
+									:disabled="!show"
+									class="inputtype">
+							</div>
+
+							<!-- vacaciones disponibles -->
+							<div class="box1Inside">
+								<label for="Vacaciones" class="labeltype">
+									<BagSuitcase :size="20" />
+									Vacaciones
+								</label>
+								<input id="Vacaciones"
+									v-model="Vacaciones"
+									type="text"
+									:disabled="!show"
+									class="inputtype">
+							</div>
+
+							<!-- calcular vacaciones -->
+							<div class="topRefresh MarginRight">
+								<NcButton
+									type="primary"
+									@click="CambiosEmpleado()">
+									<template #icon>
+										<Refresh :size="20" />
+									</template>
+								</NcButton>
+							</div>
+						</div>
 					</div>
-					<h2>csa</h2>
+					<div>
+						<div class="divider">
+							<span>Fondo de ahorro</span>
+						</div>
+						<div class="flexible">
+							<div class="box1Inside">
+								<label for="Fondo_clave" class="labeltype">
+									<Piggybankoutline :size="20" />
+									Fondo Clave
+								</label>
+								<input id="Fondo_clave"
+									v-model="Fondo_clave"
+									type="text"
+									:disabled="!show"
+									class="inputtype">
+							</div>
+
+							<div class="box1Inside">
+								<label for="Fondo_ahorro" class="labeltype">
+									<Piggybankoutline :size="20" />
+									Fondo ahorro
+								</label>
+								<input id="Fondo_ahorro"
+									v-model="Fondo_ahorro"
+									type="text"
+									:disabled="!show"
+									class="inputtype">
+							</div>
+						</div>
+					</div>
+					<div>
+						<div class="divider">
+							<span>Sistemas</span>
+						</div>
+						<div class="flexible">
+							<div class="box1Inside">
+								<label for="Equipo_asignado" class="labeltype">
+									<Laptopaccount :size="20" />
+									Equipo Asignado
+								</label>
+								<input id="Equipo_asignado"
+									v-model="Equipo_asignado"
+									type="text"
+									:disabled="!show"
+									class="inputtype">
+							</div>
+						</div>
+					</div>
 				</div>
+
 				<div class="box2">
 					<div class="divider">
 						<span>Extructura Laboral</span>
@@ -154,12 +295,15 @@ import axios from '@nextcloud/axios'
 // import debounce from 'debounce'
 
 // ICONOS
-// import Badgeaccountoutline from 'vue-material-design-icons/BadgeAccountOutline.vue'
-// import Piggybankoutline from 'vue-material-design-icons/PiggyBankOutline.vue'
-// import Calendarrange from 'vue-material-design-icons/CalendarRange.vue'
-// import Laptopaccount from 'vue-material-design-icons/LaptopAccount.vue'
-// import Bank from 'vue-material-design-icons/Bank.vue'
-// import Cash from 'vue-material-design-icons/Cash.vue'
+import Badgeaccountoutline from 'vue-material-design-icons/BadgeAccountOutline.vue'
+import Piggybankoutline from 'vue-material-design-icons/PiggyBankOutline.vue'
+import Calendarrange from 'vue-material-design-icons/CalendarRange.vue'
+import Laptopaccount from 'vue-material-design-icons/LaptopAccount.vue'
+import BagSuitcase from 'vue-material-design-icons/BagSuitcase.vue'
+import PartyPopper from 'vue-material-design-icons/PartyPopper.vue'
+import Refresh from 'vue-material-design-icons/Refresh.vue'
+import Bank from 'vue-material-design-icons/Bank.vue'
+import Cash from 'vue-material-design-icons/Cash.vue'
 
 import {
 	NcAvatar,
@@ -173,12 +317,15 @@ export default {
 
 	components: {
 		NcAvatar,
-		// Badgeaccountoutline,
-		// Calendarrange,
-		// Bank,
-		// Piggybankoutline,
-		// Laptopaccount,
-		// Cash,
+		Badgeaccountoutline,
+		Calendarrange,
+		Bank,
+		PartyPopper,
+		BagSuitcase,
+		Refresh,
+		Piggybankoutline,
+		Laptopaccount,
+		Cash,
 		OrganizationChart,
 		NcButton,
 		NcSelect,
@@ -226,6 +373,8 @@ export default {
 			EquipoSend: '',
 			peopleEquipo: {},
 			EmpleadosList: [],
+			Aniversario: '',
+			Vacaciones: '',
 		}
 	},
 
@@ -424,6 +573,13 @@ export default {
 }
 .box1 {
 	flex: 3;
+	padding-right: 5%;
+}
+.box1Inside {
+	flex: 3;
+}
+.MarginRight {
+	padding-right: 5px;
 }
 .box2 {
 	flex: 2;
@@ -450,9 +606,9 @@ export default {
 	gap: 10px;
 	margin-top: 2px;
 }
-.labeltype {
+.labelEmpleado {
 	font-weight: bold;
-	display: flex;
+	display: inline-flex;
 	align-items: center;
 	gap: 5px;
 	min-width: 150px;
@@ -560,5 +716,13 @@ export default {
 }
 .orgchart{
 	min-height: 10px;
+}
+.flexible {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+}
+.topRefresh {
+	margin-top: 26px;
 }
 </style>
