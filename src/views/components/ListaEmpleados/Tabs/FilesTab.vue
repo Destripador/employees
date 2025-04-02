@@ -140,12 +140,17 @@ export default {
 	},
 
 	mounted() {
-		this.currentPath = `${defaultRootPath}/EMPLEADOS/${this.data.uid} - ${this.data.displayname.toUpperCase()}/`
+		const nombre = (this.data && typeof this.data.displayname === 'string' && this.data.displayname.trim())
+			? this.data.displayname
+			: this.data.uid
+
+		this.currentPath = `${defaultRootPath}/EMPLEADOS/${this.data.uid} - ${nombre.toUpperCase()}/`
+
 		this.fetchFiles()
-		// 🔄 Auto-actualizar la lista de archivos cada 30 segundos
+
 		this.autoRefreshInterval = setInterval(() => {
 			this.fetchFiles()
-		}, 10000) // 30 segundos
+		}, 10000)
 	},
 
 	beforeDestroy() {
