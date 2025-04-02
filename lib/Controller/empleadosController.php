@@ -135,7 +135,8 @@ class EmpleadosController extends BaseController {
             // Verificar si el grupo "empleados" existe
             $group = $this->groupManager->get("empleados");
             if (!$group) {
-                return "Error: El grupo 'empleados' no existe en Nextcloud.";
+                
+                 $this->groupManager->add("empleados");
             }
 
             // Verificar si el usuario ya pertenece al grupo
