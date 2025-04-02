@@ -130,15 +130,16 @@ class EmpleadosController extends BaseController {
     #[NoAdminRequired]
     public function ActivarEmpleado(string $id_user): string {
         try {
-            if (!$group) {
-                $this->groupManager->createGroup("empleados");
-            }
-            // verificar que el usuario exista en nextcloud
-            $user = $this->userManager->get($id_user);
             // Verificar si el grupo "empleados" existe
             $group = $this->groupManager->get("empleados");
-            
+            if (!$group) {
+                $this->groupManager->createGroup("empleados");
+                $group = $this->groupManager->get("empleados");
+            }
 
+            // verificar que el usuario exista en nextcloud
+            $user = $this->userManager->get($id_user);
+        
             // Verificar si el usuario ya pertenece al grupo
             if (!$group->inGroup($user)) {
                 $group->addUser($user);
@@ -208,7 +209,6 @@ class EmpleadosController extends BaseController {
 	public function EliminarEmpleado(int $id_empleados, string $id_user): string {
 		try{
 
-			$this->empleadosMapper->deleteByIdEmpleado($id_empleados);
             // verificar que el usuario exista en nextcloud
             $user = $this->userManager->get($id_user);
             // Verificar si el grupo "empleados" existe
@@ -219,6 +219,7 @@ class EmpleadosController extends BaseController {
                 $group->removeUser($user);
             }
             
+			$this->empleadosMapper->deleteByIdEmpleado($id_empleados);
 
 			return "ok"; 
 		}

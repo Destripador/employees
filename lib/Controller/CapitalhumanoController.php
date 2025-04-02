@@ -103,8 +103,14 @@ class CapitalhumanoController extends Controller {
 	}
 
 	private function processUserInsertion($userId, $gestor, $folderPath): void {
-		$user = $this->userManager->get($userId);
+		// Verificar si el grupo "recursos_humanos" existe
 		$group = $this->groupManager->get("recursos_humanos");
+		if (!$group) {
+			$this->groupManager->createGroup("recursos_humanos");
+			$group = $this->groupManager->get("recursos_humanos");
+		}
+
+		$user = $this->userManager->get($userId);
 
 		if ($user && $group && !$group->inGroup($user)) {
 			$group->addUser($user);
