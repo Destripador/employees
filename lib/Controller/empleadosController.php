@@ -130,14 +130,14 @@ class EmpleadosController extends BaseController {
     #[NoAdminRequired]
     public function ActivarEmpleado(string $id_user): string {
         try {
+            if (!$group) {
+                $this->groupManager->createGroup("empleados");
+            }
             // verificar que el usuario exista en nextcloud
             $user = $this->userManager->get($id_user);
             // Verificar si el grupo "empleados" existe
             $group = $this->groupManager->get("empleados");
-            if (!$group) {
-                
-                 $this->groupManager->add("empleados");
-            }
+            
 
             // Verificar si el usuario ya pertenece al grupo
             if (!$group->inGroup($user)) {
