@@ -5,6 +5,9 @@
 			<VTab title="Empleados">
 				<EmpleadosSettings />
 			</VTab>
+			<VTab title="Tiempo laboral">
+				<TiempoLaboralSettings />
+			</VTab>
 			<VTab title="Configuraciones">
 				<ListSettings />
 			</VTab>
@@ -13,6 +16,7 @@
 </template>
 
 <script>
+import TiempoLaboralSettings from './TiempoLaboralSettings.vue'
 import EmpleadosSettings from './EmpleadosSettings.vue'
 import ListSettings from './ListSettings.vue'
 // global registration
@@ -37,6 +41,7 @@ export default {
 	name: 'Settings',
 	components: {
 		EmpleadosSettings,
+		TiempoLaboralSettings,
 		ListSettings,
 		VueTabs,
 		VTab,

@@ -41,8 +41,8 @@ class Version4Date20250319230629 extends SimpleMigrationStep {
 			$table = $schema->createTable('aniversarios');
 			$table->addColumn('id_aniversario', 'integer', ['autoincrement' => true, 'unsigned' => true]);
 			$table->addColumn('numero_aniversario', 'integer', ['notnull' => true]);
-			$table->addColumn('fecha_de', 'datetime', ['notnull' => true]);
-			$table->addColumn('fecha_hasta', 'datetime', ['notnull' => true]);
+			$table->addColumn('fecha_de', 'datetime', ['notnull' => false]);
+			$table->addColumn('fecha_hasta', 'datetime', ['notnull' => false]);
 			$table->addColumn('dias', 'decimal', ['precision' => 5, 'scale' => 2, 'notnull' => true]);
 			$table->addColumn('timestamp', 'datetime', ['notnull' => true, 'default' => 'CURRENT_TIMESTAMP']);
 			$table->setPrimaryKey(['id_aniversario']);

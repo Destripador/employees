@@ -85,7 +85,7 @@ class Version2Date20240724190637 extends SimpleMigrationStep {
 	 */
 	public function postSchemaChange(IOutput $output, Closure $schemaClosure, array $options): void {
 		$qb = $this->db->getQueryBuilder();
-		$nombres = ['usuario_almacenamiento', 'automatic_save_note'];
+		$nombres = ['usuario_almacenamiento', 'automatic_save_note', 'acumular_vacaciones'];
 		  
 		foreach ($nombres as $nombre) {
 			$qb->insert('empleados_conf')

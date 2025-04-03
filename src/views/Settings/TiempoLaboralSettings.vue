@@ -1,0 +1,269 @@
+<!-- eslint-disable vue/require-v-for-key -->
+<template>
+	<div>
+		<div class="container">
+			<div class="flex">
+				<div class="mitad">
+					<div>
+						<div class="table_component" role="region" tabindex="0">
+							<table>
+								<caption>
+									<span class="caption-title">Tabla de aniversarios</span>
+									<span class="caption-buttons">
+										<NcActions>
+											<NcActionButton :close-after-click="true" @click="showAddAniversario">
+												<template #icon>
+													<Plus :size="20" />
+												</template>
+												Crear nuevo aniversario
+											</NcActionButton>
+											<NcActionButton :close-after-click="true" @click="showMessage('Edit')">
+												<template #icon>
+													<Import :size="20" />
+												</template>
+												Importar listado
+											</NcActionButton>
+											<NcActionButton :close-after-click="true" @click="showMessage('Edit')">
+												<template #icon>
+													<Export :size="20" />
+												</template>
+												Exportar listado
+											</NcActionButton>
+										</NcActions>
+									</span>
+								</caption>
+								<thead>
+									<tr>
+										<th>Numero Aniversario</th>
+										<th>Dias libres</th>
+										<th>opciones</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr v-for="(item) in Aniversarios" v-bind="$attrs">
+										<td>
+											{{ item.numero_aniversario }}
+										</td>
+										<td>
+											{{ item.dias }}
+										</td>
+										<td>
+											<NcActions>
+												<NcActionButton @click="showMessage(item)">
+													<template #icon>
+														<Cog :size="20" />
+													</template>
+													Editar registro
+												</NcActionButton>
+												<NcActionButton @click="showMessage(item)">
+													<template #icon>
+														<Delete :size="20" />
+													</template>
+													Eliminar
+												</NcActionButton>
+											</NcActions>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+				<div class="mitad">
+					<h1 class="text-2xl font-bold">
+						Tipos de ausencias
+					</h1>
+				</div>
+			</div>
+		</div>
+		<NcModal
+			v-if="modalAddAniversario"
+			ref="modalRef"
+			name="agregar"
+			@close="closeModalAniversario">
+			<div class="modal__content">
+				<h2>Agregue informacion del nuevo aniversario</h2>
+				<div class="form-group">
+					<NcTextField label="numero de aniversario" :value.sync="NumeroAniversario" />
+				</div>
+				<div class="form-group">
+					<NcTextField label="Dias" :value.sync="DiasAniversario" />
+				</div>
+
+				<NcButton
+					:disabled="!NumeroAniversario || !DiasAniversario"
+					@click="AgregarNuevoAniversario">
+					Submit
+				</NcButton>
+			</div>
+		</NcModal>
+	</div>
+</template>
+
+<script>
+// global registration
+// import { VueTabs, VTab } from 'vue-nav-tabs/dist/vue-tabs.js'
+// import 'vue-nav-tabs/themes/vue-tabs.css'
+
+// iconos
+// import AccountGroup from 'vue-material-design-icons/AccountGroup.vue'
+import Delete from 'vue-material-design-icons/Delete.vue'
+import Plus from 'vue-material-design-icons/Plus.vue'
+import Import from 'vue-material-design-icons/Import.vue'
+import Export from 'vue-material-design-icons/Export.vue'
+// import WalletPlus from 'vue-material-design-icons/WalletPlus'
+import Cog from 'vue-material-design-icons/Cog.vue'
+// import Check from 'vue-material-design-icons/Check'
+
+// imports
+import {
+	NcActions,
+	NcActionButton,
+	NcModal,
+	NcTextField,
+	NcButton,
+} from '@nextcloud/vue'
+import { ref } from 'vue'
+import { showError, showSuccess } from '@nextcloud/dialogs'
+import { generateUrl } from '@nextcloud/router'
+import axios from '@nextcloud/axios'
+
+export default {
+	name: 'TiempoLaboralSettings',
+	components: {
+		NcActions,
+		NcActionButton,
+		NcModal,
+		NcTextField,
+		NcButton,
+		Plus,
+		Import,
+		Export,
+		Delete,
+		Cog,
+	},
+
+	data() {
+		return {
+			modalAddAniversario: false,
+			modalRef: ref(null),
+
+			Aniversarios: [],
+			NumeroAniversario: null,
+			DiasAniversario: null,
+		}
+	},
+
+	mounted() {
+		this.getAniversarios()
+	},
+
+	methods: {
+
+		showAddAniversario() {
+			this.modalAddAniversario = true
+		},
+		closeModalAniversario() {
+			this.modalAddAniversario = false
+		},
+		async getAniversarios() {
+			// this.loading = true
+			this.DiasAniversario = null
+			this.NumeroAniversario = null
+			try {
+				await axios.get(generateUrl('/apps/empleados/Getaniversarios'))
+					.then(
+						(response) => {
+							this.Aniversarios = response.data
+							// eslint-disable-next-line no-console
+							console.log(this.Aniversarios)
+							// this.loading = false
+						},
+						(err) => {
+							showError(err)
+						},
+					)
+			} catch (err) {
+				showError(t('empleados', 'Se ha producido una excepcion [01] [' + err + ']'))
+			}
+		},
+		async AgregarNuevoAniversario() {
+			try {
+				await axios.post(generateUrl('/apps/empleados/AgregarNuevoAniversario'), {
+					numero_aniversario: this.NumeroAniversario,
+					dias_aniversario: this.DiasAniversario,
+				})
+				showSuccess('Nota ha sido actualizada')
+				this.getAniversarios()
+			} catch (err) {
+				showError(t('empleados', 'Se ha producido una excepcion [03] [' + err + ']'))
+			}
+		},
+	},
+}
+</script>
+
+<style>
+.flex {
+    display: flex;
+    justify-content: space-between;
+}
+.mitad {
+      flex: 1;
+      padding: 20px;
+      border: 1px solid #000;
+}
+
+.table_component {
+    overflow: auto;
+    width: 100%;
+}
+
+.table_component table {
+    border: 1px solid #dededf;
+    height: 100%;
+    width: 100%;
+    table-layout: fixed;
+    border-collapse: collapse;
+    border-spacing: 1px;
+    text-align: left;
+}
+
+.table_component th {
+    border: 1px solid #dededf;
+    background-color: #eceff1;
+    color: #000000;
+    padding: 5px;
+}
+
+.table_component td {
+    border: 1px solid #dededf;
+    background-color: #ffffff;
+    color: #000000;
+    padding: 5px;
+}
+
+.caption-title {
+    font-weight: bold;
+}
+
+.caption-buttons {
+    float: right;
+    padding-bottom: 6px;
+}
+
+.modal__content {
+	margin: 50px;
+}
+
+.modal__content h2 {
+	text-align: center;
+}
+
+.form-group {
+	margin: calc(var(--default-grid-baseline) * 4) 0;
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+}
+</style>

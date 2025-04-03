@@ -17,6 +17,30 @@
 		</div>
 
 		<div class="container">
+			<!-- Bloque: Switch para “guardado automático de notas” -->
+			<div class="grid">
+				<NcCheckboxRadioSwitch
+					:checked="guardado_notas"
+					type="switch"
+					@update:checked="onChangeGuardadoNotas">
+					Guardado automático de notas
+				</NcCheckboxRadioSwitch>
+			</div>
+
+			<br>
+
+			<!-- Bloque: Switch para “Acumular vacaciones” -->
+			<div class="grid">
+				<NcCheckboxRadioSwitch
+					:checked="acumular_vacaciones"
+					type="switch"
+					@update:checked="onChangeacumular_vacaciones">
+					Permitir a todos los usuarios acumular vacaciones
+				</NcCheckboxRadioSwitch>
+			</div>
+
+			<br>
+
 			<!-- Bloque: Selector único para el Gestor de datos -->
 			<div class="grid">
 				<NcNoteCard v-if="selected_user" type="warning" heading="ATENCION">
@@ -39,18 +63,6 @@
 					@click="saveGestor">
 					Aplicar cambios
 				</NcButton>
-			</div>
-
-			<br>
-
-			<!-- Bloque: Switch para “guardado automático de notas” -->
-			<div class="grid">
-				<NcCheckboxRadioSwitch
-					:checked="guardado_notas"
-					type="switch"
-					@update:checked="onChangeGuardadoNotas">
-					Guardado automático de notas
-				</NcCheckboxRadioSwitch>
 			</div>
 
 			<br>
@@ -116,6 +128,7 @@ export default {
 
 			selected_user: null, // Gestor de datos seleccionado
 			guardado_notas: false,
+			acumular_vacaciones: false,
 
 			/**
 			 * SELECTOR MÚLTIPLE - Capital Humano
@@ -172,6 +185,9 @@ export default {
 				// Guardado automático de notas
 				this.guardado_notas = (response.data.Guardado_notas === 'true')
 
+				// Acumular vacaciones
+				this.acumular_vacaciones = (response.data.Acumular_vacaciones === 'true')
+
 				this.loading = false
 			} catch (err) {
 				this.loading = false
@@ -227,6 +243,23 @@ export default {
 				await axios.post(generateUrl('/apps/empleados/ActualizarConfiguracion'), {
 					id_configuracion: 'automatic_save_note',
 					data: this.guardado_notas.toString(),
+				})
+				showSuccess('Configuración actualizada')
+			} catch (err) {
+				showError('Excepción [ActualizarConfiguracion]: ' + err)
+				console.error(err)
+			}
+		},
+
+		/**
+		 * Cambia la configuración de acumulo de vacaciones
+		 */
+		 async onChangeacumular_vacaciones() {
+			this.acumular_vacaciones = !this.acumular_vacaciones
+			try {
+				await axios.post(generateUrl('/apps/empleados/ActualizarConfiguracion'), {
+					id_configuracion: 'acumular_vacaciones',
+					data: this.acumular_vacaciones.toString(),
 				})
 				showSuccess('Configuración actualizada')
 			} catch (err) {
