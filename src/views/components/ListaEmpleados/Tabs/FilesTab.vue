@@ -132,7 +132,11 @@ export default {
 	watch: {
 		data(news, old) {
 			if (news) {
-				this.currentPath = `${defaultRootPath}/EMPLEADOS/${news.uid} - ${news.displayname.toUpperCase()}/`
+				const nombre = (news && typeof news.displayname === 'string' && news.displayname.trim())
+					? news.displayname
+					: news.uid
+
+				this.currentPath = `${defaultRootPath}/EMPLEADOS/${news.uid} - ${nombre.toUpperCase()}/`
 				this.navigationStack = []
 				this.fetchFiles()
 			}

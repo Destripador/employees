@@ -27,7 +27,13 @@
 												<template #icon>
 													<Export :size="20" />
 												</template>
-												Exportar listado
+												Exportar listado / plantilla
+											</NcActionButton>
+											<NcActionButton :close-after-click="true" @click="vaciar()">
+												<template #icon>
+													<Delete :size="20" />
+												</template>
+												Vaciar tabla aniversarios
 											</NcActionButton>
 										</NcActions>
 									</span>
@@ -47,22 +53,6 @@
 										<td>
 											{{ item.dias }}
 										</td>
-										<!--td>
-											<NcActions>
-												<NcActionButton @click="showMessage(item)">
-													<template #icon>
-														<Cog :size="20" />
-													</template>
-													Editar registro
-												</NcActionButton>
-												<NcActionButton @click="showMessage(item)">
-													<template #icon>
-														<Delete :size="20" />
-													</template>
-													Eliminar
-												</NcActionButton>
-											</NcActions>
-										</td-->
 									</tr>
 								</tbody>
 							</table>
@@ -113,7 +103,7 @@
 
 // iconos
 // import AccountGroup from 'vue-material-design-icons/AccountGroup.vue'
-// import Delete from 'vue-material-design-icons/Delete.vue'
+import Delete from 'vue-material-design-icons/Delete.vue'
 import Plus from 'vue-material-design-icons/Plus.vue'
 import Import from 'vue-material-design-icons/Import.vue'
 import Export from 'vue-material-design-icons/Export.vue'
@@ -145,6 +135,7 @@ export default {
 		Plus,
 		Import,
 		Export,
+		Delete,
 	},
 
 	data() {
@@ -204,6 +195,24 @@ export default {
 				this.getAniversarios()
 			} catch (err) {
 				showError(t('empleados', 'Se ha producido una excepcion [03] [' + err + ']'))
+			}
+		},
+		async vaciar() {
+			// this.loading = true
+			this.closeModalAniversario()
+			try {
+				await axios.get(generateUrl('/apps/empleados/VaciarAniversarios'))
+					.then(
+						(response) => {
+							this.getAniversarios()
+							showSuccess('Tabla de aniversarios vaciada')
+						},
+						(err) => {
+							showError(err)
+						},
+					)
+			} catch (err) {
+				showError(t('empleados', 'Se ha producido una excepcion [01] [' + err + ']'))
 			}
 		},
 		Exportar() {

@@ -73,6 +73,7 @@ return [
 
 		/****************************** ANIVERSARIOS ****************************************/
 		['name' => 'aniversarios#Getaniversarios', 'url' => '/Getaniversarios', 'verb' => 'GET'],
+		['name' => 'aniversarios#VaciarAniversarios', 'url' => '/VaciarAniversarios', 'verb' => 'GET'],
 		['name' => 'aniversarios#AgregarNuevoAniversario', 'url' => '/AgregarNuevoAniversario', 'verb' => 'POST'],
 		['name' => 'aniversarios#ExportListAniversarios', 'url' => '/ExportListAniversarios', 'verb' => 'GET'],
 		['name' => 'aniversarios#ImportListAniversarios', 'url' => '/ImportListAniversarios', 'verb' => 'POST'],

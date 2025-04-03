@@ -83,6 +83,20 @@ class AniversariosController extends Controller {
             }
         }
     }
+        
+    /**
+     * Elimina un área por ID.
+     */
+    #[UseSession]
+    #[NoAdminRequired]
+    public function VaciarAniversarios(): string {
+        try {
+            $this->aniversarioMapper->VaciarAniversarios();
+            return "ok";
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
 
     /**
      * Elimina un área por ID.

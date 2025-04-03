@@ -68,6 +68,14 @@ class aniversarioMapper extends QBMapper {
 		$query->execute();
 	}
 
+	public function VaciarAniversarios(): void {
+		$qb = $this->db->getQueryBuilder();
+
+		$qb->delete($this->getTableName());
+
+		$result = $qb->execute();
+	}
+
 	public function EliminarArea(string $id_departamento): void {
 		$qb = $this->db->getQueryBuilder();
 
