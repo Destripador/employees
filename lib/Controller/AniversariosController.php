@@ -50,16 +50,14 @@ class AniversariosController extends Controller {
      * Exporta la lista de áreas a un archivo XLSX.
      */
     public function ExportListAniversarios(): array {
-        $aniversarios = $this->departamentosMapper->GetAniversarios();
-        $books = [['Id_departamento', 'Id_padre', 'Nombre', 'created_at', 'updated_at']];
+        $aniversarios = $this->aniversarioMapper->Getaniversarios();
+        $books = [['id_universario', 'numero_aniversario', 'dias']];
 
         foreach ($aniversarios as $area) {
             $books[] = [
-                $area['Id_departamento'],
-                $area['Id_padre'],
-                $area['Nombre'],
-                $area['created_at'],
-                $area['updated_at'],
+                $area['id_aniversario'],
+                $area['numero_aniversario'],
+                $area['dias'],
             ];
         }
 
@@ -71,19 +69,16 @@ class AniversariosController extends Controller {
      * Importa la lista de áreas desde un archivo XLSX.
      */
     public function ImportListAniversarios(): void {
-        $file = $this->getUploadedFile('AreafileXLSX');
+        $file = $this->getUploadedFile('fileXLSX');
         if ($xlsx = \Shuchkin\SimpleXLSX::parse($file['tmp_name'])) {
             foreach ($xlsx->rows() as $row) {
                 if (!empty($row[0])) {
-                    $this->departamentosMapper->updateAniversarios((string) $row[0], (string) $row[1], (string) $row[2]);
+                    $this->aniversarioMapper->updateAniversarios((int) $row[0], (int) $row[1], (float) $row[2]);
                 } else {
-                    $timestamp = date('Y-m-d');
-                    $area = new departamentos();
-                    $area->setid_padre((string) $row[1]);
-                    $area->setnombre((string) $row[2]);
-                    $area->setcreated_at($timestamp);
-                    $area->setupdated_at($timestamp);
-                    $this->departamentosMapper->insert($area);
+                    $area = new aniversario();
+                    $area->setnumero_aniversario($row[1]);
+                    $area->setdias($row[2]);
+                    $this->aniversarioMapper->insert($area);
                 }
             }
         }
@@ -117,10 +112,12 @@ class AniversariosController extends Controller {
      */
     #[UseSession]
     #[NoAdminRequired]
-    public function AgregarNuevoAniversario(int $numero_aniversario, float $dias_aniversario): void {
+    public function AgregarNuevoAniversario(int $numero_aniversario, string $fecha_de, string $fecha_hasta, float $dias): void {
         $area = new aniversario();
         $area->setnumero_aniversario($numero_aniversario);
-        $area->setdias($dias_aniversario);
+        $area->setfecha_de($fecha_de);
+        $area->setfecha_hasta($fecha_hasta);
+        $area->setdias($dias);
         $this->aniversarioMapper->insert($area);
     }
 

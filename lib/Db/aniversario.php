@@ -9,14 +9,14 @@ use OCP\AppFramework\Db\Entity;
 
 class aniversario extends Entity {
     
-    protected int $id_aniversario = '';
-    protected int $numero_aniversario = '';
+    protected ?int $id_aniversario = null;
+    protected ?int $numero_aniversario = null;
     protected string $fecha_de = '';
     protected string $fecha_hasta = '';
-    protected float $dias = '';
+	protected ?float $dias = null;
 
 	public function __construct() {
-        $this->addType('Id_aniversario', 'int');
+        $this->addType('id_aniversario', 'int');
         $this->addType('numero_aniversario', 'int');
 		$this->addType('fecha_de', 'string');
 		$this->addType('fecha_hasta', 'string');
@@ -25,7 +25,7 @@ class aniversario extends Entity {
 
 	public function read(): array {
 		return [
-			'Id_aniversario' => $this->id_aniversario,
+			'id_aniversario' => $this->id_aniversario,
 			'numero_aniversario' => $this->numero_aniversario,
 			'fecha_de' => $this->fecha_de,
 			'fecha_hasta' => $this->fecha_hasta,

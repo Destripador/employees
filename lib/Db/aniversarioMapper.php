@@ -55,18 +55,15 @@ class aniversarioMapper extends QBMapper {
 		$result = $qb->execute();
 	}
 
-	public function updateAreas(string $Id_departamento, string $Id_padre, string $Nombre ): void {
-		$timestamp = date('Y-m-d');
-
-		if(empty($Id_departamento) && $Id_departamento != 0){ $Id_departamento = null; }
-		if(empty($Id_padre) && $Id_padre != 0){ $Id_padre = null; }
-		if(empty($Nombre) && $Nombre != 0){ $Nombre = null; }
+	public function updateAniversarios(int $id_aniversario, int $numero_aniversario, float $dias ): void {
+		if(empty($id_aniversario) && $id_aniversario != 0){ $id_aniversario = null; }
+		if(empty($numero_aniversario) && $numero_aniversario != 0){ $numero_aniversario = null; }
+		if(empty($dias) && $dias != 0){ $dias = null; }
 		$query = $this->db->getQueryBuilder();
 		$query->update($this->getTableName())
-			->set('Id_padre', $query->createNamedParameter($Id_padre))
-			->set('Nombre', $query->createNamedParameter($Nombre))
-			->set('updated_at', $query->createNamedParameter($timestamp))
-			->where($query->expr()->eq('Id_departamento', $query->createNamedParameter($Id_departamento)));
+			->set('numero_aniversario', $query->createNamedParameter($numero_aniversario))
+			->set('dias', $query->createNamedParameter($dias))
+			->where($query->expr()->eq('id_aniversario', $query->createNamedParameter($id_aniversario)));
 	
 		$query->execute();
 	}
