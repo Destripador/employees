@@ -27,7 +27,7 @@ class empleadosMapper extends QBMapper {
 			->from($this->getTableName(), 'o')
 			->innerJoin('o', 'users', 'c', $qb->expr()->eq('uid', 'id_user'))
 			->where($qb->expr()->eq('Estado', $qb->createNamedParameter(1)));
-		
+	 
 		$result = $qb->execute();
 		$users = $result->fetchAll();
 		$result->closeCursor();

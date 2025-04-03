@@ -19,6 +19,8 @@ use OCA\Empleados\Db\empleados;
 use OCA\Empleados\Db\departamentos;
 use OCA\Empleados\Db\configuraciones;
 
+use OCP\IDBConnection;
+
 use OCP\Files\IRootFolder;
 
 use OCP\AppFramework\Http\Attribute\UseSession;
@@ -128,7 +130,7 @@ class EmpleadosController extends BaseController {
      */
     #[UseSession]
     #[NoAdminRequired]
-    public function ActivarEmpleado(string $id_user): string {
+    public function ActivarEmpleado(string $id_user): int {
         try {
             // Verificar si el grupo "empleados" existe
             $group = $this->groupManager->get("empleados");
@@ -165,8 +167,12 @@ class EmpleadosController extends BaseController {
                 $empleado->setupdated_at($timestamp);
 
                 $this->empleadosMapper->insert($empleado);
+                                
+                // Obtén la conexión a través del contenedor de Nextcloud
+                $connection = \OC::$server->get(IDBConnection::class);
+                $idEmpleado = $connection->lastInsertId('empleados');
 
-                return "ok";
+                return $idEmpleado;
             } else {
                 return "No existe usuario gestor";
             }
