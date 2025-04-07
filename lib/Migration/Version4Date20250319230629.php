@@ -67,7 +67,7 @@ class Version4Date20250319230629 extends SimpleMigrationStep {
 			$table->addColumn('prima_vacacional', 'boolean', ['notnull' => false, 'default' => 0]);
 			$table->addColumn('timestamp', 'datetime', ['notnull' => true, 'default' => 'CURRENT_TIMESTAMP']);
 			$table->setPrimaryKey(['id_ausencias']);
-			$table->addIndex(['id_empleado']);
+			$table->addUniqueIndex(['id_empleado']);
 			$table->addForeignKeyConstraint('aniversarios', ['id_aniversario'], ['id_aniversario'], ['onDelete' => 'SET NULL']);
 		}
 		

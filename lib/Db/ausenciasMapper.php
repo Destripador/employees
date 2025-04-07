@@ -46,15 +46,6 @@ class ausenciasMapper extends QBMapper {
 		return $users;
 	}
 
-	public function deleteByIdEmpleado(int $id_ausencias): void {
-		$qb = $this->db->getQueryBuilder();
-
-		$qb->delete($this->getTableName())
-			->where($qb->expr()->eq('Nombre', $qb->createNamedParameter($Nombre)));
-
-		$result = $qb->execute();
-	}
-
 	public function updateAusencias(int $id_ausencias, int $numero_ausencias, float $dias ): void {
 		if(empty($id_ausencias) && $id_ausencias != 0){ $id_ausencias = null; }
 		if(empty($numero_ausencias) && $numero_ausencias != 0){ $numero_ausencias = null; }
@@ -83,6 +74,16 @@ class ausenciasMapper extends QBMapper {
 			->where($qb->expr()->eq('Id_departamento', $qb->createNamedParameter($id_departamento)));
 
 		$result = $qb->execute();
+	}
+
+	public function deleteByIdEmpleado(int $id_empleados): void {
+		$qb = $this->db->getQueryBuilder();
+
+		$qb->delete($this->getTableName())
+			->where($qb->expr()->eq('id_empleado', $qb->createNamedParameter($id_empleados)));
+			
+
+		$qb->executeStatement();
 	}
 
 }
