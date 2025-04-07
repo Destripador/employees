@@ -63,7 +63,7 @@ class Version4Date20250319230629 extends SimpleMigrationStep {
 			$table->addColumn('id_ausencias', 'integer', ['autoincrement' => true, 'unsigned' => true]);
 			$table->addColumn('id_empleado', 'integer', ['unsigned' => true, 'notnull' => true]);
 			$table->addColumn('id_aniversario', 'integer', ['unsigned' => true, 'notnull' => false]);
-			$table->addColumn('dias_disponibles', 'decimal', ['precision' => 5, 'scale' => 2, 'notnull' => true, 'default' => 0.00]); // PERMITE MEDIO DÍA
+			$table->addColumn('dias_disponibles', 'decimal', ['precision' => 5, 'scale' => 2, 'notnull' => false, 'default' => 0.00]); // PERMITE MEDIO DÍA
 			$table->addColumn('prima_vacacional', 'boolean', ['notnull' => false, 'default' => 0]);
 			$table->addColumn('timestamp', 'datetime', ['notnull' => true, 'default' => 'CURRENT_TIMESTAMP']);
 			$table->setPrimaryKey(['id_ausencias']);

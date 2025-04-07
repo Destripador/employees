@@ -15,6 +15,8 @@ use OCP\IL10N;
 use OCA\Empleados\Db\empleadosMapper;
 use OCA\Empleados\Db\departamentosMapper;
 use OCA\Empleados\Db\configuracionesMapper;
+use OCA\Empleados\Db\ausenciasMapper;
+use OCA\Empleados\Db\ausencias;
 use OCA\Empleados\Db\empleados;
 use OCA\Empleados\Db\departamentos;
 use OCA\Empleados\Db\configuraciones;
@@ -40,6 +42,7 @@ class EmpleadosController extends BaseController {
     protected $userManager;
     protected $groupManager;
     protected $empleadosMapper;
+    protected $ausenciasMapper;
     protected $departamentosMapper;
     protected $configuracionesMapper;
     protected $session;
@@ -53,6 +56,7 @@ class EmpleadosController extends BaseController {
         IUserSession $userSession,
         IUserManager $userManager,
         empleadosMapper $empleadosMapper,
+        ausenciasMapper $ausenciasMapper,
         departamentosMapper $departamentosMapper,
         configuracionesMapper $configuracionesMapper,
         IL10N $l10n,
@@ -66,6 +70,7 @@ class EmpleadosController extends BaseController {
         $this->userManager = $userManager;
         $this->groupManager = $groupManager;
         $this->empleadosMapper = $empleadosMapper;
+        $this->ausenciasMapper = $ausenciasMapper;
         $this->departamentosMapper = $departamentosMapper;
         $this->configuracionesMapper = $configuracionesMapper;
         $this->l10n = $l10n;
@@ -130,7 +135,7 @@ class EmpleadosController extends BaseController {
      */
     #[UseSession]
     #[NoAdminRequired]
-    public function ActivarEmpleado(string $id_user): int {
+    public function ActivarEmpleado(string $id_user): string {
         try {
             // Verificar si el grupo "empleados" existe
             $group = $this->groupManager->get("empleados");
@@ -172,7 +177,11 @@ class EmpleadosController extends BaseController {
                 $connection = \OC::$server->get(IDBConnection::class);
                 $idEmpleado = $connection->lastInsertId('empleados');
 
-                return $idEmpleado;
+                $ausencias = new ausencias();
+                $ausencias->setid_empleado((int)$idEmpleado);
+                $this->ausenciasMapper->insert($ausencias);
+
+                return "ok";
             } else {
                 return "No existe usuario gestor";
             }
