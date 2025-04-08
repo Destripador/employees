@@ -85,4 +85,18 @@ class aniversarioMapper extends QBMapper {
 		$result = $qb->execute();
 	}
 
+	public function GetAniversarioByDate(int $ingreso): array {
+		$qb = $this->db->getQueryBuilder();
+
+		$qb->select('*')
+			->from($this->getTableName())
+			->where($qb->expr()->eq('numero_aniversario', $qb->createNamedParameter($ingreso)));
+			
+		$result = $qb->execute();
+		$aniversarios = $result->fetchAll();
+		$result->closeCursor();
+	
+		return $aniversarios;
+	}
+
 }

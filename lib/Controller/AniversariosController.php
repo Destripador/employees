@@ -12,6 +12,8 @@ use OCP\IRequest;
 use OCP\IL10N;
 use OCA\Empleados\UploadException;
 
+use DateTime;
+
 use OCA\Empleados\Db\aniversarioMapper;
 use OCA\Empleados\Db\aniversario;
 
@@ -146,5 +148,20 @@ class AniversariosController extends Controller {
             throw new UploadException($this->l10n->t('Error en la subida del archivo.'));
         }
         return $file;
+    }
+
+    /**
+     * Obtiene la lista de aniversarios.
+     */
+    #[UseSession]
+    #[NoAdminRequired]
+    public function GetAniversarioByDate(string $ingreso): array {
+        $fechaInicio = new DateTime($ingreso);
+        $hoy = new DateTime();
+    
+        $diferencia = $hoy->diff($fechaInicio);
+    
+        return $this->aniversarioMapper->GetAniversarioByDate($diferencia->y);
+
     }
 }

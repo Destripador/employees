@@ -88,10 +88,11 @@
 							</div>
 
 							<!-- calcular vacaciones -->
-							<div class="topRefresh MarginRight">
+							<div v-if="Ingreso && (!Aniversario) && (!Vacaciones)" class="topRefresh MarginRight">
 								<NcButton
 									type="primary"
-									@click="CambiosEmpleado()">
+									:disabled="!show"
+									@click="CalcularVacaciones()">
 									<template #icon>
 										<Refresh :size="20" />
 									</template>
@@ -426,8 +427,8 @@ export default {
 
 			this.Numero_empleado = this.checknull(NumeroEmpleado)
 			this.Ingreso = this.checknull(Ingreso)
-			this.area = this.checknull(Area)
-			this.puesto = this.checknull(Puesto)
+			this.area = Area
+			this.puesto = Puesto
 			this.gerente = this.checknull(Gerente)
 			this.socio = this.checknull(Socio)
 			this.Fondo_clave = this.checknull(FondoClave)
@@ -532,8 +533,18 @@ export default {
 
 		async CambiosEmpleado() {
 			try {
-				this.areaSend = this.optionsarea.find(role => role.label === this.area)?.value || ''
-				this.puestoSend = this.optionspuesto.find(role => role.label === this.puesto)?.value || ''
+
+				this.areaSend = this.area.value
+				this.puestoSend = this.puesto.value
+
+				if (!this.area.value) {
+					this.areaSend = this.optionsarea.find(role => role.label === this.area)?.value || ''
+				}
+
+				if (!this.puesto.value) {
+					this.puestoSend = this.optionspuesto.find(role => role.label === this.puesto)?.value || ''
+				}
+
 				this.socio = this.socio?.id || this.socio
 				this.gerente = this.gerente?.id || this.gerente
 
@@ -541,8 +552,8 @@ export default {
 					id_empleados: this.data.Id_empleados,
 					numeroempleado: this.checknull(this.Numero_empleado),
 					ingreso: this.checknull(this.Ingreso),
-					area: this.areaSend,
-					puesto: this.puestoSend,
+					area: this.checknull(this.areaSend),
+					puesto: this.checknull(this.puestoSend),
 					socio: this.socio,
 					gerente: this.checknull(this.gerente),
 					fondoclave: this.checknull(this.Fondo_clave),
@@ -556,6 +567,26 @@ export default {
 				this.$bus.emit('getall')
 				this.$bus.emit('show', false)
 				showSuccess('Datos actualizados')
+			} catch (err) {
+				showError(t('empleados', 'Se ha producido una excepcion [03] [' + err + ']'))
+			}
+		},
+
+		async CalcularVacaciones() {
+			try {
+				try {
+					const response = await axios.post(generateUrl('/apps/empleados/GetAniversarioByDate'), {
+						ingreso: this.checknull(this.Ingreso),
+					})
+
+					// eslint-disable-next-line no-console
+					console.log(response.data)
+					this.Aniversario = response.data[0]?.numero_aniversario
+					this.Vacaciones = response.data[0]?.dias
+					// this.peopleEquipo = response.data
+				} catch (err) {
+					showError(err)
+				}
 			} catch (err) {
 				showError(t('empleados', 'Se ha producido una excepcion [03] [' + err + ']'))
 			}

@@ -76,6 +76,7 @@ return [
 		['name' => 'aniversarios#VaciarAniversarios', 'url' => '/VaciarAniversarios', 'verb' => 'GET'],
 		['name' => 'aniversarios#AgregarNuevoAniversario', 'url' => '/AgregarNuevoAniversario', 'verb' => 'POST'],
 		['name' => 'aniversarios#ExportListAniversarios', 'url' => '/ExportListAniversarios', 'verb' => 'GET'],
+		['name' => 'aniversarios#GetAniversarioByDate', 'url' => '/GetAniversarioByDate', 'verb' => 'POST'],
 		['name' => 'aniversarios#ImportListAniversarios', 'url' => '/ImportListAniversarios', 'verb' => 'POST'],
 	],
 	
