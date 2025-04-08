@@ -263,6 +263,12 @@ class EmpleadosController extends BaseController {
                     (string) $row[19], (string) $row[20], (string) $row[21], (string) $row[22],
                     (string) $row[23], (string) $row[24]
                 );
+                
+                $this->ausenciasMapper->updateAusenciasById(
+                    (int)$row[0], 
+                    (int)$row[25], 
+                    (float)$row[26],
+                );
             }
         }
     }
@@ -288,7 +294,9 @@ class EmpleadosController extends BaseController {
         $numerocuenta, 
         $equipoasignado,
         $equipo, 
-        $sueldo): void {
+        $sueldo,
+        $id_aniversario,
+        $dias_disponibles): void {
 		$this->empleadosMapper->CambiosEmpleado(
             $id_empleados, 
             $numeroempleado, 
@@ -303,6 +311,12 @@ class EmpleadosController extends BaseController {
             $equipoasignado, 
             $equipo, 
             $sueldo);
+
+        $this->ausenciasMapper->updateAusenciasById(
+            (int)$id_empleados, 
+            (int)$id_aniversario, 
+            (float)$dias_disponibles
+        );
 	}
 
     #[UseSession]
@@ -351,6 +365,8 @@ class EmpleadosController extends BaseController {
 		'Genero',
 		'Contacto_emergencia',
 		'Numero_emergencia',
+        'id_aniversario',
+        'dias_disponibles',
 		'created_at', 
 		'updated_at', 
 		]];
@@ -384,6 +400,8 @@ class EmpleadosController extends BaseController {
 					$datas['Genero'],
 					$datas['Contacto_emergencia'],
 					$datas['Numero_emergencia'],
+                    $datas['id_aniversario'],
+                    $datas['dias_disponibles'],
 					$datas['created_at'], 
 					$datas['updated_at'], 
 				]);

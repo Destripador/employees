@@ -46,7 +46,7 @@
 					</tr>
 				</thead>
 				<tbody>
-					<tr v-for="file in files" :key="file.id" @dblclick="exploreFolder(file)">
+					<tr v-for="file in files" :key="file.id" @click="exploreFolder(file)">
 						<td>
 							<div class="file-item">
 								<FolderOutline v-if="file.isFolder" :size="20" />

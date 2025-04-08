@@ -88,7 +88,7 @@
 							</div>
 
 							<!-- calcular vacaciones -->
-							<div v-if="Ingreso && (!Aniversario) && (!Vacaciones)" class="topRefresh MarginRight">
+							<div v-if="Ingreso && (Aniversario == 0 || !Aniversario || Aniversario == null) && (!Vacaciones || Vacaciones == 0.00 || Vacaciones == null)" class="topRefresh MarginRight">
 								<NcButton
 									type="primary"
 									:disabled="!show"
@@ -394,7 +394,9 @@ export default {
 					news.Numero_cuenta,
 					news.Id_equipo,
 					news.Equipo_asignado,
-					news.Sueldo)
+					news.Sueldo,
+					news.dias_disponibles,
+					news.id_aniversario)
 			}
 		},
 	},
@@ -419,11 +421,13 @@ export default {
 			this.data.Numero_cuenta,
 			this.data.Id_equipo,
 			this.data.Equipo_asignado,
-			this.data.Sueldo)
+			this.data.Sueldo,
+			this.data.dias_disponibles,
+			this.data.id_aniversario)
 	},
 
 	methods: {
-		setAttr(NumeroEmpleado, Ingreso, Area, Puesto, Gerente, Socio, FondoClave, FondoAhorro, NumeroCuenta, Equipo, EquipoAsignado, Sueldo) {
+		setAttr(NumeroEmpleado, Ingreso, Area, Puesto, Gerente, Socio, FondoClave, FondoAhorro, NumeroCuenta, Equipo, EquipoAsignado, Sueldo, Vacaciones, Aniversario) {
 
 			this.Numero_empleado = this.checknull(NumeroEmpleado)
 			this.Ingreso = this.checknull(Ingreso)
@@ -437,6 +441,8 @@ export default {
 			this.Equipo = this.checknull(Equipo)
 			this.Equipo_asignado = this.checknull(EquipoAsignado)
 			this.Sueldo = this.checknull(Sueldo)
+			this.Vacaciones = this.checknull(Vacaciones)
+			this.Aniversario = this.checknull(Aniversario)
 
 			this.getAreas(this.area)
 			this.getPuestos(this.puesto)
@@ -562,6 +568,8 @@ export default {
 					equipoasignado: this.checknull(this.Equipo_asignado),
 					equipo: this.Equipo.value,
 					sueldo: this.checknull(this.Sueldo),
+					id_aniversario: this.checknull(this.Aniversario),
+					dias_disponibles: this.checknull(this.Vacaciones),
 				})
 				this.GetAllEquipo(this.Equipo.value)
 				this.$bus.emit('getall')

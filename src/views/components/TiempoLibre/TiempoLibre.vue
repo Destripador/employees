@@ -2,11 +2,21 @@
 	<NcAppContent name="Loading">
 		<div class="container">
 			<div class="text-center section">
-				<p>Fecha seleccionada: {{ date }}</p>
-				<DatePicker v-model="date"
-					is-expanded
-					is-range
-					@input="onRangeSelected" />
+				<section class="layout">
+					<div class="grow2">
+						<DatePicker v-model="date"
+							is-expanded
+							is-range
+							@input="onRangeSelected" />
+					</div>
+					<div class="grow1">
+						<div>
+							<div>Vacaciones</div>
+							<div>dias</div>
+							<div>Dias asignados</div>
+						</div>
+					</div>
+				</section>
 			</div>
 		</div>
 		<NcModal
@@ -60,3 +70,15 @@ export default {
 	},
 }
 </script>
+
+<style>
+.layout {
+  width: 100%;
+
+  display: flex;
+  gap: 16px;
+}
+
+.grow1 { flex-grow: 1; }
+.grow2 { flex-grow: 2; }
+</style>
