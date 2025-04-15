@@ -78,6 +78,10 @@ return [
 		['name' => 'aniversarios#ExportListAniversarios', 'url' => '/ExportListAniversarios', 'verb' => 'GET'],
 		['name' => 'aniversarios#GetAniversarioByDate', 'url' => '/GetAniversarioByDate', 'verb' => 'POST'],
 		['name' => 'aniversarios#ImportListAniversarios', 'url' => '/ImportListAniversarios', 'verb' => 'POST'],
+
+		
+		/******************************* AUSENCIAS *****************************************/
+		['name' => 'ausencias#GetAusenciasByUser', 'url' => '/GetAusenciasByUser', 'verb' => 'POST'],
 	],
 	
 ];

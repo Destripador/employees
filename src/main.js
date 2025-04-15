@@ -19,6 +19,10 @@ const configuraciones = dataElement ? JSON.parse(dataElement.getAttribute('data-
 
 const groupElement = document.getElementById('group-user')
 const groups = groupElement ? JSON.parse(groupElement.getAttribute('data-parameters') || '{}') : {}
+
+const employeeElement = document.getElementById('employee')
+const employee = employeeElement ? JSON.parse(employeeElement.getAttribute('data-parameters') || '{}') : {}
+
 const emitter = mitt()
 
 Vue.prototype.$bus = emitter // ✅ Esto hace que $bus esté disponible globalmente
@@ -31,5 +35,6 @@ new View({
 	propsData: {
 		parameters: configuraciones,
 		groupsUser: groups,
+		employee,
 	},
 }).$mount('#content')

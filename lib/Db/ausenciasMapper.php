@@ -32,6 +32,20 @@ class ausenciasMapper extends QBMapper {
 		return $ausencias;
 	}
 
+	public function GetAusenciasByUser($id): array {
+		$qb = $this->db->getQueryBuilder();
+
+		$qb->select('*')
+			->from($this->getTableName())
+			->where($qb->expr()->eq('id_empleado', $qb->createNamedParameter($id)));
+			
+		$result = $qb->execute();
+		$ausencias = $result->fetchAll();
+		$result->closeCursor();
+	
+		return $ausencias;
+	}
+
 	public function CheckExistAreas($id_ausencias): array {
 		$qb = $this->db->getQueryBuilder();
 

@@ -8,13 +8,16 @@ use OCP\AppFramework\OCS\OCSForbiddenException;
 use OCP\IRequest;
 use OCP\IUserSession;
 use OCP\IGroupManager;
+use OCA\Empleados\Db\empleadosMapper;
 use OCA\Empleados\Db\configuracionesMapper;
+
 
 abstract class BaseController extends Controller {
 
     protected $userSession;
     protected $groupManager;
     protected $configuracionesMapper;
+    protected $empleadosMapper;
     protected $configParams = []; // 🔹 Aquí almacenaremos la configuración
 
     public function __construct(
@@ -22,11 +25,13 @@ abstract class BaseController extends Controller {
         IRequest $request,
         IUserSession $userSession,
         IGroupManager $groupManager,
+        empleadosMapper $empleadosMapper,
         configuracionesMapper $configuracionesMapper // 🔹 Agregamos el Mapper de configuración
     ) {
         parent::__construct($appName, $request);
         $this->userSession = $userSession;
         $this->groupManager = $groupManager;
+        $this->empleadosMapper = $empleadosMapper;
         $this->configuracionesMapper = $configuracionesMapper;
 
         $this->checkAccess(); // 🔥 Validar accesos automáticamente
@@ -95,6 +100,7 @@ abstract class BaseController extends Controller {
         $this->configParams = [
             "usuario_almacenamiento" => $configMap['usuario_almacenamiento'] ?? null,
             "automatic_save_note" => $configMap['automatic_save_note'] ?? null,
+            "acumular_vacaciones" => $configMap['acumular_vacaciones'] ?? null,
         ];
     }
 
@@ -103,5 +109,14 @@ abstract class BaseController extends Controller {
      */
     public function getConfigParams(): array {
         return $this->configParams;
+    }
+
+    
+    /**
+     * 📌 Permite que los controladores accedan los datos del empleado actual.
+     */
+    public function getEmployeeInfo(): array {
+        $user = $this->userSession->getUser();
+        return $this->empleadosMapper->GetMyEmployeeInfo($user->getUID());
     }
 }

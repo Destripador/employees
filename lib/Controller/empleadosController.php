@@ -63,7 +63,7 @@ class EmpleadosController extends BaseController {
         IGroupManager $groupManager,
         IRootFolder $rootFolder
     ) {
-		parent::__construct(Application::APP_ID, $request, $userSession, $groupManager, $configuracionesMapper);
+		parent::__construct(Application::APP_ID, $request, $userSession, $groupManager, $empleadosMapper, $configuracionesMapper);
 
         $this->session = $session;
         $this->userSession = $userSession;
@@ -452,6 +452,15 @@ class EmpleadosController extends BaseController {
 
 
         return $data;
+	}
+
+    #[NoCSRFRequired]
+	#[NoAdminRequired]    
+	public function GetMyEmployeeInfo(): array {
+
+        $user = $this->userSession->getUser();
+        return $this->empleadosMapper->GetMyEmployeeInfo($user->getUID());
+        
 	}
 
 }

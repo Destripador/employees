@@ -21,6 +21,7 @@ export default {
 		return {
 			configuraciones: this.configuraciones,
 			groupuser: this.groupsuser,
+			employee: this.employee,
 		}
 	},
 
@@ -34,12 +35,17 @@ export default {
 			type: Object,
 			required: true,
 		},
+		employee: {
+			type: Array,
+			required: true,
+		},
 	},
 
 	data() {
 		return {
 			configuraciones: this.parameters,
 			groupsuser: this.groupsUser,
+			employeeUser: this.employee,
 		}
 	},
 }

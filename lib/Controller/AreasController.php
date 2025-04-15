@@ -46,7 +46,7 @@ class AreasController extends BaseController {
         IL10N $l10n,
         IGroupManager $groupManager
     ) {
-        parent::__construct(Application::APP_ID, $request, $userSession, $groupManager, $configuracionesMapper);
+        parent::__construct(Application::APP_ID, $request, $userSession, $groupManager, $empleadosMapper, $configuracionesMapper);
 
         $this->userSession = $userSession;
         $this->userManager = $userManager;
