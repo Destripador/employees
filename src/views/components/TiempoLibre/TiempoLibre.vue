@@ -4,10 +4,16 @@
 			<div class="text-center section">
 				<section class="layout">
 					<div class="grow2">
-						<DatePicker v-model="date"
+						{{ date.start }}
+						<DatePicker :key="calendarKey"
+							v-model="date"
 							is-expanded
 							is-range
-							@input="onRangeSelected" />
+							:min-date="FechaInitial"
+							:max-date="FechaMaxima"
+							@dayclick="calcularFechaMaxima()"
+							@input="onRangeSelected"
+							@drag="dragValue = $event" />
 					</div>
 					<div class="grow1">
 						<div class="cards">
@@ -18,7 +24,7 @@
 											<template #icon>
 												<CalendarQuestionOutline :size="20" />
 											</template>
-											Tengo dudas
+											Mi informacion
 										</NcActionButton>
 									</NcActions>
 								</div>
@@ -38,7 +44,7 @@
 							</div>
 							<div class="infos">
 								<p class="titles">
-									How to make this material card ?
+									ejemplo mensaje lorem
 								</p>
 								<p>
 									Lorem ipsum dolor sit amet consectetur adipisicing elit. Maxime mollitia,
@@ -61,7 +67,75 @@
 		<NcModal
 			v-if="modal"
 			name="Name inside modal"
-			@close="closeModal" />
+			@close="closeModal">
+			<div class="table_component" role="region" tabindex="0">
+				<div class="modal__content">
+					<form class="bg-white shadow-md rounded px-8 pt-6 pb-8" @submit.prevent>
+						<div class="mb-4">
+							<span class="block text-gray-600 text-sm text-left font-bold mb-2">Select Range</span>
+							<DatePicker
+								v-model="date"
+								mode="date"
+								is-range>
+								<template #default="{ inputValue, inputEvents, isDragging }">
+									<div class="flex flex-col sm:flex-row justify-start items-center">
+										<div class="relative flex-grow">
+											<svg
+												class="text-gray-600 w-4 h-full mx-2 absolute pointer-events-none"
+												fill="none"
+												stroke-linecap="round"
+												stroke-linejoin="round"
+												stroke-width="2"
+												viewBox="0 0 24 24"
+												stroke="currentColor">
+												<path
+													d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+											</svg>
+											<input
+												class="flex-grow pl-8 pr-2 py-1 bg-gray-100 border rounded w-full"
+												:class="isDragging ? 'text-gray-600' : 'text-gray-900'"
+												:value="inputValue.start"
+												v-on="inputEvents.start">
+										</div>
+										<span class="flex-shrink-0 m-2">
+											<svg
+												class="w-4 h-4 stroke-current text-gray-600"
+												viewBox="0 0 24 24">
+												<path
+													stroke-linecap="round"
+													stroke-linejoin="round"
+													stroke-width="2"
+													d="M14 5l7 7m0 0l-7 7m7-7H3" />
+											</svg>
+										</span>
+										<div class="relative flex-grow">
+											<svg
+												class="text-gray-600 w-4 h-full mx-2 absolute pointer-events-none"
+												fill="none"
+												stroke-linecap="round"
+												stroke-linejoin="round"
+												stroke-width="2"
+												viewBox="0 0 24 24"
+												stroke="currentColor">
+												<path
+													d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+											</svg>
+											<input
+												class="flex-grow pl-8 pr-2 py-1 bg-gray-100 border rounded w-full"
+												:class="isDragging ? 'text-gray-600' : 'text-gray-900'"
+												:value="inputValue.end"
+												v-on="inputEvents.end">
+										</div>
+									</div>
+								</template>
+							</DatePicker>
+						</div>
+					</form>
+				</div>
+			</div>
+		</NcModal>
+
+		<!-- INICIO MODAL ANIVERSARIOS SOLO INFO -->
 		<NcModal
 			v-if="ModalAniversario"
 			ref="modalRef"
@@ -96,56 +170,19 @@
 							</table>
 						</div>
 						<div class="grow4">
-							<div class="info-vacaciones">
-								<h2>🏖️ Tabla de Vacaciones – Información para Empleados</h2>
-								<p>
-									Esta tabla te muestra <strong>cuántos días de vacaciones te corresponden</strong> según los años que lleves trabajando en la empresa. Es una guía basada en la <strong>Ley Federal del Trabajo</strong>, reformada en 2023.
-								</p>
-
-								<h3>🤔 Preguntas frecuentes</h3>
-
-								<h4>¿Desde cuándo tengo derecho a vacaciones?</h4>
-								<p>
-									Desde tu primer año trabajado completo ya puedes disfrutar de vacaciones. El mínimo son <strong>12 días</strong>, y va aumentando cada año.
-								</p>
-
-								<h4>¿Cómo se cuentan los días?</h4>
-								<p>
-									Los días que aparecen en la tabla son <strong>días hábiles</strong>. No cuentan sábados, domingos ni feriados.
-								</p>
-
-								<h4>¿Puedo dividir mis vacaciones?</h4>
-								<p>
-									Sí. Por ley, al menos la mitad debe tomarse de corrido, pero puedes hablar con Recursos Humanos para distribuir los días según tus necesidades y las de tu equipo.
-								</p>
-								<h4>¿Qué pasa si no tomo mis vacaciones?</h4>
-								<p v-if="configuraciones.acumular_vacaciones === 'true'">
-									Las vacaciones no tomadas <strong>no se pierden</strong>, pero es importante usarlas. Descansar es un derecho y también ayuda a tu salud y desempeño.
-								</p>
-								<p v-else>
-									Si no tomas tus vacaciones, <strong>se pierden</strong>. Es importante que las uses para cuidar tu salud y bienestar.
-								</p>
-
-								<h4>¿Puedo pedir más días de vacaciones?</h4>
-								<p>
-									Sí, aunque lo establecido por ley es el mínimo, la empresa puede ofrecer más días como <strong>prestación adicional</strong>. Revisa tu contrato o habla con RH.
-								</p>
-
-								<h3>✅ Recomendación</h3>
-								<p>
-									Consulta esta tabla cada vez que cumplas un aniversario laboral. Así podrás <strong>planear tus descansos con anticipación</strong> y disfrutar al máximo tus días libres.
-								</p>
-							</div>
+							<MensajeAniversarios :info="Ausencias" :acumular="configuraciones.acumular_vacaciones" />
 						</div>
 					</div>
 				</div>
 			</div>
 		</NcModal>
+		<!-- FINAL MODAL ANIVERSARIOS SOLO INFO -->
 	</NcAppContent>
 </template>
 
 <script>
 // Importing necessary components
+import MensajeAniversarios from './MensajeAniversarios.vue'
 
 import { ref } from 'vue'
 
@@ -169,6 +206,7 @@ export default {
 	name: 'TiempoLibre',
 
 	components: {
+		MensajeAniversarios,
 		NcAppContent,
 		DatePicker,
 		NcModal,
@@ -183,22 +221,26 @@ export default {
 	data() {
 		return {
 			modalRef: ref(null),
-			date: new Date(),
+			date: ref({
+				start: new Date(),
+				end: null,
+			}),
+			FechaInitial: new Date(),
+			FechaMaxima: null,
 			modal: false,
 			ModalAniversario: false,
 			Ausencias: [],
 			Aniversarios: [],
+			dragValue: null,
+			calendarKey: 0,
 		}
 	},
 
 	mounted() {
 		this.GetAusencias()
 	},
-
 	methods: {
 		onRangeSelected(range) {
-			// eslint-disable-next-line no-console
-			console.log('Rango seleccionado:', range)
 			this.modal = true
 		},
 		showAniversarioModal() {
@@ -207,6 +249,16 @@ export default {
 		closeModal() {
 			this.modal = false
 			this.ModalAniversario = false
+			this.dragValue = null
+
+			this.calendarKey++
+
+			this.date = {
+				start: null,
+				end: null,
+			}
+			this.FechaInitial = new Date()
+			this.FechaMaxima = null
 		},
 		async GetAusencias() {
 			try {
@@ -257,7 +309,30 @@ export default {
 				return `${dias} días` // puedes redondear o manejar más decimales si quieres
 			}
 		},
+		calcularFechaMaxima() {
+			this.FechaInitial = this.dragValue.start
 
+			const fechaInicio = this.FechaInitial
+			const diasTotales = Math.floor(this.Ausencias.dias_disponibles)
+			const horasExtra = (this.Ausencias.dias_disponibles % 1) * 24
+
+			let diasContados = 0
+			const fechaMax = new Date(fechaInicio)
+
+			while (diasContados < diasTotales) {
+				fechaMax.setDate(fechaMax.getDate() + 1)
+				const diaSemana = fechaMax.getDay()
+				// 0 = domingo, 6 = sábado
+				if (diaSemana !== 0 && diaSemana !== 6) {
+					diasContados++
+				}
+			}
+
+			// Suma las horas extra, si aplica
+			fechaMax.setHours(fechaMax.getHours() + horasExtra)
+
+			this.FechaMaxima = fechaMax
+		},
 	},
 }
 </script>
