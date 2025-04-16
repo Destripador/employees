@@ -54,6 +54,7 @@ class Version4Date20250319230629 extends SimpleMigrationStep {
 			$table->addColumn('id_tipo_ausencia', 'integer', ['autoincrement' => true, 'unsigned' => true]);
 			$table->addColumn('nombre', 'string', ['length' => 255, 'notnull' => true]);
 			$table->addColumn('descripcion', 'text', ['notnull' => false]);
+			$table->addColumn('solicitar_archivo', 'integer', ['notnull' => true]);
 			$table->setPrimaryKey(['id_tipo_ausencia']);
 			$table->addIndex(['nombre']);
 		}

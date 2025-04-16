@@ -4,16 +4,31 @@
 			<div class="text-center section">
 				<section class="layout">
 					<div class="grow2">
-						{{ date.start }}
-						<DatePicker :key="calendarKey"
-							v-model="date"
-							is-expanded
-							is-range
-							:min-date="FechaInitial"
-							:max-date="FechaMaxima"
-							@dayclick="calcularFechaMaxima()"
-							@input="onRangeSelected"
-							@drag="dragValue = $event" />
+						<div class="text-center section">
+							<h2 class="h2">
+								Custom Calendars
+							</h2>
+							<p class="text-lg font-medium text-gray-600 mb-6">
+								Roll your own calendars using scoped slots
+							</p>
+							<DatePicker :key="calendarKey"
+								v-model="date"
+								class="custom-calendar"
+								is-expanded
+								is-range
+								:min-date="FechaInitial"
+								:max-date="FechaMaxima"
+								@dayclick="calcularFechaMaxima()"
+								@input="onRangeSelected"
+								@drag="dragValue = $event">
+								<template #day-content="{ day }">
+									<div class="flex flex-col h-full z-10">
+										<span class="day-label text-sm text-gray-900">{{ day.day }}</span>
+										<div class="flex-grow overflow-y-auto overflow-x-auto" />
+									</div>
+								</template>
+							</DatePicker>
+						</div>
 					</div>
 					<div class="grow1">
 						<div class="cards">
@@ -336,11 +351,10 @@ export default {
 	},
 }
 </script>
-
-<style>
+<style scoped>
+/* 🎯 Estilos locales del componente */
 .layout {
   width: 100%;
-
   display: flex;
   gap: 16px;
 }
@@ -368,7 +382,7 @@ export default {
   margin-right: 1rem;
   border-radius: 0.75rem;
   background-color: rgb(33 150 243);
-  box-shadow: 0 10px 15px -3px rgba(33,150,243,.4),0 4px 6px -4px rgba(33,150,243,.4);
+  box-shadow: 0 10px 15px -3px rgba(33,150,243,.4), 0 4px 6px -4px rgba(33,150,243,.4);
   height: 8rem;
   text-align: center;
 }
@@ -381,8 +395,6 @@ export default {
 
 .titles {
   color: rgb(38 50 56);
-  letter-spacing: 0;
-  line-height: 1.375;
   font-weight: 600;
   font-size: 1.25rem;
   margin-bottom: 0.5rem;
@@ -400,17 +412,14 @@ export default {
 .tags {
   font-weight: 300;
   font-size: .75rem;
-  display: block;
 }
 
 .actions {
-  -webkit-user-select: none;
-  -moz-user-select: none;
   user-select: none;
   border: none;
   outline: none;
-  box-shadow: 0 4px 6px -1px rgba(33,150,243,.4),0 2px 4px -2px rgba(33,150,243,.4);
-  color: rgb(255 255 255);
+  box-shadow: 0 4px 6px -1px rgba(33,150,243,.4), 0 2px 4px -2px rgba(33,150,243,.4);
+  color: white;
   text-transform: uppercase;
   font-weight: 700;
   font-size: .75rem;
@@ -420,13 +429,13 @@ export default {
 }
 
 .vacations {
-	display: flex;
-	justify-content: center;
-	color: white;
+  display: flex;
+  justify-content: center;
+  color: white;
 }
 
 .h2-white {
-	color: white;
+  color: white;
 }
 
 .btn-top-right {
@@ -448,56 +457,112 @@ export default {
 }
 
 .table_component {
-    overflow: auto;
-    width: 100%;
+  overflow: auto;
+  width: 100%;
 }
 
 .table_component table {
-    border: 1px solid #dededf;
-    height: 100%;
-    width: 100%;
-    table-layout: fixed;
-    border-collapse: collapse;
-    border-spacing: 1px;
-    text-align: left;
+  border: 1px solid #dededf;
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.table_component th,
+.table_component td {
+  border: 1px solid #dededf;
+  padding: 5px;
 }
 
 .table_component th {
-    border: 1px solid #dededf;
-    background-color: #eceff1;
-    color: #000000;
-    padding: 5px;
+  background-color: #eceff1;
+  color: black;
 }
 
 .table_component td {
-    border: 1px solid #dededf;
-    background-color: #ffffff;
-    color: #000000;
-    padding: 5px;
+  background-color: white;
+  color: black;
 }
 
 .caption-title {
-    font-weight: bold;
-}
-
-.caption-buttons {
-    float: right;
-    padding-bottom: 6px;
+  font-weight: bold;
 }
 
 .modal__content {
-	margin: 50px;
-}
-
-.modal__content h2 {
-	text-align: center;
+  margin: 50px;
 }
 
 .form-group {
-	margin: calc(var(--default-grid-baseline) * 4) 0;
-	display: flex;
-	flex-direction: column;
-	align-items: flex-start;
+  margin: 2rem 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
 }
 
+/* Ocultar scrollbar */
+::-webkit-scrollbar {
+  width: 0px;
+}
+::-webkit-scrollbar-track {
+  display: none;
+}
+
+/* 🌐 Estilos globales para v-calendar */
+::v-deep(.custom-calendar.vc-container) {
+  --day-border: 1px solid #b8c2cc;
+  --day-border-highlight: 1px solid #b8c2cc;
+  --day-width: 90px;
+  --day-height: 90px;
+  --weekday-bg: #f8fafc;
+  --weekday-border: 1px solid #eaeaea;
+
+  border-radius: 0;
+  width: 100%;
+}
+
+::v-deep(.custom-calendar.vc-container .vc-header) {
+  background-color: #f1f5f8;
+  padding: 10px 0;
+}
+
+::v-deep(.custom-calendar.vc-container .vc-weeks) {
+  padding: 0;
+}
+
+::v-deep(.custom-calendar.vc-container .vc-weekday) {
+  background-color: var(--weekday-bg);
+  border-bottom: var(--weekday-border);
+  border-top: var(--weekday-border);
+  padding: 5px 0;
+}
+
+::v-deep(.custom-calendar.vc-container .vc-day) {
+  padding: 0 5px 3px 5px;
+  text-align: left;
+  height: var(--day-height);
+  min-width: var(--day-width);
+  background-color: white;
+}
+
+::v-deep(.custom-calendar.vc-container .vc-day.weekday-1),
+::v-deep(.custom-calendar.vc-container .vc-day.weekday-7) {
+  background-color: #eff8ff;
+}
+
+::v-deep(.custom-calendar.vc-container .vc-day:not(.on-bottom)) {
+  border-bottom: var(--day-border);
+}
+
+::v-deep(.custom-calendar.vc-container .vc-day.weekday-1:not(.on-bottom)) {
+  border-bottom: var(--day-border-highlight);
+}
+
+::v-deep(.custom-calendar.vc-container .vc-day:not(.on-right)) {
+  border-right: var(--day-border);
+}
+
+::v-deep(.custom-calendar.vc-container .vc-day-dots) {
+  margin-bottom: 5px;
+}
 </style>
