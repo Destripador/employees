@@ -69,7 +69,6 @@ class Version4Date20250319230629 extends SimpleMigrationStep {
 			$table->addColumn('timestamp', 'datetime', ['notnull' => true, 'default' => 'CURRENT_TIMESTAMP']);
 			$table->setPrimaryKey(['id_ausencias']);
 			$table->addUniqueIndex(['id_empleado']);
-			$table->addForeignKeyConstraint('aniversarios', ['id_aniversario'], ['id_aniversario'], ['onDelete' => 'SET NULL']);
 		}
 		
 		if (!$schema->hasTable('historial_ausencias')) {
