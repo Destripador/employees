@@ -6,6 +6,7 @@
 					<div class="grow2">
 						<div class="text-center sectionPicker">
 							<DatePicker
+								ref="calendarRef"
 								:key="calendarKey"
 								v-model="date"
 								class="custom-calendar"
@@ -241,8 +242,25 @@ export default {
 
 	mounted() {
 		this.GetAusencias()
+		document.addEventListener('keydown', this.detectarEscape)
+		document.addEventListener('click', this.handleClickOutside)
+	},
+	beforeUnmount() {
+		document.removeEventListener('keydown', this.detectarEscape)
+		document.removeEventListener('click', this.handleClickOutside)
 	},
 	methods: {
+		detectarEscape(e) {
+			if (e.key === 'Escape') {
+				this.restartCalendar() // o cualquier acción que quieras
+			}
+		},
+		handleClickOutside(event) {
+			const calendar = this.$refs.calendarRef?.$el
+			if (calendar && !calendar.contains(event.target)) {
+				this.restartCalendar()
+			}
+		},
 		onRangeSelected(range) {
 			this.modal = true
 		},
@@ -251,17 +269,7 @@ export default {
 		},
 		closeModal() {
 			this.modal = false
-			this.ModalAniversario = false
-			this.dragValue = null
-
-			this.calendarKey++
-
-			this.date = {
-				start: null,
-				end: null,
-			}
-			this.FechaInitial = new Date()
-			this.FechaMaxima = null
+			this.restartCalendar()
 		},
 		async GetAusencias() {
 			try {
@@ -335,6 +343,15 @@ export default {
 			fechaMax.setHours(fechaMax.getHours() + horasExtra)
 
 			this.FechaMaxima = fechaMax
+		},
+		restartCalendar() {
+			this.date = {
+				start: null,
+				end: null,
+			}
+			this.FechaInitial = new Date()
+			this.FechaMaxima = null
+			this.calendarKey++
 		},
 	},
 }
