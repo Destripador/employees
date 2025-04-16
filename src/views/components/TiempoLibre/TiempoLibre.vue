@@ -4,14 +4,9 @@
 			<div class="text-center section">
 				<section class="layout">
 					<div class="grow2">
-						<div class="text-center section">
-							<h2 class="h2">
-								Custom Calendars
-							</h2>
-							<p class="text-lg font-medium text-gray-600 mb-6">
-								Roll your own calendars using scoped slots
-							</p>
-							<DatePicker :key="calendarKey"
+						<div class="text-center sectionPicker">
+							<DatePicker
+								:key="calendarKey"
 								v-model="date"
 								class="custom-calendar"
 								is-expanded
@@ -20,14 +15,7 @@
 								:max-date="FechaMaxima"
 								@dayclick="calcularFechaMaxima()"
 								@input="onRangeSelected"
-								@drag="dragValue = $event">
-								<template #day-content="{ day }">
-									<div class="flex flex-col h-full z-10">
-										<span class="day-label text-sm text-gray-900">{{ day.day }}</span>
-										<div class="flex-grow overflow-y-auto overflow-x-auto" />
-									</div>
-								</template>
-							</DatePicker>
+								@drag="dragValue = $event" />
 						</div>
 					</div>
 					<div class="grow1">
@@ -500,6 +488,10 @@ export default {
   align-items: flex-start;
 }
 
+.sectionPicker {
+	padding: 2px 10px 0 22px;
+}
+
 /* Ocultar scrollbar */
 ::-webkit-scrollbar {
   width: 0px;
@@ -538,11 +530,42 @@ export default {
 }
 
 ::v-deep(.custom-calendar.vc-container .vc-day) {
-  padding: 0 5px 3px 5px;
   text-align: left;
   height: var(--day-height);
   min-width: var(--day-width);
   background-color: white;
+}
+
+::v-deep(.custom-calendar.vc-container .vc-day-content) {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 0;
+  padding-left: 10px;
+}
+
+::v-deep(.custom-calendar.vc-container .vc-highlight) {
+	padding-left: 30px;
+}
+::v-deep(.custom-calendar.vc-container .vc-day-box-right-center) {
+  display: block;
+}
+::v-deep(.custom-calendar.vc-container .vc-highlight-base-start) {
+	width: 100% !important;
+}
+
+::v-deep(.custom-calendar.vc-container .vc-day-box-left-center) {
+  display: block;
+}
+::v-deep(.custom-calendar.vc-container .vc-highlight-base-end) {
+	width: 10% !important;
+  border-radius:0px 15px 19px 0px !important;
+}
+::v-deep(.custom-calendar.vc-container .vc-day-box-center-center) {
+  justify-content: center;
+  align-items: center;
+  transform-origin: 50% 50%;
+  display: block;
 }
 
 ::v-deep(.custom-calendar.vc-container .vc-day.weekday-1),
