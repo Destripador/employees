@@ -230,7 +230,7 @@ export default {
 				start: new Date(),
 				end: null,
 			}),
-			FechaInitial: new Date(),
+			FechaInitial: null,
 			FechaMaxima: null,
 			modal: false,
 			ModalAniversario: false,
@@ -361,7 +361,11 @@ export default {
 			const end = this.dragValue?.end
 
 			// Validar si hay un rango seleccionado
-			if (!start & start !== this.date.start || !end) return
+			if (!start || !end) return
+			if (start < new Date()) {
+				showError('No puedes solicitar ausencias en fechas pasadas')
+				this.restartCalendar()
+			}
 
 			// Paso 1: Validar si solo se seleccionaron sábado y/o domingo
 			let fecha = new Date(start) // 🟢 CLONAMOS correctamente
@@ -409,7 +413,7 @@ export default {
 				start: new Date(),
 				end: null,
 			}
-			this.FechaInitial = new Date()
+			this.FechaInitial = null
 			this.FechaMaxima = null
 			this.dragValue = null
 		},
