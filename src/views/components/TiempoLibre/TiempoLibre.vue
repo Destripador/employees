@@ -70,13 +70,14 @@
 		</div>
 		<NcModal
 			v-if="modal"
-			name="Name inside modal"
+			size="large"
+			name="Format de vacaciones"
 			@close="closeModal">
-			<div class="table_component" role="region" tabindex="0">
+			<div ref="calendarRef" class="table_component" role="region">
 				<div class="modal__content">
 					<form class="bg-white shadow-md rounded px-8 pt-6 pb-8" @submit.prevent>
 						<div class="mb-4">
-							<span class="block text-gray-600 text-sm text-left font-bold mb-2">Select Range</span>
+							<span class="block text-gray-600 text-sm text-left font-bold mb-2">Select Range {{ diasSolicitados }}</span>
 							<DatePicker
 								v-model="date"
 								mode="date"
@@ -237,6 +238,7 @@ export default {
 			Aniversarios: [],
 			dragValue: null,
 			calendarKey: 0,
+			diasSolicitados: 0,
 		}
 	},
 
@@ -262,8 +264,42 @@ export default {
 			}
 		},
 		onRangeSelected(range) {
+			if (!range || !range.start || !range.end) return
+
+			const startDate = new Date(range.start)
+			const endDate = new Date(range.end)
+
+			// Paso 1: Validar que no termine en fin de semana
+			const dia = endDate.getDay() // 0 = domingo, 6 = sábado
+			if (dia === 0 || dia === 6) {
+				console.warn('⚠️ El rango termina en fin de semana (sábado o domingo).')
+				showError('No puedes finalizar tu ausencia en fin de semana')
+				this.restartCalendar()
+				return
+			}
+
+			// Paso 2: Contar los días hábiles
+			let fecha = new Date(startDate)
+			let diasHabiles = 0
+
+			while (fecha <= endDate) {
+				const diaSemana = fecha.getDay()
+				if (diaSemana !== 0 && diaSemana !== 6) {
+					diasHabiles++
+				}
+				fecha = new Date(fecha.getFullYear(), fecha.getMonth(), fecha.getDate() + 1) // ✅ AVANZAMOS la fecha
+			}
+
+			// eslint-disable-next-line no-console
+			console.log(`📅 Días hábiles seleccionados: ${diasHabiles}`)
+
+			// Aquí puedes guardar o usar los días hábiles como desees
+			this.diasSolicitados = diasHabiles
 			this.modal = true
+			// eslint-disable-next-line no-console
+			console.log('Selected range:', range)
 		},
+
 		showAniversarioModal() {
 			this.getAniversarios()
 		},
@@ -321,37 +357,61 @@ export default {
 			}
 		},
 		calcularFechaMaxima() {
-			this.FechaInitial = this.dragValue.start
+			const start = this.dragValue?.start
+			const end = this.dragValue?.end
 
-			const fechaInicio = this.FechaInitial
+			// Validar si hay un rango seleccionado
+			if (!start & start !== this.date.start || !end) return
+
+			// Paso 1: Validar si solo se seleccionaron sábado y/o domingo
+			let fecha = new Date(start) // 🟢 CLONAMOS correctamente
+			let soloFinesDeSemana = true
+
+			while (fecha <= end) {
+				const dia = fecha.getDay()
+				if (dia !== 0 && dia !== 6) {
+					soloFinesDeSemana = false
+					break
+				}
+				fecha = new Date(fecha.getFullYear(), fecha.getMonth(), fecha.getDate() + 1) // ✅ AVANZAMOS la fecha
+			}
+
+			if (soloFinesDeSemana) {
+				this.restartCalendar()
+				return
+			}
+
+			// Paso 2: Cálculo normal de FechaMaxima
+			this.FechaInitial = start
+
 			const diasTotales = Math.floor(this.Ausencias.dias_disponibles)
 			const horasExtra = (this.Ausencias.dias_disponibles % 1) * 24
 
-			let diasContados = 0
-			const fechaMax = new Date(fechaInicio)
+			let diasContados = 1
+			const fechaMax = new Date(start)
 
 			while (diasContados < diasTotales) {
 				fechaMax.setDate(fechaMax.getDate() + 1)
 				const diaSemana = fechaMax.getDay()
-				// 0 = domingo, 6 = sábado
 				if (diaSemana !== 0 && diaSemana !== 6) {
 					diasContados++
 				}
 			}
 
-			// Suma las horas extra, si aplica
 			fechaMax.setHours(fechaMax.getHours() + horasExtra)
-
 			this.FechaMaxima = fechaMax
 		},
+
 		restartCalendar() {
+			this.calendarKey++
+
 			this.date = {
-				start: null,
+				start: new Date(),
 				end: null,
 			}
 			this.FechaInitial = new Date()
 			this.FechaMaxima = null
-			this.calendarKey++
+			this.dragValue = null
 		},
 	},
 }
