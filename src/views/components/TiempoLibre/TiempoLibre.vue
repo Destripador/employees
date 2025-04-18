@@ -357,12 +357,19 @@ export default {
 			}
 		},
 		calcularFechaMaxima() {
+			const nDate = new Date()
 			const start = this.dragValue?.start
 			const end = this.dragValue?.end
+			// eslint-disable-next-line no-console
+			console.log('start', start.getDate(), nDate.getDate())
+			// eslint-disable-next-line no-console
+			console.log('start', start.getMonth(), nDate.getMonth())
+			// eslint-disable-next-line no-console
+			console.log('start', start.getFullYear(), nDate.getFullYear())
 
 			// Validar si hay un rango seleccionado
 			if (!start || !end) return
-			if (start < new Date()) {
+			if (start.getDate() < nDate.getDate() && start.getMonth() <= nDate.getMonth() && start.getFullYear() <= nDate.getFullYear()) {
 				showError('No puedes solicitar ausencias en fechas pasadas')
 				this.restartCalendar()
 			}
