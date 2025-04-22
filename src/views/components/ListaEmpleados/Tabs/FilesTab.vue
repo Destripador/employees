@@ -152,9 +152,9 @@ export default {
 
 		this.fetchFiles()
 
-		this.autoRefreshInterval = setInterval(() => {
-			this.fetchFiles()
-		}, 10000)
+		// this.autoRefreshInterval = setInterval(() => {
+		// this.fetchFiles()
+		// }, 90000)
 	},
 
 	beforeDestroy() {

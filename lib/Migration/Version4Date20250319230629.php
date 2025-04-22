@@ -87,9 +87,6 @@ class Version4Date20250319230629 extends SimpleMigrationStep {
 			$table->addColumn('a_capital_humano', 'boolean', ['notnull' => false, 'default' => 0]);
 			$table->setPrimaryKey(['id_historial_ausencias']);
 			$table->addIndex(['id_ausencias']);
-			$table->addForeignKeyConstraint('ausencias', ['id_ausencias'], ['id_ausencias'], ['onDelete' => 'CASCADE']);
-			$table->addForeignKeyConstraint('aniversarios', ['id_aniversario'], ['id_aniversario'], ['onDelete' => 'SET NULL']);
-			$table->addForeignKeyConstraint('tipo_ausencia', ['id_tipo_ausencia'], ['id_tipo_ausencia'], ['onDelete' => 'CASCADE']);
 		}
 		
 

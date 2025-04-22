@@ -231,10 +231,13 @@ export default {
 
 		async GuardarCambioEquipo() {
 			try {
+				if (this.selected_user.id !== null) {
+					this.selected_user = this.selected_user.id
+				}
 				await axios.post(generateUrl('/apps/empleados/GuardarCambioEquipo'),
 					{
 						Id_Equipo: this.data.Id_equipo,
-						Id_jefe_equipo: this.selected_user.id,
+						Id_jefe_equipo: this.selected_user,
 						Nombre: this.equipo_nombre,
 					})
 					.then(
