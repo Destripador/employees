@@ -68,6 +68,7 @@
 				</section>
 			</div>
 		</div>
+		<!-- INICIO MODAL SOLICITUD DE VACACIONES -->
 		<NcModal
 			v-if="modal"
 			size="large"
@@ -83,6 +84,7 @@
 				</div>
 			</div>
 		</NcModal>
+		<!-- FINAL MODAL SOLICITUD DE VACACIONES -->
 
 		<!-- INICIO MODAL ANIVERSARIOS SOLO INFO -->
 		<NcModal

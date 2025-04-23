@@ -82,6 +82,14 @@ return [
 		
 		/******************************* AUSENCIAS *****************************************/
 		['name' => 'ausencias#GetAusenciasByUser', 'url' => '/GetAusenciasByUser', 'verb' => 'POST'],
+		
+
+		/**************************** TIPO AUSENCIAS **************************************/
+		['name' => 'tipoausencias#getTipo', 'url' => '/getTipo', 'verb' => 'GET'],
+		['name' => 'tipoausencias#VaciarTipo', 'url' => '/VaciarTipo', 'verb' => 'GET'],
+		['name' => 'tipoausencias#AgregarNuevoTipo', 'url' => '/AgregarNuevoTipo', 'verb' => 'POST'],
+		['name' => 'tipoausencias#ExportarTipo', 'url' => '/ExportarTipo', 'verb' => 'GET'],
+		['name' => 'tipoausencias#importarTipo', 'url' => '/importarTipo', 'verb' => 'POST'],
 	],
 	
 ];
