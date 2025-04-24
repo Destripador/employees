@@ -6,6 +6,7 @@ use OCP\Util;
 
 // style('empleados', 'semantic');  // adds css/style.(s)css
 style('empleados', 'chart');
+style('empleados', 'bootsdivs');
 Util::addScript(OCA\Empleados\AppInfo\Application::APP_ID, 'main');
 ?>
 

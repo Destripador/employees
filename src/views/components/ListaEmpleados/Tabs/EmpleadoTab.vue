@@ -1,8 +1,8 @@
 <template>
 	<div class="well">
 		<div class="top">
-			<div class="main">
-				<div class="box1">
+			<div class="row">
+				<div class="col-6">
 					<div>
 						<div class="divider">
 							<span>Informacion Laboral</span>
@@ -150,7 +150,7 @@
 					</div>
 				</div>
 
-				<div class="box2">
+				<div class="col-6">
 					<div class="divider">
 						<span>Extructura Laboral</span>
 					</div>
