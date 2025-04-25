@@ -73,7 +73,7 @@
 				<div class="center">
 					<VueTabs active-tab-color="#fdb913c"
 						active-text-color="white"
-						type="pills"
+						type="grow"
 						centered>
 						<VTab title="Empleado">
 							<EmpleadoTab :data="data"

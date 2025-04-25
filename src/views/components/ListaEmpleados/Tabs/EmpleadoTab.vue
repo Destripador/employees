@@ -1,8 +1,8 @@
 <template>
 	<div class="well">
 		<div class="top">
-			<div class="row">
-				<div class="col-6">
+			<div class="main">
+				<div class="box1">
 					<div>
 						<div class="divider">
 							<span>Informacion Laboral</span>
@@ -150,7 +150,7 @@
 					</div>
 				</div>
 
-				<div class="col-6">
+				<div class="box2">
 					<div class="divider">
 						<span>Extructura Laboral</span>
 					</div>
@@ -612,7 +612,7 @@ export default {
 }
 .box1 {
 	flex: 3;
-	padding-right: 5%;
+	padding-right: 2%;
 }
 .box1Inside {
 	flex: 3;
@@ -624,10 +624,28 @@ export default {
 	flex: 2;
 }
 .main {
-	margin-top: 10px;
 	display: flex;
-	gap: 5px;
+	flex-wrap: wrap; /* Permite que los elementos bajen si no caben */
+	gap: 20px;
 }
+
+/* Que .box1 y .box2 ocupen el 100% en pantallas pequeñas */
+@media (max-width: 768px) {
+	.box1, .box2 {
+		flex: 1 1 100%;
+	}
+}
+
+/* En pantallas grandes, box1 y box2 se distribuyen como lo hacías */
+@media (min-width: 769px) {
+	.box1 {
+		flex: 3;
+	}
+	.box2 {
+		flex: 2;
+	}
+}
+
 .label-input-trabajo {
 	display: grid;
 	align-items: center;
