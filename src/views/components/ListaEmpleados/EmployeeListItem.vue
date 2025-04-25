@@ -4,7 +4,7 @@
 			:key="source.Id_empleados"
 			class="list-item-style envelope"
 			:name="source.uid"
-			@click="showDetails(source)">
+			@click.prevent="showDetails(source)">
 			<template #icon>
 				<div class="app-content-list-item-icon">
 					<BaseAvatar

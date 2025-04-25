@@ -6,7 +6,7 @@
 			class="list-item-style envelope"
 			:name="source.Nombre"
 			:counter-number="source.cantidad_empleados"
-			@click="showDetails(source)">
+			@click.prevent="showDetails(source)">
 			<template #name>
 				{{ source.Nombre }}
 			</template>
