@@ -626,7 +626,6 @@ export default {
 .main {
 	display: flex;
 	flex-wrap: wrap; /* Permite que los elementos bajen si no caben */
-	gap: 20px;
 }
 
 /* Que .box1 y .box2 ocupen el 100% en pantallas pequeñas */
@@ -683,7 +682,7 @@ export default {
 .divider {
   position: relative;
   text-align: center;
-  margin: 2rem 0;
+  margin: 1rem 0;
 }
 
 .divider::before {
