@@ -19,6 +19,7 @@
 					:use-markdown="useMarkdown" />
 				<!-- Employee Notes -->
 				<NcTextArea v-if="!showMarkdown"
+					input-class="model"
 					class="top"
 					label="NOTAS EMPLEADO"
 					resize="vertical"
@@ -165,4 +166,7 @@ export default {
 	height: 300px;
 }
 
+textarea.model {
+	height: 300px !important;
+}
 </style>
