@@ -101,6 +101,7 @@ abstract class BaseController extends Controller {
             "usuario_almacenamiento" => $configMap['usuario_almacenamiento'] ?? null,
             "automatic_save_note" => $configMap['automatic_save_note'] ?? null,
             "acumular_vacaciones" => $configMap['acumular_vacaciones'] ?? null,
+            "modulo_ahorro" => $configMap['modulo_ahorro'] ?? null,
         ];
     }
 

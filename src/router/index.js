@@ -7,6 +7,7 @@ import Calendario from '../views/components/TiempoLibre/TiempoLibre.vue'
 import Equipos from '../views/components/Equipos/Equipos.vue'
 import Puestos from '../views/components/puestos/Puestos.vue'
 import Areas from '../views/components/areas/Areas.vue'
+import Ahorros from '../views/components/ahorros/Solicitar.vue'
 import Dashboard from '../views/components/Dashboard/Dashboard.vue'
 Vue.use(Router)
 
@@ -46,6 +47,11 @@ export default new Router({
 			path: '/Calendario',
 			component: Calendario,
 			name: 'Calendario',
+		},
+		{
+			path: '/Solicitar',
+			component: Ahorros,
+			name: 'Ahorros',
 		},
 	],
 })

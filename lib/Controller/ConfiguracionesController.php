@@ -117,6 +117,7 @@ class ConfiguracionesController extends Controller {
 			'Users' => $userList,
             'Guardado_notas' => $configuraciones[1]['Data'],
             'Acumular_vacaciones' => $configuraciones[2]['Data'],
+            'modulo_ahorro' => $configuraciones[3]['Data'],
         );
 
 

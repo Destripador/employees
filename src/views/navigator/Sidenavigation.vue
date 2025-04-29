@@ -28,6 +28,16 @@
 			</NcAppNavigationList>
 		</div>
 
+		<div v-if="ahorroModulo()">
+			<NcAppNavigationCaption heading-id="Ahorro Gossler"
+				is-heading
+				name="Ahorro Gossler" />
+			<NcAppNavigationList aria-labelledby="Ahorro Gossler">
+				<NcAppNavigationItem name="Solicitar"
+					:to="{ name: 'Ahorros' }" />
+			</NcAppNavigationList>
+		</div>
+
 		<div>
 			<NcAppNavigationCaption heading-id="Tiempo Laboral"
 				is-heading
@@ -57,7 +67,7 @@ export default {
 		NcAppNavigationCaption,
 	},
 
-	inject: ['groupuser'],
+	inject: ['groupuser', 'configuraciones'],
 
 	methods: {
 		navigateTo(route) {
@@ -65,6 +75,12 @@ export default {
 		},
 		isAdmin() {
 			return 'admin' in this.groupuser || 'recursos_humanos' in this.groupuser
+		},
+		ahorroModulo() {
+			if (this.configuraciones.modulo_ahorro === 'true') {
+				return true
+			}
+			return false
 		},
 	},
 }

@@ -90,6 +90,7 @@ return [
 		['name' => 'tipoausencias#AgregarNuevoTipo', 'url' => '/AgregarNuevoTipo', 'verb' => 'POST'],
 		['name' => 'tipoausencias#ExportarTipo', 'url' => '/ExportarTipo', 'verb' => 'GET'],
 		['name' => 'tipoausencias#importarTipo', 'url' => '/importarTipo', 'verb' => 'POST'],
+
 	],
 	
 ];
