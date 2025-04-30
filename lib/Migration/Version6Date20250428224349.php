@@ -44,7 +44,7 @@ class Version6Date20250428224349 extends SimpleMigrationStep {
 				'autoincrement' => true,
 				'notnull' => true,
 			]);
-			$table->addColumn('id_user', 'string', [
+			$table->addColumn('id_user', 'integer', [
 				'notnull' => true,
 			]);
 			$table->addColumn('id_permision', 'string', [

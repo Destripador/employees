@@ -91,6 +91,10 @@ return [
 		['name' => 'tipoausencias#ExportarTipo', 'url' => '/ExportarTipo', 'verb' => 'GET'],
 		['name' => 'tipoausencias#importarTipo', 'url' => '/importarTipo', 'verb' => 'POST'],
 
+		/******************************** AHORRO ******************************************/
+		['name' => 'ahorros#GetInfoAhorro', 'url' => '/GetInfoAhorro', 'verb' => 'POST'],
+		['name' => 'ahorros#EnviarSolicitud', 'url' => '/EnviarSolicitud', 'verb' => 'POST'],
+
 	],
 	
 ];

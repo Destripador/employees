@@ -15,11 +15,15 @@ use OCP\IUserManager;
 use OCP\IGroupManager;
 use OCA\Empleados\Db\empleadosMapper;
 use OCA\Empleados\Db\configuracionesMapper;
+use OCA\Empleados\Db\userahorroMapper;
+use OCA\Empleados\Db\historialahorroMapper;
 
 class ahorrosController extends BaseController {
 
     protected $empleadosMapper;
 	protected $configuracionesMapper;
+	protected $userahorroMapper;
+	protected $historialahorroMapper;
 	protected $session;
 
 	public function __construct(
@@ -29,6 +33,8 @@ class ahorrosController extends BaseController {
 		IUserManager $userManager,
         empleadosMapper $empleadosMapper,
 		configuracionesMapper $configuracionesMapper, 
+		userahorroMapper $userahorroMapper,
+		historialahorroMapper $historialahorroMapper,
 		IGroupManager $groupManager
 	) {
 		parent::__construct(Application::APP_ID, $request, $userSession, $groupManager, $empleadosMapper, $configuracionesMapper);
@@ -36,5 +42,39 @@ class ahorrosController extends BaseController {
 		$this->session = $session;
 		$this->configuracionesMapper = $configuracionesMapper;
 		$this->empleadosMapper = $empleadosMapper;
+		$this->userahorroMapper = $userahorroMapper;
+		$this->historialahorroMapper = $historialahorroMapper;
 	}
+
+    #[UseSession]
+    #[NoAdminRequired]
+	public function GetInfoAhorro(int $Id_user): array{
+		try{
+			$user = $this->userahorroMapper->GetInfoAhorro($Id_user);
+			
+			return $user; 
+		}
+		catch(Exception $e){
+			return $e;
+		}
+	}
+
+	#[UseSession]
+    #[NoAdminRequired]
+	public function EnviarSolicitud(int $id_ahorro, float $cantidad_solicitada, string $nota): string {
+		try{
+			# $user = $this->userahorroMapper->GetInfoByIdAhorro($id_ahorro);
+			$user = $this->userSession->getUser();
+			$employee = $this->empleadosMapper->GetMyEmployeeInfo($user->getUID());
+
+			$this->historialahorroMapper->EnviarSolicitud($id_ahorro, $cantidad_solicitada, $employee[0]['Fondo_ahorro'], $nota);
+			$this->userahorroMapper->updatePermisionUserId($id_ahorro, '2');
+			
+			return "ok"; 
+		}
+		catch(Exception $e){
+			return $e;
+		}
+	}
+
 }

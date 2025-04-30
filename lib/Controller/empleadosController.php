@@ -16,10 +16,12 @@ use OCA\Empleados\Db\empleadosMapper;
 use OCA\Empleados\Db\departamentosMapper;
 use OCA\Empleados\Db\configuracionesMapper;
 use OCA\Empleados\Db\ausenciasMapper;
+use OCA\Empleados\Db\userahorroMapper;
 use OCA\Empleados\Db\ausencias;
 use OCA\Empleados\Db\empleados;
 use OCA\Empleados\Db\departamentos;
 use OCA\Empleados\Db\configuraciones;
+use OCA\Empleados\Db\userahorro;
 
 use OCP\IDBConnection;
 
@@ -45,6 +47,7 @@ class EmpleadosController extends BaseController {
     protected $ausenciasMapper;
     protected $departamentosMapper;
     protected $configuracionesMapper;
+    protected $userahorroMapper;
     protected $session;
     protected $l10n;
 
@@ -59,6 +62,7 @@ class EmpleadosController extends BaseController {
         ausenciasMapper $ausenciasMapper,
         departamentosMapper $departamentosMapper,
         configuracionesMapper $configuracionesMapper,
+        userahorroMapper $userahorroMapper,
         IL10N $l10n,
         IGroupManager $groupManager,
         IRootFolder $rootFolder
@@ -71,6 +75,7 @@ class EmpleadosController extends BaseController {
         $this->groupManager = $groupManager;
         $this->empleadosMapper = $empleadosMapper;
         $this->ausenciasMapper = $ausenciasMapper;
+        $this->userahorroMapper = $userahorroMapper;
         $this->departamentosMapper = $departamentosMapper;
         $this->configuracionesMapper = $configuracionesMapper;
         $this->l10n = $l10n;
@@ -177,9 +182,20 @@ class EmpleadosController extends BaseController {
                 $connection = \OC::$server->get(IDBConnection::class);
                 $idEmpleado = $connection->lastInsertId('empleados');
 
+                // Generar un nuevo registro de ausencias
+                // y asociarlo al empleado recién creado
                 $ausencias = new ausencias();
                 $ausencias->setid_empleado((int)$idEmpleado);
                 $this->ausenciasMapper->insert($ausencias);
+
+                // Generar un nuevo registro de ahorro
+                // y asociarlo al empleado recién creado
+                $userahorro = new userahorro();
+                $userahorro->setid_user($idEmpleado);
+                $userahorro->setid_permision('0');
+                $userahorro->setstate('0');
+                $userahorro->setlast_modified($timestamp);
+                $this->userahorroMapper->insert($userahorro);
 
                 return "ok";
             } else {
