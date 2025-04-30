@@ -479,4 +479,14 @@ class EmpleadosController extends BaseController {
         
 	}
 
+    #[UseSession]
+    #[NoAdminRequired]
+    public function ActualizarEstadoAhorro($id_ahorro, $state): string {
+        $this->userahorroMapper->updatePermisionUserId(
+            $id_ahorro, 
+            $state,
+        );
+        return "ok";
+    }
+
 }

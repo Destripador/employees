@@ -37,10 +37,11 @@ class empleadosMapper extends QBMapper {
     public function GetUserLists(): array {
 		$qb = $this->db->getQueryBuilder();
 
-		$qb->select('e.*', 'u.displayname', 'u.uid', 'a.*') // Solo traemos empleados sin duplicar
+		$qb->select('e.*', 'u.displayname', 'u.uid', 'a.*', 'i.*') // Solo traemos empleados sin duplicar
 			->from('empleados', 'e')
 			->innerJoin('e', 'users', 'u', $qb->expr()->eq('u.uid', 'e.Id_user'))
 			->innerJoin('e', 'ausencias', 'a', $qb->expr()->eq('a.id_empleado', 'e.Id_empleados'))
+			->innerJoin('e', 'user_ahorro', 'i', $qb->expr()->eq('i.id_user', 'e.Id_empleados'))
 			->where($qb->expr()->eq('e.estado', $qb->createNamedParameter(1)));
 
 

@@ -128,6 +128,13 @@
 									:disabled="!show"
 									class="inputtype">
 							</div>
+							<div class="topRefresh MarginRight">
+								<NcCheckboxRadioSwitch
+									v-model="state"
+									type="switch">
+									{{ state ? 'puede solicitar' : 'Modo lectura' }}
+								</NcCheckboxRadioSwitch>
+							</div>
 						</div>
 					</div>
 					<div>
@@ -311,6 +318,7 @@ import {
 	NcButton,
 	NcSelect,
 	NcListItem,
+	NcCheckboxRadioSwitch,
 } from '@nextcloud/vue'
 
 export default {
@@ -331,6 +339,7 @@ export default {
 		NcButton,
 		NcSelect,
 		NcListItem,
+		NcCheckboxRadioSwitch,
 	},
 
 	props: {
@@ -376,10 +385,16 @@ export default {
 			EmpleadosList: [],
 			Aniversario: '',
 			Vacaciones: '',
+			state: false,
 		}
 	},
 
 	watch: {
+		state(oldState, newState) {
+			if (newState !== this.state) {
+				this.cambioEstado(newState ? '0' : '1')
+			}
+		},
 		data(news) {
 			if (news) {
 				this.setAttr(
@@ -396,7 +411,8 @@ export default {
 					news.Equipo_asignado,
 					news.Sueldo,
 					news.dias_disponibles,
-					news.id_aniversario)
+					news.id_aniversario,
+					news.state)
 			}
 		},
 	},
@@ -409,6 +425,7 @@ export default {
 			icon: '',
 			user: empleados.Id_user,
 		}))
+
 		this.setAttr(
 			this.data.Numero_empleado,
 			this.data.Ingreso,
@@ -423,12 +440,12 @@ export default {
 			this.data.Equipo_asignado,
 			this.data.Sueldo,
 			this.data.dias_disponibles,
-			this.data.id_aniversario)
+			this.data.id_aniversario,
+			this.data.state)
 	},
 
 	methods: {
-		setAttr(NumeroEmpleado, Ingreso, Area, Puesto, Gerente, Socio, FondoClave, FondoAhorro, NumeroCuenta, Equipo, EquipoAsignado, Sueldo, Vacaciones, Aniversario) {
-
+		setAttr(NumeroEmpleado, Ingreso, Area, Puesto, Gerente, Socio, FondoClave, FondoAhorro, NumeroCuenta, Equipo, EquipoAsignado, Sueldo, Vacaciones, Aniversario, state) {
 			this.Numero_empleado = this.checknull(NumeroEmpleado)
 			this.Ingreso = this.checknull(Ingreso)
 			this.area = Area
@@ -443,6 +460,12 @@ export default {
 			this.Sueldo = this.checknull(Sueldo)
 			this.Vacaciones = this.checknull(Vacaciones)
 			this.Aniversario = this.checknull(Aniversario)
+
+			if (state === '0' || state === '2') {
+				this.state = false
+			} else if (state === '1') {
+				this.state = true
+			}
 
 			this.getAreas(this.area)
 			this.getPuestos(this.puesto)
@@ -597,6 +620,16 @@ export default {
 				}
 			} catch (err) {
 				showError(t('empleados', 'Se ha producido una excepcion [03] [' + err + ']'))
+			}
+		},
+		async cambioEstado(state) {
+			try {
+				await axios.post(generateUrl('/apps/empleados/ActualizarEstadoAhorro'), {
+					id_ahorro: this.data.id_ahorro,
+					state,
+				})
+			} catch (err) {
+				showError(err)
 			}
 		},
 	},

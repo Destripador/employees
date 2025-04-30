@@ -56,7 +56,7 @@ class userahorroMapper extends QBMapper {
 		return $users;
 	}
 
-	public function updateUserId(int $id, string $id_permision, string $state, string $cantidad): void {
+	public function updateAhorroById(int $id_ahorro, string $id_permision, string $state, string $cantidad): void {
 		$query = $this->db->getQueryBuilder();
 		$query->update($this->getTableName())
 			->set('id_permision', $query->createNamedParameter($id_permision))

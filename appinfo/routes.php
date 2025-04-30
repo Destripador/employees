@@ -27,6 +27,7 @@ return [
 		['name' => 'empleados#EliminarEmpleado', 'url' => '/EliminarEmpleado', 'verb' => 'POST'],
 		['name' => 'empleados#DesactivarEmpleado', 'url' => '/DesactivarEmpleado', 'verb' => 'POST'],
 		['name' => 'empleados#ImportListEmpleados', 'url' => '/ImportListEmpleados', 'verb' => 'POST'],
+		['name' => 'empleados#ActualizarEstadoAhorro', 'url' => '/ActualizarEstadoAhorro', 'verb' => 'POST'],
 
 		/******************************** AREAS ********************************************/ 
 		['name' => 'areas#GetAreasFix', 'url' => '/GetAreasFix', 'verb' => 'GET'],
