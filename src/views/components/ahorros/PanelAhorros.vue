@@ -78,10 +78,10 @@
 									</template>
 									Ver solicitud
 								</NcActionButton>
-								<NcActionButton v-if="historial[itemIndex].estado == 0" @click="accion('aceptar', historial[itemIndex].id_historial, historial[itemIndex].id_user)">
+								<NcActionButton v-if="item.estado == 0" @click="accion('aceptar', item.id_historial, item.id_user)">
 									Aprobar
 								</NcActionButton>
-								<NcActionButton v-if="historial[itemIndex].estado == 0" @click="accion('denegar', historial[itemIndex].id_historial, historial[itemIndex].id_user)">
+								<NcActionButton v-if="item.estado == 0" @click="accion('denegar', item.id_historial, item.id_user)">
 									Eliminar
 								</NcActionButton>
 							</template>
@@ -193,12 +193,12 @@
 						<div v-if="historial[index].estado == 0" style="display: flex; flex-direction: column; gap: 12px; margin: 10px;">
 							<div style="display: flex; gap: 12px;">
 								<div style="display: flex; flex-direction: column; gap: 12px; flex: 1">
-									<NcButton type="secondary" wide @click="accion('aceptar', historial[index].id_historial, historial[index].id)">
+									<NcButton type="secondary" wide @click="accion('aceptar', historial[index].id_historial, historial[index].id_user)">
 										ACEPTAR
 									</NcButton>
 								</div>
 								<div style="display: flex; flex-direction: column; gap: 12px; flex: 1">
-									<NcButton type="error" wide @click="accion('denegar', historial[index].id_historial, historial[index].id)">
+									<NcButton type="error" wide @click="accion('denegar', historial[index].id_historial, historial[index].id_user)">
 										DENEGAR
 									</NcButton>
 								</div>
@@ -288,7 +288,7 @@ export default {
 	},
 
 	async mounted() {
-		this.gethistorial()
+		await this.gethistorial()
 	},
 
 	methods: {
@@ -386,9 +386,9 @@ export default {
 						id,
 					},
 				).then(
-					(response) => {
+					async (response) => {
 						this.send = true
-						this.gethistorial()
+						await this.gethistorial()
 						showSuccess(t('empleados', 'Solicitud aceptada'))
 					},
 					(err) => {
@@ -407,9 +407,9 @@ export default {
 						id,
 					},
 				).then(
-					(response) => {
+					async (response) => {
 						this.send = true
-						this.gethistorial()
+						await this.gethistorial()
 						showSuccess(t('empleados', 'Solicitud Denegada'))
 					},
 					(err) => {
