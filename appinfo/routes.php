@@ -9,6 +9,7 @@ return [
 		/********************************** INDEX **********************************************/ 
 		['name' => 'page#index', 'url' => '/', 'verb' => 'GET'],
 		
+
 		/******************************** EMPLEADOS ********************************************/ 
 		['name' => 'empleados#GetUser', 'url' => '/GetUser', 'verb' => 'GET'],
 		['name' => 'empleados#GetUserLists', 'url' => '/GetUserLists', 'verb' => 'GET'],
@@ -29,6 +30,7 @@ return [
 		['name' => 'empleados#ImportListEmpleados', 'url' => '/ImportListEmpleados', 'verb' => 'POST'],
 		['name' => 'empleados#ActualizarEstadoAhorro', 'url' => '/ActualizarEstadoAhorro', 'verb' => 'POST'],
 
+
 		/******************************** AREAS ********************************************/ 
 		['name' => 'areas#GetAreasFix', 'url' => '/GetAreasFix', 'verb' => 'GET'],
 		['name' => 'areas#GetAreasList', 'url' => '/GetAreasList', 'verb' => 'GET'],
@@ -38,6 +40,7 @@ return [
 		['name' => 'areas#ImportListAreas', 'url' => '/ImportListAreas', 'verb' => 'POST'],
 		['name' => 'areas#EliminarArea', 'url' => '/EliminarArea', 'verb' => 'POST'],
 		['name' => 'areas#crearArea', 'url' => '/crearArea', 'verb' => 'POST'],
+
 
 		/****************************** PUESTOS *********************************************/
 		['name' => 'puestos#GetPuestosFix', 'url' => '/GetPuestosFix', 'verb' => 'GET'],
@@ -49,6 +52,7 @@ return [
 		['name' => 'puestos#EliminarPuesto', 'url' => '/EliminarPuesto', 'verb' => 'POST'],
 		['name' => 'puestos#crearPuesto', 'url' => '/crearPuesto', 'verb' => 'POST'],
 
+		
 		/****************************** EQUIPOS *********************************************/
 		['name' => 'equipos#GetEquiposFix', 'url' => '/GetEquiposFix', 'verb' => 'GET'],
 		['name' => 'equipos#GetEquiposList', 'url' => '/GetEquiposList', 'verb' => 'GET'],
@@ -83,7 +87,7 @@ return [
 		
 		/******************************* AUSENCIAS *****************************************/
 		['name' => 'ausencias#GetAusenciasByUser', 'url' => '/GetAusenciasByUser', 'verb' => 'POST'],
-		
+		 
 
 		/**************************** TIPO AUSENCIAS **************************************/
 		['name' => 'tipoausencias#getTipo', 'url' => '/getTipo', 'verb' => 'GET'],
@@ -92,9 +96,14 @@ return [
 		['name' => 'tipoausencias#ExportarTipo', 'url' => '/ExportarTipo', 'verb' => 'GET'],
 		['name' => 'tipoausencias#importarTipo', 'url' => '/importarTipo', 'verb' => 'POST'],
 
+
 		/******************************** AHORRO ******************************************/
 		['name' => 'ahorros#GetInfoAhorro', 'url' => '/GetInfoAhorro', 'verb' => 'POST'],
 		['name' => 'ahorros#EnviarSolicitud', 'url' => '/EnviarSolicitud', 'verb' => 'POST'],
+		['name' => 'ahorros#getHistorial', 'url' => '/getHistorial/{id_user}', 'verb' => 'GET'],
+		['name' => 'ahorros#GetHistorialPanel', 'url' => '/GetHistorialPanel/{options_fechas_value}/{options_estado_values}', 'verb' => 'GET'],
+		['name' => 'ahorros#AceptarAhorro', 'url' => '/AceptarAhorro', 'verb' => 'POST'],
+		['name' => 'ahorros#DenegarAhorro', 'url' => '/DenegarAhorro', 'verb' => 'POST'],
 
 	],
 	

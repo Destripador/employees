@@ -273,17 +273,22 @@ class EmpleadosController extends BaseController {
                 $this->empleadosMapper->updateEmpleado(
                     (string) $row[0], (string) $row[2], $this->convertExcelDate($row[3]),
                     (string) $row[4], (string) $row[5], (string) $row[6], (string) $row[7],
-                    (string) $row[8], (string) $row[9], (string) $row[10], (string) $row[11],
-                    (string) $row[12], (string) $row[13], $this->convertExcelDate($row[14]),
-                    (string) $row[15], (string) $row[16], (string) $row[17], (string) $row[18],
-                    (string) $row[19], (string) $row[20], (string) $row[21], (string) $row[22],
-                    (string) $row[23], (string) $row[24]
+                    (string) $row[8], (string) $row[9], (string) $row[10], (string) $row[12],
+                    (string) $row[13], (string) $row[14], $this->convertExcelDate($row[15]),
+                    (string) $row[16], (string) $row[17], (string) $row[18], (string) $row[19],
+                    (string) $row[20], (string) $row[21], (string) $row[22], (string) $row[23],
+                    (string) $row[24], (string) $row[25],
                 );
                 
                 $this->ausenciasMapper->updateAusenciasById(
                     (int)$row[0], 
                     (int)$row[25], 
                     (float)$row[26],
+                );
+
+                $this->userahorroMapper->updatePermisionByEmpleadoId(
+                    (int) $row[0], 
+                    (string) $row[11],
                 );
             }
         }
@@ -367,6 +372,7 @@ class EmpleadosController extends BaseController {
 		'Id_socio', 
 		'Fondo_clave',
 		'Fondo_ahorro',
+        'estado_ahorro',
 		'Numero_cuenta', 
 		'Equipo_asignado', 
 		'Sueldo', 
@@ -402,6 +408,7 @@ class EmpleadosController extends BaseController {
 					$datas['Id_socio'], 
 					$datas['Fondo_clave'], 
 					$datas['Fondo_ahorro'], 
+					$datas['state'], 
 					$datas['Numero_cuenta'], 
 					$datas['Equipo_asignado'], 
 					$datas['Sueldo'], 

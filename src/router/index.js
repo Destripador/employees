@@ -8,6 +8,7 @@ import Equipos from '../views/components/Equipos/Equipos.vue'
 import Puestos from '../views/components/puestos/Puestos.vue'
 import Areas from '../views/components/areas/Areas.vue'
 import Ahorros from '../views/components/ahorros/Solicitar.vue'
+import PanelAhorros from '../views/components/ahorros/PanelAhorros.vue'
 import Dashboard from '../views/components/Dashboard/Dashboard.vue'
 Vue.use(Router)
 
@@ -52,6 +53,11 @@ export default new Router({
 			path: '/Solicitar',
 			component: Ahorros,
 			name: 'Ahorros',
+		},
+		{
+			path: '/PanelAhorros',
+			component: PanelAhorros,
+			name: 'PanelAhorros',
 		},
 	],
 })

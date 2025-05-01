@@ -96,7 +96,7 @@
 							placeholder="Notas" />
 						<br>
 						<div>
-							<div class="center">
+							<div class="center-box">
 								<NcCheckboxRadioSwitch
 									:checked.sync="acept_terms"
 									value="true"
@@ -106,9 +106,8 @@
 									</strong>
 								</NcCheckboxRadioSwitch>
 							</div>
-							<div class="center">
+							<div class="center-box">
 								<NcButton
-									class="center"
 									style="margin-top: 20px;"
 									text="Enviar Solicitud"
 									type="primary"
@@ -121,10 +120,12 @@
 				</div>
 			</div>
 		</NcModal>
+		<historial :id="userdata.id_ahorro" />
 	</NcAppContent>
 </template>
 
 <script>
+import historial from './Historial.vue'
 // Importing necessary components
 import { ref } from 'vue'
 import { showError /* showSuccess */ } from '@nextcloud/dialogs'
@@ -160,6 +161,7 @@ export default {
 		NcTextField,
 		NcTextArea,
 		NcCheckboxRadioSwitch,
+		historial,
 		// ClockAlertOutline,
 	},
 
@@ -411,7 +413,7 @@ export default {
 	font-size: 1.5rem;
 	font-weight: 700;
 	}
-	.center {
+	.center-box {
 		display: flex;
 		justify-content: center;
 		align-items: center;

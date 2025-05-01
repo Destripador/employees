@@ -77,4 +77,59 @@ class ahorrosController extends BaseController {
 		}
 	}
 
+	#[UseSession]
+    #[NoAdminRequired]
+	public function getHistorial(string $id_user) : array {
+		try{
+			$user = $this->historialahorroMapper->getahorrobyid($id_user);
+			
+			return $user; 
+		}
+		catch(Exception $e){
+			return $e;
+		}
+	}
+
+	#[UseSession]
+    #[NoAdminRequired]
+	public function GetHistorialPanel(string $options_fechas_value, string $options_estado_values) : array {
+		try{
+			$user = $this->historialahorroMapper->GetHistorialPanel($options_fechas_value, $options_estado_values);
+			
+			return $user; 
+		}
+		catch(Exception $e){
+			return $e;
+		}
+
+	}
+
+	#[UseSession]
+    #[NoAdminRequired]
+	public function AceptarAhorro(int $id_ahorro, int $id): string {
+		try{
+			$this->historialahorroMapper->AceptarAhorro($id_ahorro);	
+			$this->userahorroMapper->updatePermisionUserId($id, '0');	
+			
+			return "ok"; 
+		}
+		catch(Exception $e){
+			return $e;
+		}
+	}
+
+	#[UseSession]
+    #[NoAdminRequired]
+	public function DenegarAhorro(int $id_ahorro, int $id): string {
+		try{
+			$this->historialahorroMapper->DenegarAhorro($id_ahorro);		
+			$this->userahorroMapper->updatePermisionUserId($id, '1');	
+			
+			return "ok"; 
+		}
+		catch(Exception $e){
+			return $e;
+		}
+	}
+
 }

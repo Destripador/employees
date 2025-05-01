@@ -25,7 +25,7 @@ class historialahorroMapper extends QBMapper {
 
 		$qb->select('*')
 			->from($this->getTableName())            
-			->where($qb->expr()->eq('id_user', $qb->createNamedParameter($id_user)));
+			->where($qb->expr()->eq('id_ahorro', $qb->createNamedParameter($id_user)));
 		
 		$result = $qb->execute();
 		$users = $result->fetchAll();
@@ -39,9 +39,9 @@ class historialahorroMapper extends QBMapper {
 
 		$qb->select('*')
 			->from($this->getTableName(), 'o')
-			->innerJoin('o', 'users', 'c', $qb->expr()->eq('c.uid', 'o.id_user'))
-			->innerJoin('c', 'user_ahorro', 'x', $qb->expr()->eq('x.id_user', 'c.uid'))
-			->innerJoin('c', 'accounts', 'a', $qb->expr()->eq('c.uid', 'a.uid'))
+			->innerJoin('o', 'user_ahorro', 'x', $qb->expr()->eq('x.id_ahorro', 'o.id_ahorro'))
+			->innerJoin('x', 'empleados', 'c', $qb->expr()->eq('c.Id_empleados', 'x.id_user'))
+			->innerJoin('c', 'users', 'u', $qb->expr()->eq('u.uid', 'c.Id_user'))
 			->where($qb->expr()->eq('o.estado', $qb->createNamedParameter($options_estado_values)))
 			->andWhere(($qb->expr()->like('o.fecha_solicitud', $qb->createNamedParameter('%' . $options_fechas_value))));
 		

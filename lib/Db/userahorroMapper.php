@@ -77,6 +77,15 @@ class userahorroMapper extends QBMapper {
 		$query->execute();
 	}
 
+	public function updatePermisionByEmpleadoId(int $id, string $state): void {
+		$query = $this->db->getQueryBuilder();
+		$query->update($this->getTableName())
+			->set('state', $query->createNamedParameter($state))
+			->where($query->expr()->eq('id_user', $query->createNamedParameter($id)));
+
+		$query->execute();
+	}
+
 	public function GetInfoAhorro(int $id_user): array{
 		$qb = $this->db->getQueryBuilder();
 

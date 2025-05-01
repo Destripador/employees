@@ -36,6 +36,10 @@
 				<NcAppNavigationItem name="Solicitar"
 					:to="{ name: 'Ahorros' }" />
 			</NcAppNavigationList>
+			<NcAppNavigationList v-if="isAdmin()" aria-labelledby="Ahorro Gossler">
+				<NcAppNavigationItem name="Panel administrativo"
+					:to="{ name: 'PanelAhorros' }" />
+			</NcAppNavigationList>
 		</div>
 
 		<div>
