@@ -1,144 +1,127 @@
-# 🚀 Employee Management Module for Nextcloud (ON DEV)
+# ERP for Nextcloud — Employee and Human Resources Management Module
 
-## 📌 Description
-
-The **Employee Module** is an administrative solution designed for **employee management and information handling**. This module seamlessly integrates with Nextcloud to provide businesses and organizations with an **efficient and secure** way to manage employees, roles, and records within their existing Nextcloud infrastructure.
-
-
-
-![alt text](https://raw.githubusercontent.com/Destripador/employees/refs/heads/main/img/image1.png)
-
-
-## 🎯 Features
-
-✔ **Employee Directory** – Maintain a structured and easily searchable list.  
-✔ **Role and Department Management** – Assign employees to departments and define roles.  
-✔ **User Authentication Integration** – Sync with Nextcloud users.  
-✔ **Contract and Payroll Management** – Store key employee contract information.  
-✔ **Attendance and Leave Tracking** – Monitor working hours and absences.  
-✔ **Hierarchical Organization Chart** – Visualize employee reporting structures.  
-✔ **Secure Document Storage** – Upload and manage employee-related files.  
-✔ **Performance Evaluation** – Track employee reviews and assessments.  
-✔ **Notifications and Alerts** – Get updates on employee-related actions.  
-✔ **Admin Dashboard** – Intuitive interface for efficient employee management.  
+**Developed by:** Luis Ángel
+**Version:** Beta 2025
+**License:** MIT
 
 ---
 
-## 📂 Installation
+## 📄 Overview
 
-You can install this module in your Nextcloud instance manually or using `occ` commands.
+This ERP module for Nextcloud enables companies to fully manage employee information, departments, positions, teams, and benefits, natively integrated into the Nextcloud ecosystem.
 
-### **Using the Nextcloud App Store**
-1. Go to the **Nextcloud App Store**.
-2. Search for `"Employee Management"`.
-3. Click **Install** and enable the app from the Nextcloud Admin Panel.
-
-### **Manual Installation**
-1. Navigate to the Nextcloud apps directory:
-   ```sh
-   cd /path/to/nextcloud/apps
-   ```
-2. Clone the repository:
-   ```sh
-   git clone https://github.com/Destripador/employees.git employee_management
-   ```
+Designed for SMEs, firms, and organizations seeking digital sovereignty and customization while avoiding high commercial SaaS costs.
 
 ---
 
-## 🏗 Building the App
+## 🏢 Current Features
 
-If you are developing and need to build the app, follow these steps:
+### 🔹 Human Capital
 
-1. Install dependencies:
-   ```sh
-   npm install
-   ```
-2. Build the frontend assets:
-   ```sh
-   npm run build
-   ```
-3. Clear Nextcloud's cache:
-   ```sh
-   sudo -u www-data php occ maintenance:repair
-   ```
-4. Enable the app (if not enabled):
-   ```sh
-   sudo -u www-data php occ app:enable employee_management
-   ```
+* **Employees**
 
----
+  * General, banking, and job data.
+  * Vacation history.
+  * Savings fund.
+  * Work structure (Partner / Manager / Employee).
+  * Assignment to departments and positions.
+  * Internal notes.
+  * Documents (records, memos, identifications).
+* **Departments**
 
-## 🧪 Running Tests
+  * Creation and employee assignment to departments.
+* **Positions**
 
-To run unit tests, ensure you have PHPUnit installed:
+  * Management of job positions.
+* **Teams**
 
-```sh
-php vendor/bin/phpunit tests
-```
+  * Employee grouping under leaders or managers.
 
-To run JavaScript tests:
+### 🔹 Savings Module (Ahorro Gossler)
 
-```sh
-npm run test
-```
+* Employee savings fund request and management.
+* Request history.
+* Admin panel to review and authorize requests.
 
-For linting and code style checks:
+### 🔹 Work Time
 
-```sh
-npm run lint
-```
+* Absence and vacation calendar.
+* Automatic calculation of vacation days according to the Federal Labor Law (Mexico).
 
 ---
 
-## 🤝 How to Contribute
+## 🖼️ User Interface
 
-We welcome contributions! Follow these steps to submit a Pull Request:
+**General employee view:**
+![alt text](https://raw.githubusercontent.com/Destripador/employees/refs/heads/main/docs/screenshots/empleado_general.png)
 
-### **How to Create a Pull Request**
-1. **Fork** this repository on GitHub.
-2. **Clone** your fork locally:
-   ```sh
-   git clone https://github.com/Destripador/employees.git
-   ```
-3. Create a **feature branch**:
-   ```sh
-   git checkout -b feature/my-new-feature
-   ```
-4. Make your changes, commit them, and push the branch:
-   ```sh
-   git add .
-   git commit -m "Add new feature XYZ"
-   git push origin feature/my-new-feature
-   ```
-5. Open a **Pull Request** on GitHub.
 
----
+**Personal notes:**
+![alt text](https://raw.githubusercontent.com/Destripador/employees/refs/heads/main/docs/screenshots/notas.png)
 
-## 🌟 Code of Conduct
+**Personal data (RFC, IMSS, CURP):**
+![alt text](https://raw.githubusercontent.com/Destripador/employees/refs/heads/main/docs/screenshots/personal.png)
 
-We expect all contributors to follow our **Code of Conduct**:
+**Files and records:**
+![alt text](https://raw.githubusercontent.com/Destripador/employees/refs/heads/main/docs/screenshots/archivos.png)
 
-1. Be respectful to others.
-2. Provide constructive feedback.
-3. Follow Nextcloud’s security and privacy guidelines.
-4. Ensure your contributions align with the project's goals.
+**Departments and positions:**
+![alt text](https://raw.githubusercontent.com/Destripador/employees/refs/heads/main/docs/screenshots/areas_puestos.png)
 
-For details, refer to [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md).
+**Work teams:**
+![alt text](https://raw.githubusercontent.com/Destripador/employees/refs/heads/main/docs/screenshots/equipos.png)
 
----
+**Savings request:**
+![alt text](https://raw.githubusercontent.com/Destripador/employees/refs/heads/main/docs/screenshots/solicitud_ahorro.png)
 
-## 📄 License
+**Savings admin panel:**
+![alt text](https://raw.githubusercontent.com/Destripador/employees/refs/heads/main/docs/screenshots/panel_ahorro.png)
 
-This project is licensed under the **MIT License** – see the [LICENSE](LICENSE) file for more details.
+**Vacation calendar:**
+![alt text](https://raw.githubusercontent.com/Destripador/employees/refs/heads/main/docs/screenshots/calendario.png)
+
+**Anniversaries and absences table:**
+![alt text](https://raw.githubusercontent.com/Destripador/employees/refs/heads/main/docs/screenshots/aniversarios_ausencias.png)
+
+**Global module settings:**
+![alt text](https://raw.githubusercontent.com/Destripador/employees/refs/heads/main/docs/screenshots/configuraciones.png)
 
 ---
 
-### 🌟 If you find this project useful, don't forget to give ⭐ to the repository!
+## ⚙️ Technical Requirements
+
+* Nextcloud 28+
+* PHP 8.1+
+* MariaDB / MySQL
+* Docker (optional, recommended)
 
 ---
 
-## 🔗 Resources
-- [Nextcloud Developer Documentation](https://nextcloud.com/developer/)
-- [Nextcloud App Store](https://apps.nextcloud.com/)
-- [Nextcloud Forum](https://help.nextcloud.com/)
+## 🔄 Upcoming Roadmap
 
+1. Complete the full vacations and absences workflow.
+2. Downloadable reports in Excel/PDF.
+3. Refined roles and permissions.
+4. Develop technical and user manuals.
+5. Prepare a stable, open-source release.
+
+---
+## 🔒 License
+
+GNU Affero General Public License v3 (AGPL-3.0) — Free software for use, modification, and distribution under the terms of the license. Modifications and network interactions require source code disclosure.
+
+---
+
+## 🤝 Contributions
+
+This module is intended for internal use and collaboration with other firms interested in customized Nextcloud ERP solutions.
+
+Contributions and suggestions are welcome.
+
+---
+
+## 🚀 Current Status
+
+* **Functional module** in internal production environment.
+* **Public beta** in preparation.
+* **Documentation in progress.**
