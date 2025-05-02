@@ -132,4 +132,40 @@ class ahorrosController extends BaseController {
 		}
 	}
 
+	public function GenerateReport(string $options_fechas_value, string $options_estado_values): string {
+		try{
+			
+			$user = $this->historialahorroMapper->GetHistorialPanel($options_fechas_value, $options_estado_values);
+			$books = [["ID", 'NOMBRE', 'CORREO', 'CANTIDAD SOLICITADA', "ESTADO"]];
+
+			foreach($user as $datas){
+				if($datas['estado'] == 0){
+					$estado = "Pendiente";
+				}
+				else{
+					$estado = "Aprobado";
+				}
+
+				array_push($books, 
+					[$datas['id'], 
+					$datas['displayname'], 
+					json_decode($datas['data'], true)['email']['value'],
+					'$' . $datas['cantidad_solicitada'] . "", 
+					$estado]);
+			}
+
+			
+		
+			$xlsx = \Shuchkin\SimpleXLSXGen::fromArray( $books );
+			//$xlsx->saveAs('books.xlsx'); // or downloadAs('books.xlsx') or $xlsx_content = (string) $xlsx 
+		
+			$fileContent = $xlsx->downloadAs('php://memory');
+
+			return $books; 
+		}
+		catch(Exception $e){
+			return $e;
+		}
+	}
+
 }

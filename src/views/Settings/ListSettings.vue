@@ -62,6 +62,24 @@
 
 			<br>
 
+			<!-- Bloque: activar o desactivar modulo -->
+			<div class="grid">
+				<NcNoteCard type="info" heading="Modulo de ausencias">
+					<p>
+						Si el módulo de ausencias está habilitado, los usuarios podrán ver la opción de ausencias en su menú.
+					</p>
+					<br>
+					<NcCheckboxRadioSwitch
+						:checked="modulo_ausencias"
+						type="switch"
+						@update:checked="onChangemodulo_ausencias">
+						Activar módulo de ausencias
+					</NcCheckboxRadioSwitch>
+				</NcNoteCard>
+			</div>
+
+			<br>
+
 			<!-- Bloque: Selector único para el Gestor de datos -->
 			<div class="grid">
 				<NcNoteCard v-if="selected_user" type="warning" heading="ATENCION">
@@ -151,6 +169,7 @@ export default {
 			guardado_notas: false,
 			acumular_vacaciones: false,
 			modulo_ahorro: false,
+			modulo_ausencias: false,
 
 			/**
 			 * SELECTOR MÚLTIPLE - Capital Humano
@@ -212,6 +231,9 @@ export default {
 
 				// modulo ahorro
 				this.modulo_ahorro = (response.data.modulo_ahorro === 'true')
+
+				// modulo ausencias
+				this.modulo_ausencias = (response.data.modulo_ausencias === 'true')
 
 				this.loading = false
 			} catch (err) {
@@ -302,6 +324,23 @@ export default {
 				await axios.post(generateUrl('/apps/empleados/ActualizarConfiguracion'), {
 					id_configuracion: 'modulo_ahorro',
 					data: this.modulo_ahorro.toString(),
+				})
+				showSuccess('Configuración actualizada')
+			} catch (err) {
+				showError('Excepción [ActualizarConfiguracion]: ' + err)
+				console.error(err)
+			}
+		},
+
+		/**
+		 * Activar o desactivar modulo de ahorro
+		 */
+		 async onChangemodulo_ausencias() {
+			this.modulo_ausencias = !this.modulo_ausencias
+			try {
+				await axios.post(generateUrl('/apps/empleados/ActualizarConfiguracion'), {
+					id_configuracion: 'modulo_ausencias',
+					data: this.modulo_ausencias.toString(),
 				})
 				showSuccess('Configuración actualizada')
 			} catch (err) {

@@ -42,7 +42,7 @@
 			</NcAppNavigationList>
 		</div>
 
-		<div>
+		<div v-if="ausenciasModulo()">
 			<NcAppNavigationCaption heading-id="Tiempo Laboral"
 				is-heading
 				name="Tiempo Laboral" />
@@ -82,6 +82,12 @@ export default {
 		},
 		ahorroModulo() {
 			if (this.configuraciones.modulo_ahorro === 'true') {
+				return true
+			}
+			return false
+		},
+		ausenciasModulo() {
+			if (this.configuraciones.modulo_ausencias === 'true') {
 				return true
 			}
 			return false

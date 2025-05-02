@@ -102,6 +102,7 @@ return [
 		['name' => 'ahorros#EnviarSolicitud', 'url' => '/EnviarSolicitud', 'verb' => 'POST'],
 		['name' => 'ahorros#getHistorial', 'url' => '/getHistorial/{id_user}', 'verb' => 'GET'],
 		['name' => 'ahorros#GetHistorialPanel', 'url' => '/GetHistorialPanel/{options_fechas_value}/{options_estado_values}', 'verb' => 'GET'],
+		['name' => 'ahorros#GenerateReport', 'url' => '/GenerateReport/{options_fechas_value}/{options_estado_values}', 'verb' => 'GET'],
 		['name' => 'ahorros#AceptarAhorro', 'url' => '/AceptarAhorro', 'verb' => 'POST'],
 		['name' => 'ahorros#DenegarAhorro', 'url' => '/DenegarAhorro', 'verb' => 'POST'],
 
