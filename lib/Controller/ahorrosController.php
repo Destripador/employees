@@ -136,7 +136,7 @@ class ahorrosController extends BaseController {
 		try{
 			
 			$user = $this->historialahorroMapper->GetHistorialPanel($options_fechas_value, $options_estado_values);
-			$books = [["ID", 'NOMBRE', 'CORREO', 'CANTIDAD SOLICITADA', "ESTADO"]];
+			$books = [['NOMBRE', 'FONDO_CLAVE', 'CUENTA_BANCARIA', 'CANTIDAD_SOLICITADA', 'AHORRO_TOTAL', 'ESTADO']];
 
 			foreach($user as $datas){
 				if($datas['estado'] == 0){
@@ -146,12 +146,15 @@ class ahorrosController extends BaseController {
 					$estado = "Aprobado";
 				}
 
-				array_push($books, 
-					[$datas['id'], 
-					$datas['displayname'], 
-					json_decode($datas['data'], true)['email']['value'],
-					'$' . $datas['cantidad_solicitada'] . "", 
-					$estado]);
+				array_push($books, [
+					$datas['displayname'],
+					$datas['Fondo_clave'],
+					$datas['Numero_cuenta'],
+					'$' . $datas['cantidad_solicitada'], 
+					'$' . $datas['cantidad_total'],
+					$estado
+				]);
+				
 			}
 
 			
