@@ -159,7 +159,7 @@
 
 				<div class="box2">
 					<div class="divider">
-						<span>Extructura Laboral</span>
+						<span>Estructura Laboral</span>
 					</div>
 					<div>
 						<!-- Organization Chart -->
@@ -173,11 +173,13 @@
 										<div class="content">
 											<div class="center">
 												<div class="avatar-chart mini-top">
-													<NcAvatar
+													<NcAvatar v-if="nodeData.name == 'Sin Asignar'"
+														display-name="?"
+														:size="40" />
+													<NcAvatar v-else
 														:user="nodeData.name"
 														:display-name="nodeData.name"
-														:size="40"
-														:show-user-status="false" />
+														:size="40" />
 												</div>
 												<div class="name-chart">
 													{{ nodeData.name }}
@@ -518,9 +520,6 @@ export default {
 								this.Equipo = ''
 							}
 						},
-						(err) => {
-							showError(err)
-						},
 					)
 			} catch (err) {
 				showError(t('empleados', 'Se ha producido una excepcion [01] [' + err + ']'))
@@ -534,18 +533,16 @@ export default {
 						(response) => {
 							this.peopleEquipo = response.data
 						},
-						(err) => {
-							showError(err)
-						},
 					)
 			} catch (err) {
-				showError(t('empleados', 'Se ha producido una excepcion [01] [' + err + ']'))
+				// eslint-disable-next-line no-console
+				console.log(err)
 			}
 		},
 
 		generateChar(user, gerente, socio) {
 			if (!gerente) gerente = 'Sin Asignar'
-			if (!socio) socio = 'Sin asignar'
+			if (!socio) socio = 'Sin Asignar'
 			return {
 				id: 'nodo-oculto',
 				children: [

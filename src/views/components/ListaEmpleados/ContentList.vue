@@ -18,12 +18,6 @@
 								Exportar listado
 							</NcActionButton>
 							<NcActionSeparator />
-							<!--NcActionButton @click="showMessage('Delete')">
-								<template #icon>
-									<Download :size="20" />
-								</template>
-								Exportar plantilla vacia
-							</NcActionButton-->
 							<NcActionButton @click="$refs.file.click()">
 								<template #icon>
 									<Upload :size="20" />

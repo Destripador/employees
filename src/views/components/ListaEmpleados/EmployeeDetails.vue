@@ -30,17 +30,11 @@
 								</template>
 								Exportar
 							</NcActionButton>
-							<NcActionButton :close-after-click="true" :disabled="true" @click="showEdit">
-								<template #icon>
-									<AccountEdit :size="20" />
-								</template>
-								Enviar correo
-							</NcActionButton>
 							<NcActionButton @click="DeactiveUserDialog(data.Id_empleados)">
 								<template #icon>
 									<AccountEdit :size="20" />
 								</template>
-								Deshabilitar a {{ data.Id_empleados }}
+								Deshabilitar empleado
 							</NcActionButton>
 						</NcActions>
 					</div>

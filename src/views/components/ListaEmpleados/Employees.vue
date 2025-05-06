@@ -43,9 +43,6 @@ export default {
 						(response) => {
 							this.Empleados = response.data.Empleados
 							this.loading = false
-
-							// eslint-disable-next-line no-console
-							console.log('Empleados:', this.Empleados)
 						},
 						(err) => {
 							showError(err)

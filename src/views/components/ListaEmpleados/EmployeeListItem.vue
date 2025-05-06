@@ -10,7 +10,6 @@
 					<BaseAvatar
 						:display-name="source.uid"
 						:user="source.uid"
-						:show-user-status="false"
 						:size="40" />
 				</div>
 			</template>
