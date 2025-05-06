@@ -1,5 +1,34 @@
 <template>
 	<div class="top">
+		<!-- Estado Civil -->
+		<div class="label-input-trabajo">
+			<NcSelect v-model="Estado_civil"
+				class="select"
+				:disabled="!show"
+				input-label="Estado Civil"
+				:options="EstadoCiviloptions" />
+		</div>
+		<!-- Genero -->
+		<div class="label-input-trabajo">
+			<NcSelect v-model="Genero"
+				class="select"
+				:disabled="!show"
+				input-label="Genero"
+				:options="GeneroOptions" />
+		</div>
+		<!-- Telefono de Contacto -->
+		<div class="external-label">
+			<label for="Telefono_contacto" class="labeltype">
+				<Badgeaccountoutline :size="20" />
+				Num. Contacto
+			</label>
+			<input id="Telefono_contacto"
+				v-model="Telefono_contacto"
+				type="text"
+				:disabled="!show"
+				class="inputtype">
+		</div>
+		<br>
 		<!-- Direccion -->
 		<div class="external-label">
 			<label for="Direccion" class="labeltype">
@@ -52,7 +81,7 @@
 		<div class="external-label">
 			<label for="Fecha_nacimiento" class="labeltype">
 				<CakeVariantOutline :size="20" />
-				Fech. Nacimiento
+				Nacimiento
 			</label>
 			<input id="Fecha_nacimiento"
 				v-model="Fecha_nacimiento"
@@ -73,40 +102,12 @@
 				class="inputtype">
 		</div>
 		<br>
-		<!-- Estado Civil -->
-		<div class="label-input-trabajo">
-			<NcSelect v-model="Estado_civil"
-				class="select"
-				:disabled="!show"
-				input-label="Estado Civil"
-				:options="EstadoCiviloptions" />
-		</div>
-		<!-- Genero -->
-		<div class="label-input-trabajo">
-			<NcSelect v-model="Genero"
-				class="select"
-				:disabled="!show"
-				input-label="Genero"
-				:options="GeneroOptions" />
-		</div>
-		<br>
 		<!-- Contacto de Emergencia -->
 		<div class="emergency-contact">
 			<div class="external-label">
-				<label for="Telefono_contacto" class="labeltype">
-					<Badgeaccountoutline :size="20" />
-					Num. Contacto
-				</label>
-				<input id="Telefono_contacto"
-					v-model="Telefono_contacto"
-					type="text"
-					:disabled="!show"
-					class="inputtype">
-			</div>
-			<div class="external-label">
 				<label for="Contacto_emergencia" class="labeltype">
 					<Badgeaccountoutline :size="20" />
-					Nom. Contacto
+					Nombre Contacto emergencia
 				</label>
 				<input id="Contacto_emergencia"
 					v-model="Contacto_emergencia"
@@ -117,7 +118,7 @@
 			<div class="external-label">
 				<label for="Numero_emergencia" class="labeltype">
 					<Badgeaccountoutline :size="20" />
-					Num. Contacto
+					Numero Contacto emergencia
 				</label>
 				<input id="Numero_emergencia"
 					v-model="Numero_emergencia"
@@ -292,6 +293,7 @@ export default {
 }
 .emergency-contact {
 	border: 1px solid rgba(0,0,0,0.17);
+	padding: 20px;
 }
 .top {
 	margin-top: 20px;
