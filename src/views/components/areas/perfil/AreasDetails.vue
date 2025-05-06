@@ -49,35 +49,12 @@
 				</div>
 			</div>
 			<div class="center">
-				<div v-if="!show">
+				<div>
 					<div>
 						<h2>{{ data.Nombre }}</h2>
 					</div>
 					<div v-if="data.Id_padre">
 						<h1>{{ data.Id_padre }}</h1>
-					</div>
-				</div>
-				<div v-else>
-					<div class="wrapper">
-						<NcTextField
-							:value.sync="area"
-							:v-model="area"
-							label="Nombre del area/departamento" />
-					</div>
-					<div>
-						<NcSelect v-model="padre"
-							input-label="Area Padre"
-							:options="options" />
-					</div>
-					<br>
-					<div>
-						<NcButton
-							class="center"
-							aria-label="Guardar cambios"
-							type="primary"
-							@click="guardarcambioarea()">
-							Guardar cambios
-						</NcButton>
 					</div>
 				</div>
 				<div class="rsg-title">
@@ -112,7 +89,8 @@
 							<NcListItem v-for="(item) in peopleArea.area"
 								:key="item.Id_empleados"
 								bold
-								:name="item.displayname ? item.displayname : item.Id_user">
+								:name="item.displayname ? item.displayname : item.Id_user"
+								@click.prevent>
 								<template #icon>
 									<NcAvatar
 										:size="44"
@@ -128,6 +106,36 @@
 				</div>
 			</div>
 		</div>
+		<NcModal
+			v-if="show"
+			ref="modalRef"
+			name="Editar"
+			@close="closeModal">
+			<div class="modal__content">
+				<div class="container">
+					<div class="form-group">
+						<NcTextField
+							:value.sync="area"
+							:v-model="area"
+							label="Nombre del area/departamento" />
+					</div>
+					<div class="form-group">
+						<NcSelect v-model="padre"
+							input-label="Area Padre"
+							:options="options" />
+					</div>
+					<div class="form-group">
+						<NcButton
+							class="center"
+							aria-label="Guardar cambios"
+							type="primary"
+							@click="guardarcambioarea()">
+							Guardar cambios
+						</NcButton>
+					</div>
+				</div>
+			</div>
+		</NcModal>
 	</div>
 </template>
 
@@ -154,6 +162,7 @@ import {
 	NcSelect,
 	NcButton,
 	NcListItem,
+	NcModal,
 	// NcProgressBar,
 } from '@nextcloud/vue'
 
@@ -173,6 +182,7 @@ export default {
 		NcSelect,
 		NcButton,
 		NcListItem,
+		NcModal,
 	},
 
 	props: {
@@ -232,6 +242,9 @@ export default {
 				this.padre = this.data.Id_padre
 				this.area = this.data.Nombre
 			}
+		},
+		closeModal() {
+			this.show = !this.show
 		},
 		async eliminarDepartamento(departamento) {
 			this.showDialog = false
@@ -455,5 +468,20 @@ font-size: 14px;
   to {
     opacity: .2;
   }
+}
+
+.modal__content {
+	margin: 50px;
+}
+
+.modal__content h2 {
+	text-align: center;
+}
+
+.form-group {
+	margin: calc(var(--default-grid-baseline) * 4) 0;
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
 }
 </style>
