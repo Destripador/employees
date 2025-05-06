@@ -229,7 +229,8 @@ class empleadosMapper extends QBMapper {
 		$qb = $this->db->getQueryBuilder();
 
 		$qb->select('*')
-			->from($this->getTableName())
+			->from($this->getTableName(), 'e')
+			->innerJoin('e', 'users', 'u', $qb->expr()->eq('u.uid', 'e.Id_user'))
 			->where($qb->expr()->eq('Id_departamento', $qb->createNamedParameter($id_area)));
 		
 		$result = $qb->execute();

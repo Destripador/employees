@@ -7,7 +7,7 @@
 				<h2>Selecciona un area para mas detalles</h2>
 			</div>
 		</div>
-		<div v-else class="container">
+		<div v-else>
 			<div>
 				<div class="container-search-profile">
 					<div class="button-container-profile">
@@ -22,6 +22,14 @@
 									<AccountEdit :size="20" />
 								</template>
 								Habilitar edicion
+							</NcActionButton>
+							<NcActionButton
+								:close-after-click="true"
+								@click="ChangeView()">
+								<template #icon>
+									<AccountEdit :size="20" />
+								</template>
+								Cambiar tipo de vista
 							</NcActionButton>
 							<NcActionSeparator />
 							<NcActionButton
@@ -75,17 +83,48 @@
 				<div class="rsg-title">
 					<h3>Empleados en departamento</h3>
 				</div>
-				<div class="rsg">
-					<ul class="container flex">
-						<li v-for="(item) in peopleArea.area"
-							:key="item.Id_empleados"
-							class="item flex-item">
-							<NcAvatar :user="item.Id_user" :display-name="item.Id_user" style="margin-top: inherit;" />
-							<h3>{{ item.Id_user }}</h3>
-							<!--NcAvatar :user="item.Id_user" :display-name="item.Id_user" />
-							<h3>{{ item.Id_user }}</h3-->
-						</li>
-					</ul>
+				<div>
+					<div v-if="preferencias_areas"
+						class="rsg">
+						<ul class="container flex">
+							<li v-for="(item) in peopleArea.area"
+								:key="item.Id_empleados"
+								class="flex-item">
+								<div class="card">
+									<div>
+										<NcAvatar :user="item.Id_user" :display-name="item.Id_user" size="60" />
+									</div>
+									<div class="right">
+										<div class="card-1">
+											{{ item.displayname ? item.displayname : item.Id_user }}
+										</div>
+										<div class="card-2">
+											{{ item.Id_user }}
+										</div>
+									</div>
+								</div>
+							</li>
+						</ul>
+					</div>
+					<div v-else
+						class="rsgd">
+						<ul class="">
+							<NcListItem v-for="(item) in peopleArea.area"
+								:key="item.Id_empleados"
+								bold
+								:name="item.displayname ? item.displayname : item.Id_user">
+								<template #icon>
+									<NcAvatar
+										:size="44"
+										:user="item.Id_user"
+										:display-name="item.displayname ? item.displayname : item.Id_user" />
+								</template>
+								<template v-if="!item.displayname" #subname>
+									{{ item.Id_user }}
+								</template>
+							</NcListItem>
+						</ul>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -114,6 +153,7 @@ import {
 	NcTextField,
 	NcSelect,
 	NcButton,
+	NcListItem,
 	// NcProgressBar,
 } from '@nextcloud/vue'
 
@@ -132,6 +172,7 @@ export default {
 		NcTextField,
 		NcSelect,
 		NcButton,
+		NcListItem,
 	},
 
 	props: {
@@ -164,12 +205,22 @@ export default {
 			],
 			area: '',
 			padre: '',
+			preferencias_areas: null,
 		}
 	},
 	mounted() {
 		this.$root.$on('show', (data) => {
 			this.show = data
 		})
+		this.preferencias_areas = localStorage.getItem('nextcloud_empleados_preferencias_areas')
+		if (this.preferencias_areas === null) {
+			// No existía, la inicializamos
+			localStorage.setItem('nextcloud_empleados_preferencias_areas', 'false')
+			this.preferencias_areas = false
+		} else {
+			// Convertimos el string a boolean
+			this.preferencias_areas = this.preferencias_areas === 'true'
+		}
 	},
 
 	methods: {
@@ -202,6 +253,11 @@ export default {
 			} catch (err) {
 				showError(t('empleados', 'Se ha producido una excepcion [03] [' + err + ']'))
 			}
+		},
+
+		ChangeView() {
+			this.preferencias_areas = !this.preferencias_areas
+			localStorage.setItem('nextcloud_empleados_preferencias_areas', this.preferencias_areas)
 		},
 
 		checknull(satanizar) {
@@ -272,16 +328,12 @@ export default {
   margin-top: 20px;
   align-items: center;
 }
-.rsg {
+.rsgd {
 	padding-top: 16px;
 	padding-bottom: 16px;
 	border: 1px solid rgb(232, 232, 232);
-	border-radius: 3px;
-	display: flex;
 	margin-left: 20px;
 	margin-right: 20px;
-	width: auto;
-	justify-content: center;
 }
 .rsg-title {
 	background-color: rgba(240, 240, 240, 0.37);
@@ -338,6 +390,7 @@ export default {
   display: flex;
 
   -webkit-flex-flow: row wrap;
+  flex-flow: row wrap;
   justify-content: space-around;
 }
 
@@ -368,5 +421,39 @@ h2 {
 	display: grid;
 	grid-template-columns: repeat(1, 500px);
 	gap: 10px;
+}
+
+.card {
+  --gray: rgba(229, 231, 235, 1);
+  width: 350px;
+  display: flex;
+  grid-gap: 1.25rem;
+  gap: 1.25rem;
+  border-radius: 1rem;
+  background-color: rgba(255, 255, 255, 1);
+  padding: 1.5rem;
+  box-shadow: rgba(0, 41, 0, 0.15) 0px 0px 11px 1px;
+}
+
+.card-1 {
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.right {
+  display: flex;
+  flex: 1 1 0%;
+  flex-direction: column;
+  grid-gap: 1.25rem;
+}
+
+.card-2 {
+font-size: 14px;
+}
+
+@keyframes pulse {
+  to {
+    opacity: .2;
+  }
 }
 </style>
