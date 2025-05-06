@@ -1,6 +1,8 @@
 <template>
 	<div class="top">
 		<div class="file-container" @drop.prevent="handleDrop" @dragover.prevent>
+			<NcLoadingIcon v-if="showLoading" :size="50" message="Procesando archivos..." />
+
 			<!-- Botón para subir archivos -->
 			<input ref="fileInput"
 				type="file"
@@ -64,7 +66,7 @@
 				</tbody>
 			</table>
 
-			<p v-if="files.length === 0" class="empty-msg">
+			<p v-if="files.length === 0 && !showLoading" class="empty-msg">
 				No hay archivos disponibles.
 			</p>
 		</div>
@@ -93,7 +95,7 @@ import Reload from 'vue-material-design-icons/Reload.vue'
 import { getClient, defaultRootPath } from '@nextcloud/files/dav'
 import { upload as Upload } from '@nextcloud/upload'
 import { showError, showSuccess } from '@nextcloud/dialogs'
-import { NcButton, NcDialog, NcTextField } from '@nextcloud/vue'
+import { NcButton, NcDialog, NcTextField, NcLoadingIcon } from '@nextcloud/vue'
 
 export default {
 	name: 'FilesTab',
@@ -109,6 +111,7 @@ export default {
 		FolderMoveOutline,
 		NcDialog,
 		NcTextField,
+		NcLoadingIcon,
 		Reload,
 	},
 
@@ -125,6 +128,7 @@ export default {
 			navigationStack: [],
 			client: null,
 			showDialogFolder: false,
+			showLoading: false,
 			buttons: [{ label: 'Crear', type: 'primary', nativeType: 'submit' }],
 			Folder: '',
 		}
@@ -203,7 +207,6 @@ export default {
 			}
 		},
 
-		// Subir archivos desde input
 		async uploadFile(event) {
 			const files = Array.from(event.target.files)
 			if (!files.length) {
@@ -211,15 +214,18 @@ export default {
 				return
 			}
 
+			this.showLoading = true
+
 			const destinationFolder = this.currentPath.replace(/^\/files\/[^/]+/, '')
 
-		 try {
+			try {
 				for (const file of files) {
 					const fileDestination = destinationFolder + file.name
 					// eslint-disable-next-line no-console
 					console.log('Subiendo a:', fileDestination)
 					await Upload(fileDestination, file)
 				}
+
 				// eslint-disable-next-line no-console
 				console.log('Esperando 2 segundos antes de actualizar lista de archivos...')
 				await new Promise(resolve => setTimeout(resolve, 2000))
@@ -230,13 +236,16 @@ export default {
 			} catch (error) {
 				console.error('Uploader error:', error)
 				showError(`❌ Error al subir archivos: ${error.message}`)
+			} finally {
+				this.showLoading = false
 			}
 		},
 
-		// Subir archivos por drag & drop
 		async handleDrop(event) {
 			const files = Array.from(event.dataTransfer.files)
 			if (!files.length) return
+
+			this.showLoading = true
 
 			const destinationFolder = this.currentPath.replace(/^\/files\/[^/]+/, '')
 
@@ -251,12 +260,14 @@ export default {
 				// eslint-disable-next-line no-console
 				console.log('Esperando 2 segundos antes de actualizar lista de archivos...')
 				await new Promise(resolve => setTimeout(resolve, 2000))
-				showSuccess('✅ Archivo subido correctamente.')
 
+				showSuccess('✅ Archivo subido correctamente.')
 				this.fetchFiles()
 
 			} catch (error) {
 				showError(`❌ Error al subir archivos arrastrados: ${error.message}`)
+			} finally {
+				this.showLoading = false
 			}
 		},
 
