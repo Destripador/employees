@@ -23,6 +23,14 @@
 								</template>
 								Habilitar edicion
 							</NcActionButton>
+							<NcActionButton
+								:close-after-click="true"
+								@click="ChangeView()">
+								<template #icon>
+									<AccountEdit :size="20" />
+								</template>
+								Cambiar tipo de vista
+							</NcActionButton>
 							<NcActionSeparator />
 							<NcActionButton
 								:close-after-click="true"
@@ -41,20 +49,74 @@
 				</div>
 			</div>
 			<div class="center">
-				<div v-if="!show">
+				<div>
 					<div>
 						<h2>{{ data.Nombre }}</h2>
 					</div>
 				</div>
-				<div v-else>
-					<div class="wrapper">
+				<div class="rsg-title">
+					<h3>Empleados en departamento</h3>
+				</div>
+				<div>
+					<div v-if="preferencias_puestos"
+						class="rsg">
+						<ul class="container flex">
+							<li v-for="(item) in peopleArea.puesto"
+								:key="item.Id_empleados"
+								class="flex-item">
+								<div class="card">
+									<div>
+										<NcAvatar :user="item.Id_user" :display-name="item.Id_user" size="60" />
+									</div>
+									<div class="right">
+										<div class="card-1">
+											{{ item.displayname ? item.displayname : item.Id_user }}
+										</div>
+										<div class="card-2">
+											{{ item.Id_user }}
+										</div>
+									</div>
+								</div>
+							</li>
+						</ul>
+					</div>
+					<div v-else
+						class="rsgd">
+						<ul class="">
+							<NcListItem v-for="(item) in peopleArea.puesto"
+								:key="item.Id_empleados"
+								bold
+								:name="item.displayname ? item.displayname : item.Id_user"
+								@click.prevent>
+								<template #icon>
+									<NcAvatar
+										:size="44"
+										:user="item.Id_user"
+										:display-name="item.displayname ? item.displayname : item.Id_user" />
+								</template>
+								<template v-if="!item.displayname" #subname>
+									{{ item.Id_user }}
+								</template>
+							</NcListItem>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+		<NcModal
+			v-if="show"
+			ref="modalRef"
+			name="Editar"
+			@close="closeModal">
+			<div class="modal__content">
+				<div class="container">
+					<div class="form-group">
 						<NcTextField
 							:value.sync="area"
 							:v-model="area"
 							label="Nombre del area/departamento" />
 					</div>
-					<br>
-					<div>
+					<div class="form-group">
 						<NcButton
 							class="center"
 							aria-label="Guardar cambios"
@@ -64,23 +126,8 @@
 						</NcButton>
 					</div>
 				</div>
-				<div class="rsg-title">
-					<h3>Empleados en departamento</h3>
-				</div>
-				<div class="rsg">
-					<ul class="container flex">
-						<li v-for="(item) in peopleArea.puesto"
-							:key="item.Id_empleados"
-							class="item flex-item">
-							<NcAvatar :user="item.Id_user" :display-name="item.Id_user" style="margin-top: inherit;" />
-							<h3>{{ item.Id_user }}</h3>
-							<!--NcAvatar :user="item.Id_user" :display-name="item.Id_user" />
-							<h3>{{ item.Id_user }}</h3-->
-						</li>
-					</ul>
-				</div>
 			</div>
-		</div>
+		</NcModal>
 	</div>
 </template>
 
@@ -105,6 +152,8 @@ import {
 	NcDialog,
 	NcTextField,
 	NcButton,
+	NcListItem,
+	NcModal,
 	// NcProgressBar,
 } from '@nextcloud/vue'
 
@@ -122,6 +171,8 @@ export default {
 		NcDialog,
 		NcTextField,
 		NcButton,
+		NcListItem,
+		NcModal,
 	},
 
 	props: {
@@ -153,12 +204,22 @@ export default {
 				},
 			],
 			area: '',
+			preferencias_puestos: null,
 		}
 	},
 	mounted() {
 		this.$root.$on('show', (data) => {
 			this.show = data
 		})
+		this.preferencias_puestos = localStorage.getItem('nextcloud_empleados_preferencias_puestos')
+		if (this.preferencias_puestos === null) {
+			// No existía, la inicializamos
+			localStorage.setItem('nextcloud_empleados_preferencias_puestos', 'false')
+			this.preferencias_puestos = false
+		} else {
+			// Convertimos el string a boolean
+			this.preferencias_puestos = this.preferencias_puestos === 'true'
+		}
 	},
 
 	methods: {
@@ -169,6 +230,9 @@ export default {
 				this.getall()
 				this.area = this.data.Nombre
 			}
+		},
+		closeModal() {
+			this.show = !this.show
 		},
 		async eliminarPuesto(puesto) {
 			this.showDialog = false
@@ -190,6 +254,11 @@ export default {
 			} catch (err) {
 				showError(t('empleados', 'Se ha producido una excepcion [03] [' + err + ']'))
 			}
+		},
+
+		ChangeView() {
+			this.preferencias_puestos = !this.preferencias_puestos
+			localStorage.setItem('nextcloud_empleados_preferencias_puestos', this.preferencias_puestos)
 		},
 
 		checknull(satanizar) {
@@ -349,5 +418,54 @@ h2 {
 	display: grid;
 	grid-template-columns: repeat(1, 500px);
 	gap: 10px;
+}
+
+.card {
+  --gray: rgba(229, 231, 235, 1);
+  width: 350px;
+  display: flex;
+  grid-gap: 1.25rem;
+  gap: 1.25rem;
+  border-radius: 1rem;
+  background-color: rgba(255, 255, 255, 1);
+  padding: 1.5rem;
+  box-shadow: rgba(0, 41, 0, 0.15) 0px 0px 11px 1px;
+}
+
+.card-1 {
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.right {
+  display: flex;
+  flex: 1 1 0%;
+  flex-direction: column;
+  grid-gap: 1.25rem;
+}
+
+.card-2 {
+font-size: 14px;
+}
+
+@keyframes pulse {
+  to {
+    opacity: .2;
+  }
+}
+
+.modal__content {
+	margin: 50px;
+}
+
+.modal__content h2 {
+	text-align: center;
+}
+
+.form-group {
+	margin: calc(var(--default-grid-baseline) * 4) 0;
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
 }
 </style>
