@@ -97,25 +97,29 @@
 				<div class="modal__content">
 					<div class="layout">
 						<div class="grow3">
+							<TrofeosAniversarios :info="Ausencias" :acumular="configuraciones.acumular_vacaciones" />
+							<br>
 							<table>
 								<caption>
 									<span class="caption-title">Tabla de aniversarios</span>
 								</caption>
 								<thead>
 									<tr>
-										<th>Numero Aniversario</th>
-										<th>Dias libres</th>
-										<!--th>opciones</th-->
+										<th>Aniversario(s)</th>
+										<th>Días libres</th>
 									</tr>
 								</thead>
 								<tbody>
-									<tr v-for="(item) in Aniversarios" :key="item.id_aniversario">
+									<tr v-for="(grupo, index) in AniversariosAgrupados" :key="index">
 										<td>
-											{{ item.numero_aniversario }}
+											<span v-if="grupo.desde === grupo.hasta">
+												{{ grupo.desde }}
+											</span>
+											<span v-else>
+												{{ grupo.desde }} al {{ grupo.hasta }}
+											</span>
 										</td>
-										<td>
-											{{ item.dias }}
-										</td>
+										<td>{{ grupo.dias }}</td>
 									</tr>
 								</tbody>
 							</table>
@@ -134,6 +138,7 @@
 <script>
 // Importing necessary components
 import MensajeAniversarios from './MensajeAniversarios.vue'
+import TrofeosAniversarios from './TrofeosAniversarios.vue'
 
 import { ref } from 'vue'
 
@@ -158,6 +163,7 @@ export default {
 
 	components: {
 		MensajeAniversarios,
+		TrofeosAniversarios,
 		NcAppContent,
 		DatePicker,
 		NcModal,
@@ -186,6 +192,45 @@ export default {
 			calendarKey: 0,
 			diasSolicitados: 0,
 		}
+	},
+
+	computed: {
+		AniversariosAgrupados() {
+			const agrupados = []
+			let inicio = null
+			let fin = null
+			let diasActual = null
+
+			this.Aniversarios.forEach((item, index) => {
+				const diasNumero = Number(item.dias) // Por si viene como string
+				if (diasActual === null) {
+					inicio = item.numero_aniversario
+					fin = item.numero_aniversario
+					diasActual = diasNumero
+				} else if (diasNumero === diasActual) {
+					fin = item.numero_aniversario
+				} else {
+					agrupados.push({
+						desde: inicio,
+						hasta: fin,
+						dias: diasActual,
+					})
+					inicio = item.numero_aniversario
+					fin = item.numero_aniversario
+					diasActual = diasNumero
+				}
+
+				if (index === this.Aniversarios.length - 1) {
+					agrupados.push({
+						desde: inicio,
+						hasta: fin,
+						dias: diasActual,
+					})
+				}
+			})
+
+			return agrupados
+		},
 	},
 
 	mounted() {
