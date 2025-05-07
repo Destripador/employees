@@ -7,7 +7,7 @@
 				<h2>Selecciona un equipo para mas detalles</h2>
 			</div>
 		</div>
-		<div v-else class="container">
+		<div v-else>
 			<div>
 				<div class="container-search-profile">
 					<div class="button-container-profile">
