@@ -72,17 +72,16 @@
 		<NcModal
 			v-if="modal"
 			size="large"
-			name="Format de vacaciones"
+			name="Formato de ausencias"
 			@close="closeModal">
-			<div ref="calendarRef" class="table_component" role="region">
-				<div class="modal__content">
-					<form class="bg-white shadow-md rounded px-8 pt-6 pb-8" @submit.prevent>
-						<div class="mb-4">
-							<span class="block text-gray-600 text-sm text-left font-bold mb-2">Select Range {{ diasSolicitados }}</span>
-						</div>
-					</form>
-				</div>
-			</div>
+			<NuevaSolicitud
+				v-if="modal"
+				ref="modalRef"
+				:date="date"
+				:dias-solicitados="diasSolicitados"
+				:dias-disponibles="Ausencias.dias_disponibles"
+				:prima="Ausencias.prima_vacacional"
+				@close="closeModal" />
 		</NcModal>
 		<!-- FINAL MODAL SOLICITUD DE VACACIONES -->
 
@@ -92,7 +91,7 @@
 			ref="modalRef"
 			size="large"
 			name="Tabla de aniversarios"
-			@close="closeModal">
+			@close="closeModalAniversario">
 			<div class="table_component" role="region" tabindex="0">
 				<div class="modal__content">
 					<div class="layout">
@@ -139,6 +138,7 @@
 // Importing necessary components
 import MensajeAniversarios from './MensajeAniversarios.vue'
 import TrofeosAniversarios from './TrofeosAniversarios.vue'
+import NuevaSolicitud from './Modal/NuevaSolicitud.vue'
 
 import { ref } from 'vue'
 
@@ -164,6 +164,7 @@ export default {
 	components: {
 		MensajeAniversarios,
 		TrofeosAniversarios,
+		NuevaSolicitud,
 		NcAppContent,
 		DatePicker,
 		NcModal,
@@ -250,7 +251,13 @@ export default {
 		},
 		handleClickOutside(event) {
 			const calendar = this.$refs.calendarRef?.$el
-			if (calendar && !calendar.contains(event.target)) {
+			const modal = this.$refs.modalRef?.$el
+
+			if (
+				calendar
+				&& !calendar.contains(event.target)
+				&& (!modal || !modal.contains(event.target))
+			) {
 				this.restartCalendar()
 			}
 		},
@@ -297,6 +304,9 @@ export default {
 		closeModal() {
 			this.modal = false
 			this.restartCalendar()
+		},
+		closeModalAniversario() {
+			this.ModalAniversario = false
 		},
 		async GetAusencias() {
 			try {
@@ -357,10 +367,15 @@ export default {
 			console.log('start', start.getMonth(), nDate.getMonth())
 			// eslint-disable-next-line no-console
 			console.log('start', start.getFullYear(), nDate.getFullYear())
+			// eslint-disable-next-line no-console
+			console.log('TOP', start, nDate)
 
 			// Validar si hay un rango seleccionado
 			if (!start || !end) return
-			if (start.getDate() < nDate.getDate() && start.getMonth() <= nDate.getMonth() && start.getFullYear() <= nDate.getFullYear()) {
+			if (
+				new Date(start.getFullYear(), start.getMonth(), start.getDate())
+				< new Date(nDate.getFullYear(), nDate.getMonth(), nDate.getDate())
+			) {
 				showError('No puedes solicitar ausencias en fechas pasadas')
 				this.restartCalendar()
 			}
@@ -386,6 +401,10 @@ export default {
 			// Paso 2: Cálculo normal de FechaMaxima
 			this.FechaInitial = start
 
+			// Esta parte del código está comentada porque no se utiliza en el momento actual
+			// y se ha dejado para referencia futura.
+			// limita la fecha maxima segun las vacaciones disponibles
+			/*
 			const diasTotales = Math.floor(this.Ausencias.dias_disponibles)
 			const horasExtra = (this.Ausencias.dias_disponibles % 1) * 24
 
@@ -402,6 +421,7 @@ export default {
 
 			fechaMax.setHours(fechaMax.getHours() + horasExtra)
 			this.FechaMaxima = fechaMax
+			*/
 		},
 
 		restartCalendar() {

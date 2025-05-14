@@ -53,7 +53,7 @@ class TipoAusenciasController extends Controller {
      */
     public function ExportarTipo(): array {
         $tipoausencias = $this->tipoausenciaMapper->getTipo();
-        $books = [['id_tipo_ausencia', 'nombre', 'descripcion', 'solicitar_archivo']];
+        $books = [['id_tipo_ausencia', 'nombre', 'descripcion', 'solicitar_archivo', 'solicitar_prima_vacacional']];
 
         foreach ($tipoausencias as $tipo) {
             $books[] = [
@@ -61,6 +61,7 @@ class TipoAusenciasController extends Controller {
                 $tipo['nombre'],
                 $tipo['descripcion'],
                 $tipo['solicitar_archivo'],
+                $tipo['solicitar_prima_vacacional'],
             ];
         }
 
@@ -76,12 +77,13 @@ class TipoAusenciasController extends Controller {
         if ($xlsx = \Shuchkin\SimpleXLSX::parse($file['tmp_name'])) {
             foreach ($xlsx->rows() as $row) {
                 if (!empty($row[0])) {
-                    $this->tipoausenciaMapper->updateTipoAusencias((int) $row[0], (string) $row[1], (string) $row[2], (bool) $row[3]);
+                    $this->tipoausenciaMapper->updateTipoAusencias((int) $row[0], (string) $row[1], (string) $row[2], (bool) $row[3], (bool) $row[34]);
                 } else {
                     $tipo = new tipoausencia();
                     $tipo->setnombre($row[1]);
                     $tipo->setdescripcion($row[2]);
                     $tipo->setsolicitar_archivo($row[3]);
+                    $tipo->setsolicitar_prima_vacacional($row[4]);
                     $this->tipoausenciaMapper->insert($tipo);
                 }
             }

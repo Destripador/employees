@@ -216,7 +216,6 @@ export default {
   transition-duration: 0.5s;
   background: none;
   overflow: hidden;
-  margin-left: 20px;
 }
 
 .cards1:hover {

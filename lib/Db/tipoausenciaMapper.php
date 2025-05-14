@@ -32,7 +32,7 @@ class tipoausenciaMapper extends QBMapper {
 		return $tipo_ausencia;
 	}
 
-	public function updateTipoAusencias(int $id_tipo_ausencia, string $nombre, string $descripcion, bool $solicitar_archivo): void {
+	public function updateTipoAusencias(int $id_tipo_ausencia, string $nombre, string $descripcion, bool $solicitar_archivo, bool $solicitar_prima_vacacional): void {
 		if(empty($id_tipo_ausencia) && $id_tipo_ausencia != 0){ $id_tipo_ausencia = null; }
 		if(empty($nombre) && $nombre != 0){ $nombre = null; }
 		if(empty($descripcion) && $descripcion != 0){ $descripcion = null; }
@@ -41,6 +41,7 @@ class tipoausenciaMapper extends QBMapper {
 			->set('nombre', $query->createNamedParameter($nombre))
 			->set('descripcion', $query->createNamedParameter($descripcion))
 			->set('solicitar_archivo', $query->createNamedParameter($solicitar_archivo))
+			->set('solicitar_prima_vacacional', $query->createNamedParameter($solicitar_prima_vacacional))
 			->where($query->expr()->eq('id_tipo_ausencia', $query->createNamedParameter($id_tipo_ausencia)));
 	
 		$query->execute();

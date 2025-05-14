@@ -55,6 +55,7 @@ class Version4Date20250319230629 extends SimpleMigrationStep {
 			$table->addColumn('nombre', 'string', ['length' => 255, 'notnull' => true]);
 			$table->addColumn('descripcion', 'text', ['notnull' => false]);
 			$table->addColumn('solicitar_archivo', 'integer', ['notnull' => true]);
+			$table->addColumn('solicitar_prima_vacacional', 'integer', ['notnull' => true]);
 			$table->setPrimaryKey(['id_tipo_ausencia']);
 			$table->addIndex(['nombre']);
 		}
