@@ -201,41 +201,48 @@ class AusenciasController extends Controller {
     #[NoAdminRequired]
     public function EnviarAusencia(): DataResponse {
         $files = $_FILES['archivos'] ?? [];
-
         $fileCount = is_array($files['name']) ? count($files['name']) : 0;
-
+    
         $user = $this->userSession->getUser();
         $gestor = $this->configuracionesMapper->GetGestor()[0]['Data'] ?? null;
-
+    
         if (!$gestor) {
             throw new \Exception('No se encontró la carpeta del gestor de información.');
         }
-
+    
         $userFolder = $this->rootFolder->getUserFolder($gestor);
         $folderPath = "EMPLEADOS/" . $user->getUID() . " - " . strtoupper($user->getDisplayName()) . "/JUSTIFICANTES";
-
+    
         if (!$userFolder->nodeExists($folderPath)) {
-            throw new \Exception('No existe la carpeta de justificantes para el usuario.');
+            $userFolder->newFolder($folderPath);
         }
-
+    
         $carpetaDestino = $userFolder->get($folderPath);
-
+        $fechaActual = (new \DateTime())->format('Y-m-d');
+    
         for ($i = 0; $i < $fileCount; $i++) {
             $tmpName = $files['tmp_name'][$i];
-            $name = $files['name'][$i];
-
+            $originalName = $files['name'][$i];
+    
             if (is_uploaded_file($tmpName)) {
                 $content = file_get_contents($tmpName);
-
-                if ($carpetaDestino->nodeExists($name)) {
-                    $carpetaDestino->get($name)->putContent($content);
+    
+                // Separar extensión
+                $extension = pathinfo($originalName, PATHINFO_EXTENSION);
+                $baseName = pathinfo($originalName, PATHINFO_FILENAME);
+    
+                // Construir nuevo nombre
+                $newName = $fechaActual . '-' . $baseName . '.' . $extension;
+    
+                if ($carpetaDestino->nodeExists($newName)) {
+                    $carpetaDestino->get($newName)->putContent($content);
                 } else {
-                    $carpetaDestino->newFile($name)->putContent($content);
+                    $carpetaDestino->newFile($newName)->putContent($content);
                 }
             }
         }
-
+    
         return new DataResponse(['success' => true, 'message' => 'Archivos subidos correctamente.']);
-    }
+    }    
 
 }
