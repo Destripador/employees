@@ -235,6 +235,10 @@ export default {
 	},
 
 	mounted() {
+		this.$bus.on('close-solicitud', () => {
+			this.GetAusencias()
+			this.closeModal()
+		})
 		this.GetAusencias()
 		document.addEventListener('keydown', this.detectarEscape)
 		document.addEventListener('click', this.handleClickOutside)

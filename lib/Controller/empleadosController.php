@@ -164,7 +164,7 @@ class EmpleadosController extends BaseController {
                 $folderPath = "EMPLEADOS/" . $id_user . " - " . strtoupper($user->getDisplayName());
 
                 if (!$userFolder->nodeExists($folderPath)) {
-                    foreach (["", "/CAPACITACIONES", "/DOCUMENTOS OFICIALES", "/DOCUMENTOS DE IDENTIFICACION", "/MEMORANDUMS"] as $subFolder) {
+                    foreach (["", "/CAPACITACIONES", "/DOCUMENTOS OFICIALES", "/DOCUMENTOS DE IDENTIFICACION", "/MEMORANDUMS", "/JUSTIFICANTES"] as $subFolder) {
                         $userFolder->newFolder($folderPath . $subFolder);
                     }
                 }

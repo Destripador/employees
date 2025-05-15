@@ -11,6 +11,11 @@ use OCP\AppFramework\Http\Attribute\NoAdminRequired;
 use OCP\IRequest;
 use OCP\IL10N;
 use OCA\Empleados\UploadException;
+use OCP\AppFramework\Http\DataResponse;
+
+use OCA\Empleados\Db\configuracionesMapper;
+use OCP\Files\IRootFolder;
+use OCP\IUserManager;
 
 use OCP\IUserSession;
 
@@ -30,18 +35,29 @@ class AusenciasController extends Controller {
     protected $userSession;
     protected $l10n;
     protected $ausenciasMapper;
+    protected $configuracionesMapper;
+
+    protected $userManager;
+
+    protected IRootFolder $rootFolder;
 
     public function __construct(
         IRequest $request,
         IL10N $l10n,
         ausenciasMapper $ausenciasMapper,
         IUserSession $userSession,
+        configuracionesMapper $configuracionesMapper,
+        IRootFolder $rootFolder,
+        IUserManager $userManager,
     ) {
-        parent::__construct(Application::APP_ID, $request, $userSession);
+        parent::__construct(Application::APP_ID, $request, $userSession, $configuracionesMapper);
         
         $this->l10n = $l10n;
         $this->ausenciasMapper = $ausenciasMapper;
         $this->userSession = $userSession;
+        $this->configuracionesMapper = $configuracionesMapper;
+        $this->rootFolder = $rootFolder;
+        $this->userManager = $userManager;
     }
 
     /**
@@ -178,4 +194,48 @@ class AusenciasController extends Controller {
         return $this->ausenciasMapper->GetAniversarioByDate($diferencia->y);
 
     }
+    /**
+    * Generar solicitud de ausencia con sus respectivos archivos adjuntos.
+    */
+    #[UseSession]
+    #[NoAdminRequired]
+    public function EnviarAusencia(): DataResponse {
+        $files = $_FILES['archivos'] ?? [];
+
+        $fileCount = is_array($files['name']) ? count($files['name']) : 0;
+
+        $user = $this->userSession->getUser();
+        $gestor = $this->configuracionesMapper->GetGestor()[0]['Data'] ?? null;
+
+        if (!$gestor) {
+            throw new \Exception('No se encontró la carpeta del gestor de información.');
+        }
+
+        $userFolder = $this->rootFolder->getUserFolder($gestor);
+        $folderPath = "EMPLEADOS/" . $user->getUID() . " - " . strtoupper($user->getDisplayName()) . "/JUSTIFICANTES";
+
+        if (!$userFolder->nodeExists($folderPath)) {
+            throw new \Exception('No existe la carpeta de justificantes para el usuario.');
+        }
+
+        $carpetaDestino = $userFolder->get($folderPath);
+
+        for ($i = 0; $i < $fileCount; $i++) {
+            $tmpName = $files['tmp_name'][$i];
+            $name = $files['name'][$i];
+
+            if (is_uploaded_file($tmpName)) {
+                $content = file_get_contents($tmpName);
+
+                if ($carpetaDestino->nodeExists($name)) {
+                    $carpetaDestino->get($name)->putContent($content);
+                } else {
+                    $carpetaDestino->newFile($name)->putContent($content);
+                }
+            }
+        }
+
+        return new DataResponse(['success' => true, 'message' => 'Archivos subidos correctamente.']);
+    }
+
 }

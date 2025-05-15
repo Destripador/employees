@@ -87,6 +87,7 @@ return [
 		
 		/******************************* AUSENCIAS *****************************************/
 		['name' => 'ausencias#GetAusenciasByUser', 'url' => '/GetAusenciasByUser', 'verb' => 'POST'],
+		['name' => 'ausencias#EnviarAusencia', 'url' => '/EnviarAusencia', 'verb' => 'POST'],
 		 
 
 		/**************************** TIPO AUSENCIAS **************************************/

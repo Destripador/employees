@@ -166,7 +166,7 @@
 							</div>
 						</div>
 						<div class="top">
-							<NcButton variant="secondary" wide>
+							<NcButton variant="secondary" wide @click="EnviarAusencia()">
 								<template #icon>
 									<Airplane :size="20" />
 								</template>
@@ -291,6 +291,44 @@ export default {
 		uploadFile(event) {
 			const files = event.target.files || event.dataTransfer.files
 			this.selectedFiles = Array.from(files) // convierte FileList a Array
+		},
+		async EnviarAusencia() {
+			try {
+				const formData = new FormData()
+
+				formData.append('id_tipo_ausencia', this.AusenciaSeleccionada.id)
+				formData.append('dias_solicitados', this.diasSolicitados)
+				formData.append('fecha_de', this.date.start.toLocaleDateString())
+				formData.append('fecha_hasta', this.date.end ? this.date.end.toLocaleDateString() : '')
+				formData.append('prima_vacacional', this.SolicitarPrima)
+				formData.append('notas', this.comentarios)
+
+				// Adjuntar todos los archivos
+				for (let i = 0; i < this.selectedFiles.length; i++) {
+					formData.append('archivos[]', this.selectedFiles[i])
+				}
+
+				// eslint-disable-next-line no-console
+				console.log('Archivos a subir:', this.selectedFiles)
+
+				const response = await axios.post(
+					generateUrl('/apps/empleados/EnviarAusencia'),
+					formData,
+					{
+						headers: {
+							'Content-Type': 'multipart/form-data',
+						},
+					},
+				)
+
+				// eslint-disable-next-line no-console
+				console.log(response.data)
+
+				// this.$bus.emit('close-solicitud')
+
+			} catch (err) {
+				showError(t('empleados', 'Error al enviar la solicitud de ausencia: ' + err))
+			}
 		},
 	},
 }
