@@ -324,7 +324,7 @@ export default {
 				// eslint-disable-next-line no-console
 				console.log(response.data)
 
-				// this.$bus.emit('close-solicitud')
+				this.$bus.emit('close-solicitud')
 
 			} catch (err) {
 				showError(t('empleados', 'Error al enviar la solicitud de ausencia: ' + err))

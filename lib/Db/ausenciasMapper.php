@@ -60,6 +60,17 @@ class ausenciasMapper extends QBMapper {
 		return $users;
 	}
 
+	public function updateAusenciasEmpleado(int $id_ausencias, float $dias ): void {
+		if(empty($id_ausencias) && $id_ausencias != 0){ $id_ausencias = null; }
+		if(empty($dias) && $dias != 0){ $dias = null; }
+		$query = $this->db->getQueryBuilder();
+		$query->update($this->getTableName())
+			->set('dias_disponibles', $query->createNamedParameter($dias))
+			->where($query->expr()->eq('id_ausencias', $query->createNamedParameter($id_ausencias)));
+	
+		$query->execute();
+	}
+	
 	public function updateAusencias(int $id_ausencias, int $numero_ausencias, float $dias ): void {
 		if(empty($id_ausencias) && $id_ausencias != 0){ $id_ausencias = null; }
 		if(empty($numero_ausencias) && $numero_ausencias != 0){ $numero_ausencias = null; }

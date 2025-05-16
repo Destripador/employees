@@ -32,6 +32,20 @@ class tipoausenciaMapper extends QBMapper {
 		return $tipo_ausencia;
 	}
 
+	public function getTipoById($id): array {
+		$qb = $this->db->getQueryBuilder();
+
+		$qb->select('*')
+			->from($this->getTableName())
+			->where($qb->expr()->eq('id_tipo_ausencia', $qb->createNamedParameter($id)));
+			
+		$result = $qb->execute();
+		$tipo_ausencia = $result->fetchAll();
+		$result->closeCursor();
+	
+		return $tipo_ausencia;
+	}
+
 	public function updateTipoAusencias(int $id_tipo_ausencia, string $nombre, string $descripcion, bool $solicitar_archivo, bool $solicitar_prima_vacacional): void {
 		if(empty($id_tipo_ausencia) && $id_tipo_ausencia != 0){ $id_tipo_ausencia = null; }
 		if(empty($nombre) && $nombre != 0){ $nombre = null; }

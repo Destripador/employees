@@ -21,7 +21,10 @@ use OCP\IUserSession;
 
 use DateTime;
 
+use OCA\Empleados\Db\empleadosMapper;
 use OCA\Empleados\Db\ausenciasMapper;
+use OCA\Empleados\Db\tipoausenciaMapper;
+use OCA\Empleados\Db\historialausenciasMapper;
 use OCA\Empleados\Db\ausencias;
 
 require_once 'SimpleXLSXGen.php';
@@ -34,7 +37,10 @@ class AusenciasController extends Controller {
 
     protected $userSession;
     protected $l10n;
+    protected $empleadosMapper;
     protected $ausenciasMapper;
+    protected $tipoausenciaMapper;
+    protected $historialausenciasMapper;
     protected $configuracionesMapper;
 
     protected $userManager;
@@ -45,6 +51,9 @@ class AusenciasController extends Controller {
         IRequest $request,
         IL10N $l10n,
         ausenciasMapper $ausenciasMapper,
+        historialausenciasMapper $historialausenciasMapper,
+        tipoausenciaMapper $tipoausenciaMapper,
+        empleadosMapper $empleadosMapper,
         IUserSession $userSession,
         configuracionesMapper $configuracionesMapper,
         IRootFolder $rootFolder,
@@ -53,7 +62,10 @@ class AusenciasController extends Controller {
         parent::__construct(Application::APP_ID, $request, $userSession, $configuracionesMapper);
         
         $this->l10n = $l10n;
+        $this->empleadosMapper = $empleadosMapper;
         $this->ausenciasMapper = $ausenciasMapper;
+        $this->tipoausenciaMapper = $tipoausenciaMapper;
+        $this->historialausenciasMapper = $historialausenciasMapper;
         $this->userSession = $userSession;
         $this->configuracionesMapper = $configuracionesMapper;
         $this->rootFolder = $rootFolder;
@@ -241,8 +253,30 @@ class AusenciasController extends Controller {
                 }
             }
         }
-    
-        return new DataResponse(['success' => true, 'message' => 'Archivos subidos correctamente.']);
+        
+        $id_tipo_ausencia = $this->request->getParam('id_tipo_ausencia');
+        $dias_solicitados = $this->request->getParam('dias_solicitados');
+        $fecha_de = $this->request->getParam('fecha_de');
+        $fecha_hasta = $this->request->getParam('fecha_hasta');
+        $prima_vacacional = $this->request->getParam('prima_vacacional');
+        $notas = $this->request->getParam('notas');
+
+        // aqui se disminuyen los dias de la ausencia
+        $tipo_ausencia = $this->tipoausenciaMapper->getTipoById($id_tipo_ausencia);
+        $id_empleado = $this->empleadosMapper->GetMyEmployeeInfo($user->getUID());
+        $empleado_ausencias = $this->ausenciasMapper->GetAusenciasByUser($id_empleado[0]['Id_empleados']);
+        if (!empty($tipo_ausencia) && $tipo_ausencia[0]['solicitar_prima_vacacional'] == 1) {
+            $dias_disponibles = $empleado_ausencias[0]['dias_disponibles'] - $dias_solicitados;
+            $this->ausenciasMapper->updateAusenciasEmpleado($empleado_ausencias[0]['id_ausencias'], $dias_disponibles);
+        }
+        
+        $fecha_de = DateTime::createFromFormat('d/m/Y', $this->request->getParam('fecha_de'))->format('Y-m-d');
+        $fecha_hasta = DateTime::createFromFormat('d/m/Y', $this->request->getParam('fecha_hasta'))->format('Y-m-d');
+
+        // Registro en el historial de ausencias 
+        $this->historialausenciasMapper->EnviarAusencia((int) $id_tipo_ausencia, $empleado_ausencias[0]['id_ausencias'], $fecha_de, $fecha_hasta, (int) $prima_vacacional, $notas, $empleado_ausencias[0]['id_aniversario']);
+
+        return new DataResponse(['success' => true, 'message' => $tipo_ausencia[0]['solicitar_prima_vacacional']]);
     }    
 
 }
