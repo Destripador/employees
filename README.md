@@ -92,8 +92,25 @@ Designed for SMEs, firms, and organizations seeking digital sovereignty and cust
 
 * Nextcloud 28+
 * PHP 8.1+
-* MariaDB / MySQL
-* Docker (optional, recommended)
+---
+## 🧰 Installation Guide
+
+1. Download the compiled version
+Visit the latest release and download the .tar.gz file.
+
+2. Extract and install
+Place the extracted empleados folder into your Nextcloud custom_apps directory.
+
+If your Nextcloud is in developer mode, run the following command:
+php occ migrations:execute empleados *versions*
+
+3. Assign the Data Manager
+Go to the Configurations tab of the Employees module in the admin panel and set the Data Manager User.
+
+![Image](https://github.com/user-attachments/assets/3a2888f6-1f94-480d-862b-fd85ef8afd64)
+
+This user will store the employee documents in a folder called EMPLEADOS within their Nextcloud files. When activating a new employee, their personal folder is automatically created in that location.
+
 
 ---
 
