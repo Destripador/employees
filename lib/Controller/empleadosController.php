@@ -6,6 +6,7 @@ namespace OCA\Empleados\Controller;
 use OCA\Empleados\AppInfo\Application;
 use OCP\AppFramework\Controller;
 use OCP\AppFramework\Http\ForbiddenException;
+use OCP\AppFramework\Http\DataResponse;
 use OCP\IRequest;
 use OCP\ISession;
 use OCP\IUserSession;
@@ -22,6 +23,8 @@ use OCA\Empleados\Db\empleados;
 use OCA\Empleados\Db\departamentos;
 use OCA\Empleados\Db\configuraciones;
 use OCA\Empleados\Db\userahorro;
+
+use OCP\IAvatarManager;
 
 use OCP\IDBConnection;
 
@@ -65,7 +68,8 @@ class EmpleadosController extends BaseController {
         userahorroMapper $userahorroMapper,
         IL10N $l10n,
         IGroupManager $groupManager,
-        IRootFolder $rootFolder
+        IRootFolder $rootFolder,
+        IAvatarManager $avatarManager
     ) {
 		parent::__construct(Application::APP_ID, $request, $userSession, $groupManager, $empleadosMapper, $configuracionesMapper);
 
@@ -79,9 +83,27 @@ class EmpleadosController extends BaseController {
         $this->departamentosMapper = $departamentosMapper;
         $this->configuracionesMapper = $configuracionesMapper;
         $this->l10n = $l10n;
+        $this->avatarManager = $avatarManager;
 
         $this->rootFolder = $rootFolder;
         $this->AdminCheckAccess(); // 🔥 Validar accesos automáticamente
+    }
+
+    #[UseSession]
+    #[NoAdminRequired]
+    public function uploadAvatar(): DataResponse {
+        $uid = $this->request->getParam('uid');
+        $file = $this->request->getUploadedFile('avatar');
+
+        if (!$uid || !$file || !$file['tmp_name']) {
+            throw new \Exception('Faltan datos o archivo inválido');
+        }
+
+        $content = file_get_contents($file['tmp_name']);
+        $avatar = $this->avatarManager->getAvatar($uid);
+        $avatar->set($content);
+
+        return new DataResponse(['status' => 'success']);
     }
 
     /**

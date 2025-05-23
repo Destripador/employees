@@ -20,6 +20,8 @@ return [
 		['name' => 'empleados#GetEmpleadosListFix', 'url' => '/GetEmpleadosListFix', 'verb' => 'GET'],
 		['name' => 'empleados#ExportListEmpleados', 'url' => '/ExportListEmpleados', 'verb' => 'GET'],
 		
+		['name' => 'empleados#uploadAvatar', 'url' => '/uploadAvatar', 'verb' => 'POST'],
+		
 		['name' => 'empleados#GuardarNota', 'url' => '/GuardarNota', 'verb' => 'POST'],
 		['name' => 'empleados#CambiosEmpleado', 'url' => '/CambiosEmpleado', 'verb' => 'POST'],
 		['name' => 'empleados#CambiosPersonal', 'url' => '/CambiosPersonal', 'verb' => 'POST'],
